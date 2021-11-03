@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=58",  "setuptools_scm>=6"]
+build-backend = "setuptools.build_meta"
+
+[tool.black]
+line-length = 120
+
+[tool.isort]
+line_length = 120
+profile = "black"
+known_first_party = ["pypi_changes", "tests"]
+
+[tool.setuptools_scm]
+write_to = "src/pypi_changes/_version.py"
+
+[tool.towncrier]
+name = "pypi_changes"
+filename = "docs/changelog.rst"
+directory = "docs/changelog"
+title_format = false
+issue_format = "`#{issue} <https://github.com/gaborbernat/pypi_changes/issues/{issue}>`_"
+template = "docs/changelog/template.jinja2"
