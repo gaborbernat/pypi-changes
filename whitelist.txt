@@ -1,10 +1,12 @@
-attrgetter
+appauthor
+appname
 autoclass
 autodoc
 autosectionlabel
-backports
 cmd
 dest
+devrelease
+epilog
 exc
 extlinks
 fmt
@@ -17,6 +19,9 @@ naturaltime
 nitpicky
 param
 pathlib
+platformdirs
+prerelease
 prog
 pygments
 typehints
+ver
