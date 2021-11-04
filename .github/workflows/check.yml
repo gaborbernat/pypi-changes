@@ -31,7 +31,7 @@ jobs:
         os:
           - Ubuntu
           - Windows
-          - MacOs        
+          - MacOs
     steps:
       - uses: actions/checkout@v2
         with:
@@ -50,7 +50,7 @@ jobs:
           PYTEST_ADDOPTS: "-vv --durations=20"
       - uses: codecov/codecov-action@v1
         with:
-          file: ./.tox/4/coverage.py.xml
+          file: ./.tox/coverage.py.xml
           flags: tests
           name: ${{ matrix.py }} - ${{ matrix.os }}
 
