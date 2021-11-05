@@ -3,19 +3,21 @@ from __future__ import annotations
 import os
 from datetime import datetime, timezone
 from pathlib import Path
+from unittest.mock import create_autospec
 
 import pytest
+from pypi_simple import DistributionPackage, ProjectPage, PyPISimple
 from pytest_mock import MockerFixture
 from vcr import use_cassette
 
 from pypi_changes._cli import Options
-from pypi_changes._info import pypi_info
+from pypi_changes._info import _merge_with_index_server, pypi_info
 from pypi_changes._pkg import Package
 from tests import MakeDist
 
 
 @pytest.fixture()
-def _force_pypi_index(mocker: MockerFixture) -> None:
+def _force_pypi_index(mocker: MockerFixture, _no_index: None) -> None:  # noqa: U101
     mocker.patch("pypi_changes._info.PYPI_INDEX", "")
     mocker.patch.dict(os.environ, {"PIP_INDEX_URL": "https://pypi.org/simple"})
 
@@ -36,6 +38,7 @@ def test_info_self(tmp_path: Path, option_simple: Options, make_dist: MakeDist) 
 
 
 @pytest.mark.usefixtures("_force_pypi_index")
+@pytest.mark.usefixtures("_no_proxy")
 def test_info_missing(tmp_path: Path, option_simple: Options, make_dist: MakeDist) -> None:
     dist = make_dist(tmp_path, "missing-package", "1.0.0")
     distributions = [dist]
@@ -52,6 +55,7 @@ def test_info_missing(tmp_path: Path, option_simple: Options, make_dist: MakeDis
     assert current <= last_release_at
 
 
+@pytest.mark.usefixtures("_no_proxy")
 def test_info_pypi_server_invalid_version(tmp_path: Path, option_simple: Options, make_dist: MakeDist) -> None:
     dist = make_dist(tmp_path, "pytz", "1.0")
 
@@ -61,6 +65,7 @@ def test_info_pypi_server_invalid_version(tmp_path: Path, option_simple: Options
     assert isinstance(packages, list)
     assert len(packages) == 1
     pkg = packages[0]
+    assert pkg.exc is None
     assert pkg.info is not None
     assert "2004b" in pkg.info["releases"]  # this is an invalid version
 
@@ -77,3 +82,20 @@ def test_info_pypi_server_timeout(
     pkg = packages[0]
     assert pkg.info is None
     assert isinstance(pkg.exc, TimeoutError)
+
+
+def test_merge_with_pypi() -> None:
+    versions = [("2", "sdist"), ("1", "sdist"), (None, None), ("3", "wheel")]
+    packages = [create_autospec(DistributionPackage, spec_set=True, version=v, package_type=t) for v, t in versions]
+    page = create_autospec(ProjectPage, spec_set=True, packages=packages)
+    client = create_autospec(PyPISimple, spec_set=True)
+    client.get_project_page.return_value = page
+
+    start = {"0": [{"packagetype": "sdist", "upload_time_iso_8601": None, "version": "0"}]}
+    result = _merge_with_index_server("a", client, start)
+    assert result == {
+        "0": [{"packagetype": "sdist", "upload_time_iso_8601": None, "version": "0"}],
+        "1": [{"packagetype": "sdist", "upload_time_iso_8601": None, "version": "1"}],
+        "2": [{"packagetype": "sdist", "upload_time_iso_8601": None, "version": "2"}],
+        "3": [{"packagetype": "wheel", "upload_time_iso_8601": None, "version": "3"}],
+    }

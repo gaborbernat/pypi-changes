@@ -5,9 +5,22 @@ from pathlib import Path
 from unittest.mock import MagicMock, create_autospec
 
 import pytest
+from _pytest.monkeypatch import MonkeyPatch
 
 from pypi_changes._cli import Options
 from tests import MakeDist
+
+
+@pytest.fixture(autouse=True)
+def _no_index(monkeypatch: MonkeyPatch) -> None:
+    monkeypatch.delenv("PIP_INDEX_URL", raising=False)
+
+
+@pytest.fixture(autouse=True)
+def _no_proxy(monkeypatch: MonkeyPatch) -> None:
+    monkeypatch.delenv("https_proxy", raising=False)
+    monkeypatch.delenv("http_proxy", raising=False)
+    monkeypatch.delenv("no_proxy", raising=False)
 
 
 @pytest.fixture()

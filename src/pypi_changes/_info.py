@@ -83,7 +83,7 @@ def one_info(pypi_client: PyPISimple | None, session: CachedSession, dist: PathD
     name: str = dist.metadata["Name"]
     result = _load_from_pypi_json_api(name, session)
     if pypi_client is not None:
-        _merge_with_index_server(name, pypi_client, result)
+        result["releases"] = _merge_with_index_server(name, pypi_client, result["releases"])
     return result
 
 
@@ -104,31 +104,35 @@ def _load_from_pypi_json_api(name: str, session: CachedSession) -> dict[str, Any
             prev_release_at -= timedelta(seconds=1)
             release = {"packagetype": "sdist", "version": a_version, "upload_time_iso_8601": prev_release_at}
             artifact_release.append(release)
-
-    # order releases in reverse order
-    def key(value: tuple[str, list[dict[str, Any]]]) -> tuple[Version, datetime]:
-        try:
-            version = Version(value[0])
-        except InvalidVersion:
-            version = Version("0.0.1")
-        return version, value[1][0]["upload_time_iso_8601"]
-
-    result["releases"] = dict(sorted(result["releases"].items(), key=key, reverse=True))
+    result["releases"] = dict(sorted(result["releases"].items(), key=sort_by_version_release, reverse=True))
     return result
 
 
-def _merge_with_index_server(name: str, pypi_client: PyPISimple, result: dict[str, Any]) -> None:
+def sort_by_version_release(value: tuple[str, list[dict[str, Any]]]) -> tuple[Version, datetime]:
+    try:
+        version = Version(value[0])
+    except InvalidVersion:
+        version = Version("0.0.1")
+    return version, value[1][0]["upload_time_iso_8601"]
+
+
+def _merge_with_index_server(
+    name: str, pypi_client: PyPISimple, releases: dict[str, list[dict[str, Any]]]
+) -> dict[str, list[dict[str, Any]]]:
     index_info = pypi_client.get_project_page(name)
     if index_info is not None:
         index_releases = defaultdict(list)
         for pkg in index_info.packages:
             release = {"packagetype": pkg.package_type, "version": pkg.version, "upload_time_iso_8601": None}
-            index_releases[pkg.version].append(release)
+            if pkg.version is not None:  # some Artifactory might not set this for .egg-info uploads, ignore those
+                index_releases[pkg.version].append(release)
 
-        # insert missing entries at the start
-        missing = {ver: values for ver, values in index_releases.items() if ver not in result["releases"]}
-        missing.update(result["releases"])
-        result["releases"] = missing
+        missing = {ver: values for ver, values in index_releases.items() if ver not in releases}
+        if missing:
+            missing.update(releases)
+            missing = dict(sorted(missing.items(), key=sort_by_version_release, reverse=True))
+            releases = missing
+    return releases
 
 
 __all__ = [

@@ -1,3 +1,7 @@
+v1.0.2 (2021-11-06)
+===================
+* Better handling of private index servers (such as Artifactory)
+
 v1.0.1 (2021-11-05)
 ===================
 * Improve the readme and add test (100% coverage).

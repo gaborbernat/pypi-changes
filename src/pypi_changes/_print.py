@@ -13,10 +13,21 @@ from ._cli import Options
 from ._pkg import Package
 
 
+class Reversor:
+    def __init__(self, obj: str) -> None:
+        self.obj = obj
+
+    def __eq__(self, other: object) -> bool:
+        return isinstance(other, Reversor) and other.obj == self.obj
+
+    def __lt__(self, other: Reversor) -> bool:
+        return other.obj < self.obj
+
+
 def print_tree(distributions: Iterable[Package], options: Options) -> None:
     now = datetime.now(timezone.utc)
-    tree = Tree(f"🐍 Distributions within {escape(str(options.python.parent))}", guide_style="cyan")
-    for pkg in sorted(distributions, key=lambda v: v.last_release_at or now, reverse=True):
+    tree = Tree(f"🐍 Distributions within {escape(str(options.python))}", guide_style="cyan")
+    for pkg in sorted(distributions, key=lambda v: (v.last_release_at or now, Reversor(v.name)), reverse=True):
         text = Text(pkg.name, "yellow")
         text.stylize(f"link https://pypi.org/project/{pkg.name}/#history")
         text.append(" ", "white")

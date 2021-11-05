@@ -1,13 +1,17 @@
 appauthor
 appname
+artifactory
 autoclass
 autodoc
 autosectionlabel
+autouse
 capsys
 cmd
+delenv
 dest
 devrelease
 epilog
+eq
 exc
 exe
 extlinks
@@ -28,6 +32,7 @@ prog
 py38
 pygments
 readouterr
+reversor
 tmp
 typehints
 unittest
