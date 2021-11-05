@@ -48,7 +48,8 @@ def test_info_missing(tmp_path: Path, option_simple: Options, make_dist: MakeDis
     pkg = packages[0]
     assert pkg.info == {"releases": {}}
     current = datetime.now(timezone.utc)
-    assert current < pkg.last_release_at
+    last_release_at = pkg.last_release_at
+    assert current <= last_release_at
 
 
 def test_info_pypi_server_invalid_version(tmp_path: Path, option_simple: Options, make_dist: MakeDist) -> None:
