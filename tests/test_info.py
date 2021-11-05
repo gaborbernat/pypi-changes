@@ -1,34 +1,78 @@
 from __future__ import annotations
 
 import os
-import sys
+from datetime import datetime, timezone
 from pathlib import Path
-from unittest.mock import create_autospec
 
+import pytest
 from pytest_mock import MockerFixture
 from vcr import use_cassette
 
 from pypi_changes._cli import Options
 from pypi_changes._info import pypi_info
 from pypi_changes._pkg import Package
+from tests import MakeDist
 
 
-def test_pypi_info_self(tmp_path: Path, mocker: MockerFixture) -> None:
+@pytest.fixture()
+def _force_pypi_index(mocker: MockerFixture) -> None:
     mocker.patch("pypi_changes._info.PYPI_INDEX", "")
     mocker.patch.dict(os.environ, {"PIP_INDEX_URL": "https://pypi.org/simple"})
 
-    dist = create_autospec(f"importlib{'.' if sys.version_info >= (3, 8) else '_'}metadata.PathDistribution")
-    dist.metadata = {"Name": "pypi-changes"}
-    dist._path = tmp_path / "dist"
 
-    options = Options(cache_path=tmp_path / "a.sqlite", jobs=1, cache_duration=0.01)
+@pytest.mark.usefixtures("_force_pypi_index")
+def test_info_self(tmp_path: Path, option_simple: Options, make_dist: MakeDist) -> None:
+    dist = make_dist(tmp_path, "pypi-changes", "1.0.0")
     distributions = [dist]
 
     with use_cassette(str(Path(__file__).parent / "pypi_info_self.yaml"), mode="once"):
-        packages = list(pypi_info(distributions, options))
+        packages = list(pypi_info(distributions, option_simple))
 
     assert isinstance(packages, list)
     assert len(packages) == 1
     pkg = packages[0]
     assert isinstance(pkg, Package)
     assert repr(pkg) == f"Package(name='pypi-changes', path={repr(tmp_path / 'dist')})"
+
+
+@pytest.mark.usefixtures("_force_pypi_index")
+def test_info_missing(tmp_path: Path, option_simple: Options, make_dist: MakeDist) -> None:
+    dist = make_dist(tmp_path, "missing-package", "1.0.0")
+    distributions = [dist]
+
+    with use_cassette(str(Path(__file__).parent / "pypi_info_missing_package.yaml"), mode="once"):
+        packages = list(pypi_info(distributions, option_simple))
+
+    assert isinstance(packages, list)
+    assert len(packages) == 1
+    pkg = packages[0]
+    assert pkg.info == {"releases": {}}
+    current = datetime.now(timezone.utc)
+    assert current < pkg.last_release_at
+
+
+def test_info_pypi_server_invalid_version(tmp_path: Path, option_simple: Options, make_dist: MakeDist) -> None:
+    dist = make_dist(tmp_path, "pytz", "1.0")
+
+    with use_cassette(str(Path(__file__).parent / "pypi_info_pytz.yaml"), mode="once"):
+        packages = list(pypi_info([dist], option_simple))
+
+    assert isinstance(packages, list)
+    assert len(packages) == 1
+    pkg = packages[0]
+    assert pkg.info is not None
+    assert "2004b" in pkg.info["releases"]  # this is an invalid version
+
+
+def test_info_pypi_server_timeout(
+    tmp_path: Path, mocker: MockerFixture, option_simple: Options, make_dist: MakeDist
+) -> None:
+    dist = make_dist(tmp_path, "a", "1.0")
+    mocker.patch("requests.Session.get", side_effect=TimeoutError)
+    packages = list(pypi_info([dist], option_simple))
+
+    assert isinstance(packages, list)
+    assert len(packages) == 1
+    pkg = packages[0]
+    assert pkg.info is None
+    assert isinstance(pkg.exc, TimeoutError)

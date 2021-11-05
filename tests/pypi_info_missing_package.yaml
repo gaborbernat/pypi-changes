@@ -1,0 +1,226 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.26.0
+    method: GET
+    uri: https://pypi.org/pypi/missing-package/json
+  response:
+    body:
+      string: "<html>\n <head>\n  <title>301 Moved Permanently</title>\n </head>\n
+        <body>\n  <h1>301 Moved Permanently</h1>\n  The resource has been moved to
+        /pypi/missing-package/json/; you should be redirected automatically.\n\n\n
+        </body>\n</html>"
+    headers:
+      Accept-Ranges:
+      - bytes
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '224'
+      Content-Security-Policy:
+      - base-uri 'self'; block-all-mixed-content; connect-src 'self' https://api.github.com/repos/
+        *.fastly-insights.com sentry.io https://api.pwnedpasswords.com https://2p66nmmycsj3.statuspage.io;
+        default-src 'none'; font-src 'self' fonts.gstatic.com; form-action 'self';
+        frame-ancestors 'none'; frame-src 'none'; img-src 'self' https://warehouse-camo.ingress.cmh1.psfhosted.org/
+        www.google-analytics.com *.fastly-insights.com; script-src 'self' www.googletagmanager.com
+        www.google-analytics.com *.fastly-insights.com https://cdn.ravenjs.com; style-src
+        'self' fonts.googleapis.com; worker-src *.fastly-insights.com
+      Content-Type:
+      - text/html; charset=UTF-8
+      Date:
+      - Fri, 05 Nov 2021 08:54:19 GMT
+      Location:
+      - https://pypi.org/pypi/missing-package/json/
+      Referrer-Policy:
+      - origin-when-cross-origin
+      Server:
+      - nginx/1.13.9
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Vary:
+      - Accept-Encoding
+      X-Cache:
+      - MISS, MISS
+      X-Cache-Hits:
+      - 0, 0
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - deny
+      X-Permitted-Cross-Domain-Policies:
+      - none
+      X-Served-By:
+      - cache-bwi5177-BWI, cache-lhr7332-LHR
+      X-Timer:
+      - S1636102460.677741,VS0,VE106
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 301
+      message: Moved Permanently
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.26.0
+    method: GET
+    uri: https://pypi.org/pypi/missing-package/json/
+  response:
+    body:
+      string: !!binary |
+        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
+        /w39F4HK9rsxEgAA
+    headers:
+      Accept-Ranges:
+      - bytes
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Length:
+      - '1893'
+      Content-Security-Policy:
+      - base-uri 'self'; block-all-mixed-content; connect-src 'self' https://api.github.com/repos/
+        *.fastly-insights.com sentry.io https://api.pwnedpasswords.com https://2p66nmmycsj3.statuspage.io;
+        default-src 'none'; font-src 'self' fonts.gstatic.com; form-action 'self';
+        frame-ancestors 'none'; frame-src 'none' https://www.youtube-nocookie.com;
+        img-src 'self' https://warehouse-camo.ingress.cmh1.psfhosted.org/ www.google-analytics.com
+        *.fastly-insights.com; script-src 'self' www.googletagmanager.com www.google-analytics.com
+        *.fastly-insights.com https://cdn.ravenjs.com https://www.youtube.com https://s.ytimg.com;
+        style-src 'self' fonts.googleapis.com; worker-src *.fastly-insights.com
+      Content-Type:
+      - text/html; charset=UTF-8
+      Date:
+      - Fri, 05 Nov 2021 08:54:19 GMT
+      ETag:
+      - '"iC0+fkUPr9ioHXlCCoAlCw"'
+      Referrer-Policy:
+      - origin-when-cross-origin
+      Server:
+      - nginx/1.13.9
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Vary:
+      - Accept-Encoding
+      X-Cache:
+      - MISS, MISS
+      X-Cache-Hits:
+      - 0, 0
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - deny
+      X-Permitted-Cross-Domain-Policies:
+      - none
+      X-Served-By:
+      - cache-bwi5162-BWI, cache-lhr7332-LHR
+      X-Timer:
+      - S1636102460.800731,VS0,VE110
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 404
+      message: Not Found
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.26.0
+    method: GET
+    uri: https://pypi.org/simple/missing-package/
+  response:
+    body:
+      string: 404 Not Found
+    headers:
+      Accept-Ranges:
+      - bytes
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '13'
+      Content-Security-Policy:
+      - default-src 'none'; sandbox allow-top-navigation
+      Content-Type:
+      - text/plain; charset=UTF-8
+      Date:
+      - Fri, 05 Nov 2021 08:54:20 GMT
+      Referrer-Policy:
+      - origin-when-cross-origin
+      Server:
+      - nginx/1.13.9
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Vary:
+      - Accept-Encoding
+      X-Cache:
+      - HIT, MISS
+      X-Cache-Hits:
+      - 1, 0
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - deny
+      X-Permitted-Cross-Domain-Policies:
+      - none
+      X-Served-By:
+      - cache-bwi5166-BWI, cache-lhr7332-LHR
+      X-Timer:
+      - S1636102460.929001,VS0,VE80
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 404
+      message: Not Found
+version: 1

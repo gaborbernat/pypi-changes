@@ -52,7 +52,7 @@ def _iter_distributions(paths: Iterable[Path]) -> Generator[PathDistribution, No
                 if match:
                     dist = Distribution.at(candidate)
                     name = dist.metadata["Name"]
-                    if name not in found:
+                    if name is not None and name not in found:
                         found.add(name)
                         yield dist
 

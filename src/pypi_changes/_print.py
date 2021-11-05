@@ -22,15 +22,16 @@ def print_tree(distributions: Iterable[Package], options: Options) -> None:
         text.append(" ", "white")
         text.append(pkg.version, "blue")
         last_release = pkg.last_release
-        if last_release is not None:
+        if last_release is not None:  # pragma: no branch
             if last_release["version"] != pkg.version and pkg.info is not None:
-                for a_version, releases in pkg.info["releases"].items():
-                    if a_version == pkg.dist.version and releases[0]["upload_time_iso_8601"] is not None:
+                for a_version, releases in pkg.info["releases"].items():  # pragma: no branch
+                    first_release_at = releases[0]["upload_time_iso_8601"]
+                    if a_version == pkg.dist.version and first_release_at is not None:
                         text.append(" ")
-                        text.append(naturaltime(now - releases[0]["upload_time_iso_8601"]), "green")
+                        text.append(naturaltime(now - first_release_at), "green")
                         break
                 text.append(f" remote {last_release['version']}", "red")
-            if last_release["upload_time_iso_8601"] is not None:
+            if last_release["upload_time_iso_8601"] is not None:  # pragma: no branch
                 text.append(" ", "white")
                 text.append(naturaltime(now - last_release["upload_time_iso_8601"]), "green")
         tree.add(text)

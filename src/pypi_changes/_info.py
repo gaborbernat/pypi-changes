@@ -6,8 +6,7 @@ from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from contextlib import ExitStack, contextmanager
 from datetime import datetime, timedelta, timezone
-from http import HTTPStatus
-from typing import Any, Generator, Iterator
+from typing import Any, Generator, Iterator, Sequence
 
 from packaging.version import InvalidVersion, Version
 from pypi_simple import PyPISimple
@@ -27,7 +26,7 @@ else:  # pragma: no cover (<py38)
 PYPI_INDEX = "https://pypi.org/simple"
 
 
-def pypi_info(distributions: list[PathDistribution], options: Options) -> Generator[Package, None, None]:
+def pypi_info(distributions: Sequence[PathDistribution], options: Options) -> Generator[Package, None, None]:
     with ExitStack() as stack:
         enter = stack.enter_context
         session = enter(CachedSession(str(options.cache_path), backend="sqlite", expire_after=options.cache_duration))
@@ -91,7 +90,7 @@ def one_info(pypi_client: PyPISimple | None, session: CachedSession, dist: PathD
 def _load_from_pypi_json_api(name: str, session: CachedSession) -> dict[str, Any]:
     # ask PyPi - e.g. https://pypi.org/pypi/pip/json, see https://warehouse.pypa.io/api-reference/json/ for more details
     response = session.get(f"https://pypi.org/pypi/{name}/json")
-    result: dict[str, Any] = {"releases": {}} if response.status_code == HTTPStatus.NOT_FOUND else response.json()
+    result: dict[str, Any] = response.json() if response.ok else {"releases": {}}
 
     # normalize response
     prev_release_at = datetime.now(timezone.utc)

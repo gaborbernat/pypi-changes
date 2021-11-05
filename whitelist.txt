@@ -13,6 +13,7 @@ exe
 extlinks
 fmt
 formatter
+func
 ignorecase
 intersphinx
 iterdir
@@ -30,6 +31,7 @@ readouterr
 tmp
 typehints
 unittest
+usefixtures
 venv
 ver
 virtualenv
