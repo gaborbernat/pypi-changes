@@ -7,9 +7,9 @@ from typing import Any
 
 from packaging.version import Version
 
-if sys.version_info >= (3, 8):
+if sys.version_info >= (3, 8):  # pragma: no cover (py38+)
     from importlib.metadata import PathDistribution
-else:
+else:  # pragma: no cover (<py38)
     from importlib_metadata import PathDistribution
 
 

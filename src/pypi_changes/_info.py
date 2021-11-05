@@ -19,9 +19,9 @@ from rich.text import Text
 from ._cli import Options
 from ._pkg import Package
 
-if sys.version_info >= (3, 8):
+if sys.version_info >= (3, 8):  # pragma: no cover (py38+)
     from importlib.metadata import PathDistribution
-else:
+else:  # pragma: no cover (<py38)
     from importlib_metadata import PathDistribution
 
 
@@ -30,6 +30,7 @@ def pypi_info(distributions: list[PathDistribution], options: Options) -> Genera
         enter = stack.enter_context
         session = enter(CachedSession(str(options.cache_path), backend="sqlite", expire_after=options.cache_duration))
         session.remove_expired_responses()  # cleanup old entries
+
         client = enter(_pypi_client(session))
 
         progress = Progress(

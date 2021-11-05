@@ -11,9 +11,9 @@ from rich.console import Console
 
 from ._cli import Options
 
-if sys.version_info >= (3, 8):
+if sys.version_info >= (3, 8):  # pragma: no cover (py38+)
     from importlib.metadata import Distribution, PathDistribution
-else:
+else:  # pragma: no cover (<py38)
     from importlib_metadata import Distribution, PathDistribution
 
 
@@ -43,19 +43,18 @@ def _iter_distributions(paths: Iterable[Path]) -> Generator[PathDistribution, No
         if not path.exists():
             continue
         path = path.resolve()
-        if path in done_paths:
-            continue
-        done_paths.add(path)
-        for candidate in path.iterdir():
-            if not candidate.is_dir():
-                continue
-            match = _PKG_REGEX.match(candidate.name)
-            if match:
-                dist = Distribution.at(candidate)
-                name = dist.metadata["Name"]
-                if name not in found:
-                    found.add(name)
-                    yield dist
+        if path not in done_paths:
+            done_paths.add(path)
+            for candidate in path.iterdir():
+                if not candidate.is_dir():
+                    continue
+                match = _PKG_REGEX.match(candidate.name)
+                if match:
+                    dist = Distribution.at(candidate)
+                    name = dist.metadata["Name"]
+                    if name not in found:
+                        found.add(name)
+                        yield dist
 
 
 __all__ = [

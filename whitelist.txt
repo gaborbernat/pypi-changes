@@ -3,11 +3,13 @@ appname
 autoclass
 autodoc
 autosectionlabel
+capsys
 cmd
 dest
 devrelease
 epilog
 exc
+exe
 extlinks
 fmt
 formatter
@@ -22,6 +24,12 @@ pathlib
 platformdirs
 prerelease
 prog
+py38
 pygments
+readouterr
+tmp
 typehints
+unittest
+venv
 ver
+virtualenv
