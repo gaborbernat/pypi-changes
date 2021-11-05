@@ -49,7 +49,7 @@ class Package:
         return self.dist._path  # type: ignore # it exists
 
     def __repr__(self) -> str:
-        return f"{self.__class__.name}(name={self.name}, path={self.path})"
+        return f"{self.__class__.__name__}(name={self.name!r}, path={self.path!r})"
 
 
 __all__ = [

@@ -24,6 +24,8 @@ if sys.version_info >= (3, 8):  # pragma: no cover (py38+)
 else:  # pragma: no cover (<py38)
     from importlib_metadata import PathDistribution
 
+PYPI_INDEX = "https://pypi.org/simple"
+
 
 def pypi_info(distributions: list[PathDistribution], options: Options) -> Generator[Package, None, None]:
     with ExitStack() as stack:
@@ -71,7 +73,7 @@ class SpeedColumn(TextColumn):
 @contextmanager
 def _pypi_client(session: Session) -> Iterator[PyPISimple | None]:
     url = os.environ.get("PIP_INDEX_URL")
-    if url is not None and url != "https://pypi.org/simple/":
+    if url is not None and url.lstrip("/") != PYPI_INDEX:
         with PyPISimple(endpoint=url, session=session) as client:
             yield client
     else:
@@ -96,13 +98,8 @@ def _load_from_pypi_json_api(name: str, session: CachedSession) -> dict[str, Any
     for a_version, artifact_release in sorted(result["releases"].items(), reverse=True):
         if artifact_release:  # enrich into releases version and transform upload time to python datetime
             for release in artifact_release:
-                upload_time = release.get("upload_time_iso_8601")
-                if upload_time:
-                    upload_time = datetime.fromisoformat(upload_time.replace("Z", "+00:00"))
-                else:
-                    raise NotImplementedError
-                release["upload_time_iso_8601"] = upload_time
-                release["version"] = a_version
+                upload_time = datetime.fromisoformat(release.get("upload_time_iso_8601").replace("Z", "+00:00"))
+                release.update({"version": a_version, "upload_time_iso_8601": upload_time})
             prev_release_at = artifact_release[0]["upload_time_iso_8601"]
         else:  # if no releases make up a release time and enrich version
             prev_release_at -= timedelta(seconds=1)

@@ -77,7 +77,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Fri, 05 Nov 2021 00:58:34 GMT
+      - Fri, 05 Nov 2021 08:05:47 GMT
       ETag:
       - '"SQujkLcwtvpILHqrbKZiyg"'
       Referrer-Policy:
@@ -91,7 +91,7 @@ interactions:
       X-Cache:
       - HIT, HIT
       X-Cache-Hits:
-      - 1, 2
+      - 1, 1
       X-Content-Type-Options:
       - nosniff
       X-Frame-Options:
@@ -101,9 +101,82 @@ interactions:
       X-PyPI-Last-Serial:
       - '11924395'
       X-Served-By:
-      - cache-bwi5127-BWI, cache-lhr7373-LHR
+      - cache-bwi5127-BWI, cache-lhr7369-LHR
       X-Timer:
-      - S1636073915.592054,VS0,VE0
+      - S1636099548.605431,VS0,VE1
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.26.0
+    method: GET
+    uri: https://pypi.org/simple/pypi-changes/
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAC/52TTW/UMBCG7/yKNEjcEn9/lWQlBD0gVaICLpzQxB5vou4mITGg8OvxKtsLAgn1
+        5LHGr+edZ+zm5t2Ht5+/PNwVfTqfDi+afSmKpkcIlyCHZ0xQjHDGtpy3ebhdcJ7WIU3LVv3AZR2m
+        sSz8NCYcU1uympZXXRrSCQ/3w/i4FnFaiou48j2MR1wbsmcvpchTraabwnYV9+yfypzaz0DRLxjb
+        sk9pXm8JicMJ13reUj+N/bQmDPW0HMkM/hGykggklhEMACBodDoqYVF5DdprVCCjo1wqwyLwYBkG
+        J5xlGhmjzlHpZWfIxcnXq5Mq91rTat5ENU4jVjBu9c/+9HLtgSvddkpqpb1XlBqRrzRMUSmUpgIM
+        00zKzgrgLsrIObdOYGe1CAE8p7IDxsoiQIJqwW/fhyVX2/tqy1fH9LoVtSkP/2GmIXBouoU8l1gk
+        VJFMxILyQXJvpQ4ickOlArA872LGh8LTyNBogd55bb0U6ABURPUXYnWCpT7+euLkBTdOavBWo/aU
+        o44afaYUo6VesGCFCiojVFJGxrETXR5gHowxgQdPn8PpauEPOmR/f/mF7Z/hpqo+3X18/+a+YMxx
+        KZyqqsNvhHHyojMDAAA=
+    headers:
+      Accept-Ranges:
+      - bytes
+      Cache-Control:
+      - max-age=600, public
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Length:
+      - '470'
+      Content-Security-Policy:
+      - default-src 'none'; sandbox allow-top-navigation
+      Content-Type:
+      - text/html; charset=UTF-8
+      Date:
+      - Fri, 05 Nov 2021 08:05:47 GMT
+      ETag:
+      - '"NS4CK+gfAbMDa105cHQfyg"'
+      Referrer-Policy:
+      - origin-when-cross-origin
+      Server:
+      - nginx/1.13.9
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Vary:
+      - Accept-Encoding
+      X-Cache:
+      - HIT, HIT
+      X-Cache-Hits:
+      - 1, 1
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - deny
+      X-Permitted-Cross-Domain-Policies:
+      - none
+      X-PyPI-Last-Serial:
+      - '11924395'
+      X-Served-By:
+      - cache-bwi5161-BWI, cache-lhr7369-LHR
+      X-Timer:
+      - S1636099548.622362,VS0,VE1
       X-XSS-Protection:
       - 1; mode=block
     status:
