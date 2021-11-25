@@ -55,6 +55,8 @@ def _define_cli_arguments() -> ArgumentParser:
         nargs="?",
     )
 
+    parser.add_argument("--json", action="store_true", default=False, help="Show output in JSON format")
+
     parser.add_argument("python", help="python interpreter to inspect", metavar="PYTHON_EXE", action=_Python)
 
     return parser

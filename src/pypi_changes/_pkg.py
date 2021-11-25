@@ -48,6 +48,14 @@ class Package:
     def path(self) -> Path:
         return self.dist._path  # type: ignore # it exists
 
+    @property
+    def current_release(self) -> dict[str, Any]:
+        if self.info is not None:
+            release_info = self.info["releases"].get(self.version)
+            if release_info is not None:
+                return release_info[0] or {}
+        return {}  # return empty version info if not matching
+
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(name={self.name!r}, path={self.path!r})"
 
