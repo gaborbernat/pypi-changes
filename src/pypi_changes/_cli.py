@@ -43,6 +43,14 @@ def _define_cli_arguments() -> ArgumentParser:
     cache_help = "seconds how long requests should be cached (pass 0 to bypass the cache, -1 to cache forever)"
     parser.add_argument("--cache-duration", "-d", default=3600, type=int, help=cache_help, metavar="SEC")
 
+    parser.add_argument(
+        "--alphabetize",
+        "-a",
+        help="sort output alphabetically",
+        action="store_true",
+        dest="alphabetize",
+    )
+
     parser.add_argument("python", help="python interpreter to inspect", metavar="PYTHON_EXE", action=_Python)
 
     return parser

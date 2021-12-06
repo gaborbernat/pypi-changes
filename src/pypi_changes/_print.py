@@ -23,11 +23,19 @@ class Reversor:
     def __lt__(self, other: Reversor) -> bool:
         return other.obj < self.obj
 
+def get_sorted_pkg_list(distributions, options, now):
+    if options.alphabetize:
+        key = lambda v: v.name.lower()
+        reverse = False
+    else:
+        key = lambda v: (v.last_release_at or now, Reversor(v.name))
+        reverse = True
+    return sorted(distributions, key=key, reverse=reverse)
 
 def print_tree(distributions: Iterable[Package], options: Options) -> None:
     now = datetime.now(timezone.utc)
     tree = Tree(f"🐍 Distributions within {escape(str(options.python))}", guide_style="cyan")
-    for pkg in sorted(distributions, key=lambda v: (v.last_release_at or now, Reversor(v.name)), reverse=True):
+    for pkg in get_sorted_pkg_list(distributions, options, now):
         text = Text(pkg.name, "yellow")
         text.stylize(f"link https://pypi.org/project/{pkg.name}/#history")
         text.append(" ", "white")
