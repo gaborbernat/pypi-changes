@@ -24,8 +24,8 @@ class Reversor:
         return other.obj < self.obj
 
 
-def get_sorted_pkg_list(distributions: Iterable[Package], options: Options, now: float):
-    if options.sort == "alphabetize":
+def get_sorted_pkg_list(distributions: Iterable[Package], options: Options, now: datetime):
+    if options.sort == "alphabetic":
         return sorted(distributions, key=lambda v: v.name.lower())
     return sorted(distributions, key=lambda v: (v.last_release_at or now, Reversor(v.name)), reverse=True)
 

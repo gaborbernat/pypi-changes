@@ -18,7 +18,7 @@ def test_print(capsys: CaptureFixture[str], option_simple: Options, mocker: Mock
     mocked_datetime = mocker.patch("pypi_changes._print.datetime")
     mocked_datetime.now.return_value = datetime(2021, 11, 6, 10, tzinfo=timezone.utc)
     option_simple.python = Path(sys.executable)
-    option_simple.alphabetize = False
+    option_simple.sort = "updated"
     packages = [
         Package(
             create_autospec(PathDistribution, spec_set=True, version=v_l, metadata={"Name": n}),
@@ -51,7 +51,7 @@ def test_print_alphabetical(capsys: CaptureFixture[str], option_simple: Options,
     mocked_datetime = mocker.patch("pypi_changes._print.datetime")
     mocked_datetime.now.return_value = datetime(2021, 11, 6, 10, tzinfo=timezone.utc)
     option_simple.python = Path(sys.executable)
-    option_simple.alphabetize = True
+    option_simple.sort = "alphabetic"
     packages = [
         Package(
             create_autospec(PathDistribution, spec_set=True, version=v_l, metadata={"Name": n}),

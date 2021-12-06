@@ -14,6 +14,7 @@ class Options(Namespace):
     jobs: int
     cache_path: Path
     cache_duration: int
+    sort: str
 
 
 def parse_cli_arguments(args: Sequence[str] | None = None) -> Options:
@@ -50,7 +51,7 @@ def _define_cli_arguments() -> ArgumentParser:
         help="sort output alphabetically",
         action="store_const",
         dest="sort",
-        const="alphabetize",  # noqa: SC200
+        const="alphabetic",  # noqa: SC200
     )
     sort.add_argument(
         "--updated",
