@@ -23,6 +23,7 @@ class Reversor:
     def __lt__(self, other: Reversor) -> bool:
         return other.obj < self.obj
 
+
 def get_sorted_pkg_list(distributions, options, now):
     if options.alphabetize:
         key = lambda v: v.name.lower()
@@ -31,6 +32,7 @@ def get_sorted_pkg_list(distributions, options, now):
         key = lambda v: (v.last_release_at or now, Reversor(v.name))
         reverse = True
     return sorted(distributions, key=key, reverse=reverse)
+
 
 def print_tree(distributions: Iterable[Package], options: Options) -> None:
     now = datetime.now(timezone.utc)
