@@ -24,14 +24,10 @@ class Reversor:
         return other.obj < self.obj
 
 
-def get_sorted_pkg_list(distributions, options, now):
-    if options.alphabetize:
-        key = lambda v: v.name.lower()
-        reverse = False
-    else:
-        key = lambda v: (v.last_release_at or now, Reversor(v.name))
-        reverse = True
-    return sorted(distributions, key=key, reverse=reverse)
+def get_sorted_pkg_list(distributions: Iterable[Package], options: Options, now: float):
+    if options.sort == "alphabetize":
+        return sorted(distributions, key=lambda v: v.name.lower())
+    return sorted(distributions, key=lambda v: (v.last_release_at or now, Reversor(v.name)), reverse=True)
 
 
 def print_tree(distributions: Iterable[Package], options: Options) -> None:

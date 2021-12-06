@@ -43,12 +43,23 @@ def _define_cli_arguments() -> ArgumentParser:
     cache_help = "seconds how long requests should be cached (pass 0 to bypass the cache, -1 to cache forever)"
     parser.add_argument("--cache-duration", "-d", default=3600, type=int, help=cache_help, metavar="SEC")
 
-    parser.add_argument(
-        "--alphabetize",
+    sort = parser.add_argument_group(description="Result sorting method")
+    sort.add_argument(
+        "--alphabetic",
         "-a",
         help="sort output alphabetically",
-        action="store_true",
-        dest="alphabetize",
+        action="store_const",
+        dest="sort",
+        const="alphabetize",  # noqa: SC200
+    )
+    sort.add_argument(
+        "--updated",
+        "-u",
+        help="sort by modification date",
+        action="store_const",
+        dest="sort",
+        const="updated",  # noqa: SC200
+        default="updated",
     )
 
     parser.add_argument("python", help="python interpreter to inspect", metavar="PYTHON_EXE", action=_Python)

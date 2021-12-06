@@ -47,9 +47,7 @@ def test_print(capsys: CaptureFixture[str], option_simple: Options, mocker: Mock
     ]
 
 
-def test_print_alphabetical(
-    capsys: CaptureFixture[str], option_simple: Options, mocker: MockerFixture
-) -> None:
+def test_print_alphabetical(capsys: CaptureFixture[str], option_simple: Options, mocker: MockerFixture) -> None:
     mocked_datetime = mocker.patch("pypi_changes._print.datetime")
     mocked_datetime.now.return_value = datetime(2021, 11, 6, 10, tzinfo=timezone.utc)
     option_simple.python = Path(sys.executable)
