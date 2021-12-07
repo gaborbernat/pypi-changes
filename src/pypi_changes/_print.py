@@ -25,7 +25,7 @@ class Reversor:
 
 
 def get_sorted_pkg_list(distributions: Iterable[Package], options: Options, now: datetime):
-    if options.sort[0] == "a":
+    if options.sort in ["a", "alphabetic"]:
         return sorted(distributions, key=lambda v: v.name.lower())
     return sorted(distributions, key=lambda v: (v.last_release_at or now, Reversor(v.name)), reverse=True)
 
