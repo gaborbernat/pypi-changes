@@ -47,13 +47,12 @@ def _define_cli_arguments() -> ArgumentParser:
     parser.add_argument(
         "--sort",
         "-s",
-        help="Sorting method",
+        help="sorting method",
         choices=["a", "alphabetic", "u", "updated"],
         default="updated",
         dest="sort",
-        const="updated",  # noqa: SC200
+        const="updated",
         nargs="?",
-        metavar="[a(lphabetic), u(pdated)]",
     )
 
     parser.add_argument("python", help="python interpreter to inspect", metavar="PYTHON_EXE", action=_Python)
