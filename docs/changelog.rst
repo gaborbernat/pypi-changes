@@ -1,3 +1,7 @@
+v1.1.0 (2021-12-09)
+===================
+* Add option to alphabetize results
+
 v1.0.2 (2021-11-06)
 ===================
 * Better handling of private index servers (such as Artifactory)
