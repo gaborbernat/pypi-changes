@@ -14,6 +14,7 @@ class Options(Namespace):
     jobs: int
     cache_path: Path
     cache_duration: int
+    sort: str
 
 
 def parse_cli_arguments(args: Sequence[str] | None = None) -> Options:
@@ -42,6 +43,17 @@ def _define_cli_arguments() -> ArgumentParser:
     )
     cache_help = "seconds how long requests should be cached (pass 0 to bypass the cache, -1 to cache forever)"
     parser.add_argument("--cache-duration", "-d", default=3600, type=int, help=cache_help, metavar="SEC")
+
+    parser.add_argument(
+        "--sort",
+        "-s",
+        help="sorting method",
+        choices=["a", "alphabetic", "u", "updated"],
+        default="updated",
+        dest="sort",
+        const="updated",
+        nargs="?",
+    )
 
     parser.add_argument("python", help="python interpreter to inspect", metavar="PYTHON_EXE", action=_Python)
 
