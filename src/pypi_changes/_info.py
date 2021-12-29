@@ -11,7 +11,7 @@ from typing import Any, Generator, Iterator, Sequence
 from packaging.version import InvalidVersion, Version
 from pypi_simple import PyPISimple
 from requests import Session
-from requests_cache import CachedSession
+from requests_cache import CachedSession  # type: ignore # no implicit re-export
 from rich.progress import BarColumn, Progress, Task, TextColumn, TimeRemainingColumn
 from rich.text import Text
 
