@@ -32,7 +32,7 @@ def collect_distributions(options: Options) -> list[PathDistribution]:
 
 def _get_py_info(python: str) -> list[Path]:
     cmd = [python, "-c", "import sys, json; print(json.dumps(sys.path))"]
-    paths = [Path(i) for i in json.loads(check_output(cmd, universal_newlines=True))]
+    paths = [Path(i) for i in json.loads(check_output(cmd, text=True))]
     return paths
 
 
