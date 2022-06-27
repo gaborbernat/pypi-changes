@@ -16,10 +16,11 @@ def main(args: Sequence[str] | None = None) -> int:
     options = parse_cli_arguments(args)
     distributions = collect_distributions(options)
     info = pypi_info(distributions, options)
-    if options.json:
-        print_json(info, options)
-    else:
+
+    if options.output == "tree":
         print_tree(info, options)
+    elif options.output == "json":
+        print_json(info, options)
     return 0
 
 

@@ -74,7 +74,9 @@ def test_info_pypi_server_timeout(
     tmp_path: Path, mocker: MockerFixture, option_simple: Options, make_dist: MakeDist
 ) -> None:
     dist = make_dist(tmp_path, "a", "1.0")
-    mocker.patch("requests.Session.get", side_effect=TimeoutError)
+    mock_cached_session = mocker.patch("pypi_changes._info.CachedSession")
+    mock_cached_session.return_value.__enter__.return_value.get.side_effect = TimeoutError
+
     packages = list(pypi_info([dist], option_simple))
 
     assert isinstance(packages, list)

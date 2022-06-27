@@ -90,4 +90,5 @@ def print_json(distributions: Iterable[Package], options: Options) -> None:
 
 __all__ = [
     "print_tree",
+    "print_json",
 ]
