@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import datetime, timezone
 from typing import Iterable
 
-from humanize import naturaltime
+from humanize import naturaldelta
 from rich import print as rich_print
 from rich.markup import escape
 from rich.text import Text
@@ -30,12 +30,12 @@ def print_tree(distributions: Iterable[Package], options: Options) -> None:
 
         if current_release_at is not None:
             text.append(" ")  # pragma: no cover
-            text.append(naturaltime(now - current_release_at), "green")  # pragma: no cover
+            text.append(naturaldelta(now - current_release_at), "green")  # pragma: no cover
         if pkg.version != last_release.get("version"):
             text.append(f" remote {last_release.get('version')}", "red")
             if last_release_at is not None:  # pragma: no branch
                 text.append(" ", "white")
-                text.append(naturaltime(now - last_release_at), "green")
+                text.append(naturaldelta(now - last_release_at), "green")
         tree.add(text)
     rich_print(tree)
 

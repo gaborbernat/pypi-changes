@@ -4,7 +4,7 @@ import json
 from datetime import datetime, timezone
 from typing import Any, Iterable
 
-from humanize import naturaltime
+from humanize import naturaldelta
 
 from .._cli import Options
 from .._pkg import Package
@@ -15,7 +15,7 @@ def release_info(release: dict[str, Any] | None, now: datetime) -> dict[str, Any
     if release is None:
         return {}
     release_at = release.get("upload_time_iso_8601")
-    release_since = naturaltime(now - release_at) if release_at else None
+    release_since = naturaldelta(now - release_at) if release_at else None
     return {
         "version": release.get("version"),
         "date": release_at.isoformat() if release_at is not None else None,

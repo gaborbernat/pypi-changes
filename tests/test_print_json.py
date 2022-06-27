@@ -65,12 +65,12 @@ def test_print_json(capsys: CaptureFixture[str], option_simple: Options, mocker:
             "current": {
                 "version": "1",
                 "date": "2020-03-08T10:00:00+00:00",
-                "since": "1 year, 7 months ago",
+                "since": "1 year, 7 months",
             },
             "latest": {
                 "version": "2",
                 "date": "2021-10-05T10:00:00+00:00",
-                "since": "a month ago",
+                "since": "a month",
             },
         },
     ]
