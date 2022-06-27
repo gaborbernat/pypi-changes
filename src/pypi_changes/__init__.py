@@ -20,7 +20,7 @@ def main(args: Sequence[str] | None = None) -> int:
 
     if options.output == "tree":
         print_tree(info, options)
-    elif options.output == "json":
+    else:  # output == "json"
         print_json(info, options)
     return 0
 

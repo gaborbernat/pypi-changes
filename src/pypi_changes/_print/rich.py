@@ -9,9 +9,9 @@ from rich.markup import escape
 from rich.text import Text
 from rich.tree import Tree
 
-from . import get_sorted_pkg_list
 from .._cli import Options
 from .._pkg import Package
+from . import get_sorted_pkg_list
 
 
 def print_tree(distributions: Iterable[Package], options: Options) -> None:

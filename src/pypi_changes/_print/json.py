@@ -6,9 +6,9 @@ from typing import Any, Iterable
 
 from humanize import naturaltime
 
-from . import get_sorted_pkg_list
 from .._cli import Options
 from .._pkg import Package
+from . import get_sorted_pkg_list
 
 
 def release_info(release: dict[str, Any] | None, now: datetime) -> dict[str, Any]:
