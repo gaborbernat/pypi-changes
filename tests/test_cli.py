@@ -23,6 +23,7 @@ def test_cli_ok_default(tmp_path: Path, mocker: MockerFixture) -> None:
         "cache_duration": 3600,
         "python": tmp_path,
         "sort": "updated",
+        "output": "tree",
     }
     assert user_cache_path.call_args == call(appname="pypi_changes", appauthor="gaborbernat", version=__version__)
 

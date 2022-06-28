@@ -10,12 +10,12 @@ from pytest_mock import MockerFixture
 
 from pypi_changes._cli import Options
 from pypi_changes._pkg import Package
-from pypi_changes._print import print_tree
+from pypi_changes._print.tree import print_tree
 from tests import PathDistribution
 
 
 def test_print(capsys: CaptureFixture[str], option_simple: Options, mocker: MockerFixture) -> None:
-    mocked_datetime = mocker.patch("pypi_changes._print.datetime")
+    mocked_datetime = mocker.patch("pypi_changes._print.tree.datetime")
     mocked_datetime.now.return_value = datetime(2021, 11, 6, 10, tzinfo=timezone.utc)
     option_simple.python = Path(sys.executable)
     option_simple.sort = "updated"
@@ -42,13 +42,13 @@ def test_print(capsys: CaptureFixture[str], option_simple: Options, mocker: Mock
     assert output[-4:] == [
         "├── c 1 remote 2",
         "├── d 1",
-        "├── b 3 a day ago",
-        "└── a 1 remote 2 a month ago",
+        "├── b 3 a day",
+        "└── a 1 remote 2 a month",
     ]
 
 
 def test_print_alphabetical(capsys: CaptureFixture[str], option_simple: Options, mocker: MockerFixture) -> None:
-    mocked_datetime = mocker.patch("pypi_changes._print.datetime")
+    mocked_datetime = mocker.patch("pypi_changes._print.tree.datetime")
     mocked_datetime.now.return_value = datetime(2021, 11, 6, 10, tzinfo=timezone.utc)
     option_simple.python = Path(sys.executable)
     option_simple.sort = "alphabetic"
@@ -73,8 +73,8 @@ def test_print_alphabetical(capsys: CaptureFixture[str], option_simple: Options,
     assert output[0].startswith("🐍 Distributions within")
     assert output[1] == sys.executable or output[0].endswith(sys.executable)
     assert output[-4:] == [
-        "├── a 1 remote 2 a month ago",
-        "├── b 3 a day ago",
+        "├── a 1 remote 2 a month",
+        "├── b 3 a day",
         "├── c 1 remote 2",
         "└── d 1",
     ]
