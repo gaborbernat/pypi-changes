@@ -6,7 +6,7 @@ from ._cli import parse_cli_arguments
 from ._distributions import collect_distributions
 from ._info import pypi_info
 from ._print.json import print_json
-from ._print.rich import print_tree
+from ._print.tree import print_tree
 from ._version import version
 
 #: semantic version of the package

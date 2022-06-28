@@ -10,12 +10,12 @@ from pytest_mock import MockerFixture
 
 from pypi_changes._cli import Options
 from pypi_changes._pkg import Package
-from pypi_changes._print.rich import print_tree
+from pypi_changes._print.tree import print_tree
 from tests import PathDistribution
 
 
 def test_print(capsys: CaptureFixture[str], option_simple: Options, mocker: MockerFixture) -> None:
-    mocked_datetime = mocker.patch("pypi_changes._print.rich.datetime")
+    mocked_datetime = mocker.patch("pypi_changes._print.tree.datetime")
     mocked_datetime.now.return_value = datetime(2021, 11, 6, 10, tzinfo=timezone.utc)
     option_simple.python = Path(sys.executable)
     option_simple.sort = "updated"
@@ -48,7 +48,7 @@ def test_print(capsys: CaptureFixture[str], option_simple: Options, mocker: Mock
 
 
 def test_print_alphabetical(capsys: CaptureFixture[str], option_simple: Options, mocker: MockerFixture) -> None:
-    mocked_datetime = mocker.patch("pypi_changes._print.rich.datetime")
+    mocked_datetime = mocker.patch("pypi_changes._print.tree.datetime")
     mocked_datetime.now.return_value = datetime(2021, 11, 6, 10, tzinfo=timezone.utc)
     option_simple.python = Path(sys.executable)
     option_simple.sort = "alphabetic"

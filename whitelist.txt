@@ -23,6 +23,7 @@ ignorecase
 intersphinx
 iterdir
 metavar
+naturaldelta
 naturaltime
 nitpicky
 param
