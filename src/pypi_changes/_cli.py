@@ -73,7 +73,7 @@ class _Python(Action):
     def __call__(
         self,
         parser: ArgumentParser,  # noqa: U100
-        namespace: Namespace,  # noqa: U100
+        namespace: Namespace,
         values: str | Sequence[str] | None,
         option_string: str | None = None,  # noqa: U100
     ) -> None:
