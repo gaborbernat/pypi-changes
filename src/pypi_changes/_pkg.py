@@ -38,7 +38,7 @@ class Package:
 
     @property
     def name(self) -> str:
-        return self.dist.metadata["Name"]  # type: ignore
+        return self.dist.metadata["Name"]
 
     @property
     def version(self) -> str:
