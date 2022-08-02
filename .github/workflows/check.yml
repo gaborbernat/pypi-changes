@@ -54,7 +54,7 @@ jobs:
           - docs
           - pkg_meta
         os:
-          - ubuntu-20.04
+          - ubuntu-22.04
           - windows-2022
         exclude:
           - { os: windows, tox_env: pkg_meta }
@@ -76,7 +76,7 @@ jobs:
   publish:
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
     needs: [check, test]
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - name: Setup python to build package
         uses: actions/setup-python@v4
@@ -90,7 +90,7 @@ jobs:
       - name: Build package
         run: pyproject-build -s -w . -o dist
       - name: Publish to PyPI
-        uses: pypa/gh-action-pypi-publish@master
+        uses: pypa/gh-action-pypi-publish@v1.5.1
         with:
           skip_existing: true
           user: __token__
