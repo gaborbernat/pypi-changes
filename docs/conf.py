@@ -52,10 +52,10 @@ typehints_fully_qualified = True
 autosectionlabel_prefix_document = True
 
 extlinks = {
-    "issue": ("https://github.com/gaborbernat/pypi_changes/issues/%s", "#"),
-    "pull": ("https://github.com/gaborbernat/pypi_changes/pull/%s", "PR #"),
-    "user": ("https://github.com/%s", "@"),
-    "pypi": ("https://pypi.org/project/%s", ""),
+    "issue": ("https://github.com/gaborbernat/pypi_changes/issues/%s", "#%s"),
+    "pull": ("https://github.com/gaborbernat/pypi_changes/pull/%s", "PR #%s"),
+    "user": ("https://github.com/%s", "@%s"),
+    "pypi": ("https://pypi.org/project/%s", "%s"),
 }
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3", None),
