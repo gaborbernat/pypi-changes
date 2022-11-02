@@ -120,18 +120,17 @@ def _merge_with_index_server(
     name: str, pypi_client: PyPISimple, releases: dict[str, list[dict[str, Any]]]
 ) -> dict[str, list[dict[str, Any]]]:
     index_info = pypi_client.get_project_page(name)
-    if index_info is not None:
-        index_releases = defaultdict(list)
-        for pkg in index_info.packages:
-            release = {"packagetype": pkg.package_type, "version": pkg.version, "upload_time_iso_8601": None}
-            if pkg.version is not None:  # some Artifactory might not set this for .egg-info uploads, ignore those
-                index_releases[pkg.version].append(release)
+    index_releases = defaultdict(list)
+    for pkg in index_info.packages:
+        release = {"packagetype": pkg.package_type, "version": pkg.version, "upload_time_iso_8601": None}
+        if pkg.version is not None:  # some Artifactory might not set this for .egg-info uploads, ignore those
+            index_releases[pkg.version].append(release)
 
-        missing = {ver: values for ver, values in index_releases.items() if ver not in releases}
-        if missing:
-            missing.update(releases)
-            missing = dict(sorted(missing.items(), key=sort_by_version_release, reverse=True))
-            releases = missing
+    missing = {ver: values for ver, values in index_releases.items() if ver not in releases}
+    if missing:
+        missing.update(releases)
+        missing = dict(sorted(missing.items(), key=sort_by_version_release, reverse=True))
+        releases = missing
     return releases
 
 

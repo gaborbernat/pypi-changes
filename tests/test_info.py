@@ -49,7 +49,7 @@ def test_info_missing(tmp_path: Path, option_simple: Options, make_dist: MakeDis
     assert isinstance(packages, list)
     assert len(packages) == 1
     pkg = packages[0]
-    assert pkg.info == {"releases": {}}
+    assert pkg.info is None
     current = datetime.now(timezone.utc)
     last_release_at = pkg.last_release_at
     assert current <= last_release_at
@@ -88,8 +88,8 @@ def test_info_pypi_server_timeout(
 
 def test_merge_with_pypi() -> None:
     versions = [("2", "sdist"), ("1", "sdist"), (None, None), ("3", "wheel")]
-    packages = [create_autospec(DistributionPackage, spec_set=True, version=v, package_type=t) for v, t in versions]
-    page = create_autospec(ProjectPage, spec_set=True, packages=packages)
+    packages = [create_autospec(DistributionPackage, version=v, package_type=t) for v, t in versions]
+    page = create_autospec(ProjectPage, packages=packages)
     client = create_autospec(PyPISimple, spec_set=True)
     client.get_project_page.return_value = page
 
