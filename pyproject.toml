@@ -1,6 +1,12 @@
 [build-system]
-requires = ["setuptools>=67.6",  "setuptools_scm>=7.1"]
 build-backend = "setuptools.build_meta"
+requires = [
+  "setuptools>=67.6",
+  "setuptools_scm>=7.1",
+]
+
+[tool.setuptools_scm]
+write_to = "src/pypi_changes/_version.py"
 
 [tool.black]
 line-length = 120
@@ -9,9 +15,6 @@ line-length = 120
 line_length = 120
 profile = "black"
 known_first_party = ["pypi_changes", "tests"]
-
-[tool.setuptools_scm]
-write_to = "src/pypi_changes/_version.py"
 
 [tool.towncrier]
 name = "pypi_changes"
