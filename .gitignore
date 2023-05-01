@@ -1,9 +1,6 @@
 *.py[cod]
 __pycache__
 /.tox
-/build
-/dist
 /docs/_draft.rst
 /src/pypi_changes/_version.py
-/src/*.egg-info
 /.*_cache
