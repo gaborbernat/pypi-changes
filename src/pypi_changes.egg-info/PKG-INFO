@@ -1,0 +1,44 @@
+Metadata-Version: 2.1
+Name: pypi-changes
+Version: 1.2.1.dev18+gbf3e63f.d20230303
+Summary: check out when packages changed
+Home-page: http://pypi_changes.readthedocs.org
+Author: Bernát Gábor
+Author-email: gaborjbernat@gmail.com
+Maintainer: Bernát Gábor
+Maintainer-email: gaborbernat@python.org
+License: MIT
+Project-URL: Source, https://github.com/gaborbernat/pypi_changes
+Project-URL: Tracker, https://github.com/gaborbernat/pypi_changes/issues
+Keywords: virtual,environments,isolated,testing
+Platform: any
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Framework :: tox
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: MacOS :: MacOS X
+Classifier: Operating System :: Microsoft :: Windows
+Classifier: Operating System :: POSIX
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3 :: Only
+Classifier: Topic :: Software Development :: Libraries
+Classifier: Topic :: Software Development :: Testing
+Classifier: Topic :: Utilities
+Requires-Python: >=3.7
+Description-Content-Type: text/markdown
+Provides-Extra: docs
+Provides-Extra: testing
+License-File: LICENSE
+
+# pypi_changes
+
+[![PyPI](https://img.shields.io/pypi/v/pypi-changes?style=flat-square)](https://pypi.org/project/pypi-changes/)
+[![Supported Python
+versions](https://img.shields.io/pypi/pyversions/pypi-changes.svg)](https://pypi.org/project/pypi-changes/)
+[![check](https://github.com/gaborbernat/pypi_changes/actions/workflows/check.yml/badge.svg)](https://github.com/gaborbernat/pypi_changes/actions/workflows/check.yml)
+[![Documentation Status](https://readthedocs.org/projects/pypi-changes/badge/?version=latest)](https://pypi-changes.readthedocs.io/en/latest/?badge=latest)
+[![Code style:
+black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![Downloads](https://pepy.tech/badge/pypi-changes/month)](https://pepy.tech/project/pypi-changes/month)
+
+[![asciicast](https://asciinema.org/a/446966.svg)](https://asciinema.org/a/446966)

@@ -1,20 +1,105 @@
 [build-system]
-build-backend = "setuptools.build_meta"
+build-backend = "hatchling.build"
 requires = [
-  "setuptools>=67.6.1",
-  "setuptools_scm>=7.1",
+  "hatch-vcs>=0.3",
+  "hatchling>=1.14.1",
 ]
 
-[tool.setuptools_scm]
-write_to = "src/pypi_changes/_version.py"
+[project]
+name = "pypi-changes"
+description = "check out when packages changed"
+readme.content-type = "text/markdown"
+readme.file = "README.md"
+keywords = [
+  "environments",
+  "isolated",
+  "testing",
+  "virtual",
+]
+license = "MIT"
+maintainers = [{ name = "Bernát Gábor", email = "gaborjbernat@gmail.com" }]
+authors = [{ name = "Bernát Gábor", email = "gaborjbernat@gmail.com" }]
+requires-python = ">=3.7"
+classifiers = [
+  "Development Status :: 5 - Production/Stable",
+  "Framework :: tox",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: MacOS :: MacOS X",
+  "Operating System :: Microsoft :: Windows",
+  "Operating System :: POSIX",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.7",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Software Development :: Libraries",
+  "Topic :: Software Development :: Testing",
+  "Topic :: Utilities",
+]
+dynamic = [
+  "version",
+]
+dependencies = [
+  "devpi-client>=6.0.4",
+  "devpi-server>=6.8",
+]
+optional-dependencies.test = [
+  "covdefaults>=2.3",
+  "httpx>=0.24",
+  "pytest>=7.3.1",
+  "pytest-cov>=4",
+]
+urls.Homepage = "http://pypi_changes.readthedocs.org"
+urls.Source = "https://github.com/tox-dev/pypi_changes"
+urls.Tracker = "https://github.com/tox-dev/pypi_changes/issues"
+
+[tool.hatch]
+build.hooks.vcs.version-file = "src/pypi_changes/_version.py"
+version.source = "vcs"
 
 [tool.black]
 line-length = 120
 
 [tool.isort]
-line_length = 120
 profile = "black"
-known_first_party = ["pypi_changes", "tests"]
+known_first_party = ["pypi_changes"]
+line_length = 120
+add_imports = ["from __future__ import annotations"]
+
+[tool.flake8]
+max-complexity = 22
+max-line-length = 120
+unused-arguments-ignore-abstract-functions = true
+noqa-require-code = true
+dictionaries = ["en_US", "python", "technical", "django"]
+
+[tool.coverage]
+html.show_contexts = true
+html.skip_covered = false
+paths.source = [
+  "src",
+  ".tox*/*/lib/python*/site-packages",
+  ".tox*/pypy*/site-packages",
+  ".tox*\\*\\Lib\\site-packages",
+  "*/src",
+  "*\\src",
+]
+report.fail_under = 98
+report.omit = []
+run.parallel = true
+run.plugins = ["covdefaults"]
+
+[tool.mypy]
+python_version = "3.11"
+show_error_codes = true
+strict = true
+#overrides = [{ module = ["virtualenv.*"], ignore_missing_imports = true }]
+
+[tool.pep8]
+max-line-length = "120"
 
 [tool.towncrier]
 name = "pypi_changes"

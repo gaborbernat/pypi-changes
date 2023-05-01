@@ -1,0 +1,2 @@
+[console_scripts]
+pypi-changes = pypi_changes.__main__:main
