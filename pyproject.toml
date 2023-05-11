@@ -2,7 +2,7 @@
 build-backend = "hatchling.build"
 requires = [
   "hatch-vcs>=0.3",
-  "hatchling>=1.14.1",
+  "hatchling>=1.16.1",
 ]
 
 [project]
@@ -49,7 +49,7 @@ dependencies = [
   "packaging>=23.1",
   "platformdirs>=3.5",
   "pypi-simple>=1.1",
-  "requests>=2.29",
+  "requests>=2.30",
   "requests-cache>=1.0.1",
   "rich>=13.3.5",
 ]
@@ -68,6 +68,7 @@ optional-dependencies.testing = [
   "pytest>=7.3.1",
   "pytest-cov>=4",
   "pytest-mock>=3.10",
+  "urllib3<2",
   "vcrpy>=4.2.1",
   "virtualenv>=20.23",
 ]
