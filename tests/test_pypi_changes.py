@@ -1,10 +1,13 @@
 from __future__ import annotations
 
-from pathlib import Path
+from typing import TYPE_CHECKING
 
 from virtualenv import cli_run
 
 from pypi_changes import main
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 
 def test_pypi_changes_self_output_default(tmp_path: Path) -> None:

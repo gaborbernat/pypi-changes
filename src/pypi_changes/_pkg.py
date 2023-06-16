@@ -1,16 +1,13 @@
 from __future__ import annotations
 
-import sys
 from datetime import datetime, timezone
-from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from packaging.version import Version
 
-if sys.version_info >= (3, 8):  # pragma: no cover (py38+)
+if TYPE_CHECKING:
     from importlib.metadata import PathDistribution
-else:  # pragma: no cover (<py38)
-    from importlib_metadata import PathDistribution
+    from pathlib import Path
 
 
 class Package:
@@ -24,7 +21,7 @@ class Package:
         last_release = self.last_release
         if last_release is None:
             return datetime.now(timezone.utc)
-        return self.last_release["upload_time_iso_8601"]  # type: ignore # Any instead of datetime
+        return self.last_release["upload_time_iso_8601"]  # type: ignore[no-any-return,index] # Any instead of datetime
 
     @property
     def last_release(self) -> dict[str, Any] | None:
@@ -33,8 +30,8 @@ class Package:
         for version_str, releases in self.info["releases"].items():
             version = Version(version_str)
             if not version.is_devrelease and not version.is_prerelease:
-                return releases[0]  # type: ignore
-        return next(iter(self.info["releases"].values()))[0]  # type: ignore
+                return releases[0]  # type: ignore[no-any-return]
+        return next(iter(self.info["releases"].values()))[0]  # type: ignore[no-any-return]
 
     @property
     def name(self) -> str:
@@ -46,7 +43,7 @@ class Package:
 
     @property
     def path(self) -> Path:
-        return self.dist._path  # type: ignore # it exists
+        return self.dist._path  # type: ignore[no-any-return,attr-defined] # it exists  # noqa: SLF001
 
     @property
     def current_release(self) -> dict[str, Any]:

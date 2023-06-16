@@ -2,20 +2,17 @@ from __future__ import annotations
 
 import json
 import re
-import sys
+from importlib.metadata import Distribution, PathDistribution
 from pathlib import Path
 from subprocess import check_output
-from typing import Generator, Iterable
+from typing import TYPE_CHECKING
 
 from rich.console import Console
 
-from ._cli import Options
+if TYPE_CHECKING:
+    from collections.abc import Generator, Iterable
 
-if sys.version_info >= (3, 8):  # pragma: no cover (py38+)
-    from importlib.metadata import Distribution, PathDistribution
-else:  # pragma: no cover (<py38)
-    from importlib_metadata import Distribution, PathDistribution
-
+    from ._cli import Options
 
 _PKG_REGEX = re.compile(r"^([A-Z0-9]|[A-Z0-9][A-Z0-9._-]*[A-Z0-9])(\.egg-info|\.dist-info)$", flags=re.IGNORECASE)
 
@@ -32,17 +29,16 @@ def collect_distributions(options: Options) -> list[PathDistribution]:
 
 def _get_py_info(python: str) -> list[Path]:
     cmd = [python, "-c", "import sys, json; print(json.dumps(sys.path))"]
-    paths = [Path(i) for i in json.loads(check_output(cmd, text=True))]
-    return paths
+    return [Path(i) for i in json.loads(check_output(cmd, text=True))]  # noqa: S603
 
 
 def _iter_distributions(paths: Iterable[Path]) -> Generator[PathDistribution, None, None]:
     found: set[str] = set()
     done_paths: set[Path] = set()
-    for path in paths:
-        if not path.exists():
+    for raw_path in paths:
+        if not raw_path.exists():
             continue
-        path = path.resolve()
+        path = raw_path.resolve()
         if path not in done_paths:
             done_paths.add(path)
             for candidate in path.iterdir():

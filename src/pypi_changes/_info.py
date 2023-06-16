@@ -1,27 +1,27 @@
 from __future__ import annotations
 
 import os
-import sys
 from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from contextlib import ExitStack, contextmanager
 from datetime import datetime, timedelta, timezone
-from typing import Any, Generator, Iterator, Sequence
+from typing import TYPE_CHECKING, Any
 
 from packaging.version import InvalidVersion, Version
 from pypi_simple import PyPISimple
-from requests import Session
 from requests_cache import CachedSession
 from rich.progress import BarColumn, Progress, Task, TextColumn, TimeRemainingColumn
 from rich.text import Text
 
-from ._cli import Options
 from ._pkg import Package
 
-if sys.version_info >= (3, 8):  # pragma: no cover (py38+)
+if TYPE_CHECKING:
+    from collections.abc import Generator, Iterator, Sequence
     from importlib.metadata import PathDistribution
-else:  # pragma: no cover (<py38)
-    from importlib_metadata import PathDistribution
+
+    from requests import Session
+
+    from ._cli import Options
 
 PYPI_INDEX = "https://pypi.org/simple"
 
@@ -53,7 +53,7 @@ def pypi_info(distributions: Sequence[PathDistribution], options: Options) -> Ge
             progress.update(task, advance=1)
             try:
                 result: Exception | dict[str, Any] | None = future.result()
-            except Exception as exc:
+            except Exception as exc:  # noqa: BLE001
                 result = exc
             yield Package(dist, result)
 
@@ -65,8 +65,7 @@ class SpeedColumn(TextColumn):
     def render(self, task: Task) -> Text:
         if task.speed is None:
             return Text("no speed")
-        else:
-            return Text(f"{task.speed:.3f} steps/s")
+        return Text(f"{task.speed:.3f} steps/s")
 
 
 @contextmanager
@@ -117,7 +116,9 @@ def sort_by_version_release(value: tuple[str, list[dict[str, Any]]]) -> tuple[Ve
 
 
 def _merge_with_index_server(
-    name: str, pypi_client: PyPISimple, releases: dict[str, list[dict[str, Any]]]
+    name: str,
+    pypi_client: PyPISimple,
+    releases: dict[str, list[dict[str, Any]]],
 ) -> dict[str, list[dict[str, Any]]]:
     index_info = pypi_client.get_project_page(name)
     index_releases = defaultdict(list)
@@ -130,7 +131,7 @@ def _merge_with_index_server(
     if missing:
         missing.update(releases)
         missing = dict(sorted(missing.items(), key=sort_by_version_release, reverse=True))
-        releases = missing
+        return missing
     return releases
 
 

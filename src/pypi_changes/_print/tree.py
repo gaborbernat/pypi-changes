@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime, timezone
-from typing import Iterable
+from typing import TYPE_CHECKING
 
 from humanize import naturaldelta
 from rich import print as rich_print
@@ -9,9 +9,13 @@ from rich.markup import escape
 from rich.text import Text
 from rich.tree import Tree
 
-from .._cli import Options
-from .._pkg import Package
 from . import get_sorted_pkg_list
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable
+
+    from pypi_changes._cli import Options
+    from pypi_changes._pkg import Package
 
 
 def print_tree(distributions: Iterable[Package], options: Options) -> None:

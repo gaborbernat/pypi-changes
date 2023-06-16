@@ -2,11 +2,14 @@ from __future__ import annotations
 
 from argparse import Action, ArgumentDefaultsHelpFormatter, ArgumentError, ArgumentParser, Namespace
 from pathlib import Path
-from typing import Sequence
+from typing import TYPE_CHECKING
 
 from platformdirs import user_cache_path
 
 from ._version import version
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
 
 
 class Options(Namespace):
@@ -72,12 +75,12 @@ def _define_cli_arguments() -> ArgumentParser:
 class _Python(Action):
     def __call__(
         self,
-        parser: ArgumentParser,  # noqa: U100
+        parser: ArgumentParser,  # noqa: ARG002
         namespace: Namespace,
         values: str | Sequence[str] | None,
-        option_string: str | None = None,  # noqa: U100
+        option_string: str | None = None,  # noqa: ARG002
     ) -> None:
-        assert isinstance(values, str)
+        assert isinstance(values, str)  # noqa: S101
         path = Path(values).absolute()
         if not path.exists():
             raise ArgumentError(self, f"path {path} does not exist")

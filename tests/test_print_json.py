@@ -4,15 +4,18 @@ import json
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
+from typing import TYPE_CHECKING
 from unittest.mock import create_autospec
 
-from _pytest.capture import CaptureFixture
-from pytest_mock import MockerFixture
-
-from pypi_changes._cli import Options
 from pypi_changes._pkg import Package
 from pypi_changes._print.json import print_json, release_info
 from tests import PathDistribution
+
+if TYPE_CHECKING:
+    from _pytest.capture import CaptureFixture
+    from pytest_mock import MockerFixture
+
+    from pypi_changes._cli import Options
 
 
 def test_print_json(capsys: CaptureFixture[str], option_simple: Options, mocker: MockerFixture) -> None:
@@ -27,7 +30,7 @@ def test_print_json(capsys: CaptureFixture[str], option_simple: Options, mocker:
                 "releases": {
                     v_last: [{"version": v_last, "upload_time_iso_8601": t_last}],
                     v_cur: [{"version": v_cur, "upload_time_iso_8601": t_cur}],
-                }
+                },
             },
         )
         for n, (v_last, t_last), (v_cur, t_cur) in [

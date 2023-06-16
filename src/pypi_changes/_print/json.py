@@ -2,13 +2,17 @@ from __future__ import annotations
 
 import json
 from datetime import datetime, timezone
-from typing import Any, Iterable
+from typing import TYPE_CHECKING, Any
 
 from humanize import naturaldelta
 
-from .._cli import Options
-from .._pkg import Package
 from . import get_sorted_pkg_list
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable
+
+    from pypi_changes._cli import Options
+    from pypi_changes._pkg import Package
 
 
 def release_info(release: dict[str, Any] | None, now: datetime) -> dict[str, Any]:
@@ -37,9 +41,9 @@ def print_json(distributions: Iterable[Package], options: Options) -> None:
                 "up_to_date": pkg.version == latest_release.get("version") if latest_release is not None else True,
                 "current": current_release,
                 "latest": latest_release,
-            }
+            },
         )
-    print(json.dumps(pkg_list, indent=2))
+    print(json.dumps(pkg_list, indent=2))  # noqa: T201
 
 
 __all__ = [

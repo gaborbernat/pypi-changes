@@ -2,12 +2,14 @@ from __future__ import annotations
 
 import sys
 from pathlib import Path
-
-from pytest_mock import MockerFixture
+from typing import TYPE_CHECKING
 
 from pypi_changes._cli import Options
 from pypi_changes._distributions import collect_distributions
 from tests import PathDistribution
+
+if TYPE_CHECKING:
+    from pytest_mock import MockerFixture
 
 
 def test_distributions() -> None:
@@ -36,4 +38,4 @@ def test_distribution_duplicate_pkg(mocker: MockerFixture, tmp_path: Path) -> No
     distributions = list(collect_distributions(Options(python=Path(sys.executable))))
     assert len(distributions) == 1
     assert distributions[0].metadata["Name"] == "a"
-    assert distributions[0]._path == dist_1  # type: ignore # we're accessing a private property not type hinted
+    assert distributions[0]._path == dist_1  # type: ignore[attr-defined]  # noqa: SLF001
