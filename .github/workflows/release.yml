@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: release
-      url: https://pypi.org/p/devpi-process
+      url: https://pypi.org/p/pypi-changes
     permissions:
       id-token: write
     steps:
