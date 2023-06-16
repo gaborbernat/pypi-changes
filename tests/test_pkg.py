@@ -1,9 +1,13 @@
 from __future__ import annotations
 
-from pathlib import Path
+from typing import TYPE_CHECKING
 
 from pypi_changes._pkg import Package
-from tests import MakeDist
+
+if TYPE_CHECKING:
+    from pathlib import Path
+
+    from tests import MakeDist
 
 
 def test_ignore_dev_release(make_dist: MakeDist, tmp_path: Path) -> None:

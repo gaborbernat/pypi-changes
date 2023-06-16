@@ -3,21 +3,25 @@ from __future__ import annotations
 import os
 from datetime import datetime, timezone
 from pathlib import Path
+from typing import TYPE_CHECKING
 from unittest.mock import create_autospec
 
 import pytest
 from pypi_simple import DistributionPackage, ProjectPage, PyPISimple
-from pytest_mock import MockerFixture
 from vcr import use_cassette
 
-from pypi_changes._cli import Options
 from pypi_changes._info import _merge_with_index_server, pypi_info
 from pypi_changes._pkg import Package
-from tests import MakeDist
+
+if TYPE_CHECKING:
+    from pytest_mock import MockerFixture
+
+    from pypi_changes._cli import Options
+    from tests import MakeDist
 
 
 @pytest.fixture()
-def _force_pypi_index(mocker: MockerFixture, _no_index: None) -> None:  # noqa: U101
+def _force_pypi_index(mocker: MockerFixture, _no_index: None) -> None:
     mocker.patch("pypi_changes._info.PYPI_INDEX", "")
     mocker.patch.dict(os.environ, {"PIP_INDEX_URL": "https://pypi.org/simple"})
 
@@ -34,7 +38,7 @@ def test_info_self(tmp_path: Path, option_simple: Options, make_dist: MakeDist) 
     assert len(packages) == 1
     pkg = packages[0]
     assert isinstance(pkg, Package)
-    assert repr(pkg) == f"Package(name='pypi-changes', path={repr(tmp_path / 'dist')})"
+    assert repr(pkg) == f"Package(name='pypi-changes', path={tmp_path / 'dist'!r})"
 
 
 @pytest.mark.usefixtures("_force_pypi_index")
@@ -71,7 +75,10 @@ def test_info_pypi_server_invalid_version(tmp_path: Path, option_simple: Options
 
 
 def test_info_pypi_server_timeout(
-    tmp_path: Path, mocker: MockerFixture, option_simple: Options, make_dist: MakeDist
+    tmp_path: Path,
+    mocker: MockerFixture,
+    option_simple: Options,
+    make_dist: MakeDist,
 ) -> None:
     dist = make_dist(tmp_path, "a", "1.0")
     mock_cached_session = mocker.patch("pypi_changes._info.CachedSession")

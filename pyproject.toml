@@ -2,7 +2,7 @@
 build-backend = "hatchling.build"
 requires = [
   "hatch-vcs>=0.3",
-  "hatchling>=1.16.1",
+  "hatchling>=1.18",
 ]
 
 [project]
@@ -19,7 +19,7 @@ keywords = [
 license = "MIT"
 maintainers = [{ name = "Bernát Gábor", email = "gaborjbernat@gmail.com" }]
 authors = [{ name = "Bernát Gábor", email = "gaborjbernat@gmail.com" }]
-requires-python = ">=3.7"
+requires-python = ">=3.9"
 classifiers = [
   "Development Status :: 5 - Production/Stable",
   "Framework :: tox",
@@ -29,8 +29,6 @@ classifiers = [
   "Operating System :: Microsoft :: Windows",
   "Operating System :: POSIX",
   "Programming Language :: Python :: 3 :: Only",
-  "Programming Language :: Python :: 3.7",
-  "Programming Language :: Python :: 3.8",
   "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
@@ -47,29 +45,29 @@ dependencies = [
   "humanize>=4.6",
   'importlib-metadata>=6.6; python_version < "3.8"',
   "packaging>=23.1",
-  "platformdirs>=3.5",
+  "platformdirs>=3.5.3",
   "pypi-simple>=1.1",
-  "requests>=2.30",
+  "requests>=2.31",
   "requests-cache>=1.0.1",
-  "rich>=13.3.5",
+  "rich>=13.4.2",
 ]
 optional-dependencies.docs = [
-  "furo>=2023.3.27",
-  "sphinx>=6.2.1",
+  "furo>=2023.5.20",
+  "sphinx>=7.0.1",
   "sphinx-argparse-cli>=1.11",
-  "sphinx-autodoc-typehints!=1.23.4,>=1.23",
+  "sphinx-autodoc-typehints!=1.23.4,>=1.23.1",
   "sphinx-copybutton>=0.5.2",
   "sphinx-inline-tabs>=2023.4.21",
   "sphinxcontrib-towncrier>=0.2.1a0",
-  "towncrier>=22.12",
+  "towncrier>=23.6",
 ]
 optional-dependencies.testing = [
   "covdefaults>=2.3",
-  "pytest>=7.3.1",
-  "pytest-cov>=4",
-  "pytest-mock>=3.10",
+  "pytest>=7.3.2",
+  "pytest-cov>=4.1",
+  "pytest-mock>=3.11.1",
   "urllib3<2",
-  "vcrpy>=4.2.1",
+  "vcrpy>=4.3.1",
   "virtualenv>=20.23",
 ]
 urls.Homepage = "http://pypi_changes.readthedocs.org"
@@ -83,18 +81,27 @@ version.source = "vcs"
 [tool.black]
 line-length = 120
 
-[tool.isort]
-profile = "black"
-known_first_party = ["pypi_changes"]
-line_length = 120
-add_imports = ["from __future__ import annotations"]
-
-[tool.flake8]
-max-complexity = 22
-max-line-length = 120
-unused-arguments-ignore-abstract-functions = true
-noqa-require-code = true
-dictionaries = ["en_US", "python", "technical", "django"]
+[tool.ruff]
+select = ["ALL"]
+line-length = 120
+target-version = "py39"
+isort = {known-first-party = ["pypi_changes"], required-imports = ["from __future__ import annotations"]}
+ignore = [
+  "ANN101",  # no typoe annotation for self
+  "ANN401",  # allow Any as type annotation
+  "D203",  # `one-blank-line-before-class` (D203) and `no-blank-line-before-class` (D211) are incompatible
+  "D212",  # `multi-line-summary-first-line` (D212) and `multi-line-summary-second-line` (D213) are incompatible
+  "S104",  # Possible binding to all interface
+]
+[tool.ruff.per-file-ignores]
+"tests/**/*.py" = [
+  "S101",  # asserts allowed in tests...
+  "FBT",  # don"t care about booleans as positional arguments in tests
+  "INP001", # no implicit namespace
+  "D",  # don"t care about documentation in tests
+  "S603",  # `subprocess` call: check for execution of untrusted input
+  "PLR2004",  # Magic value used in comparison, consider replacing with a constant variable
+]
 
 [tool.coverage]
 html.show_contexts = true
@@ -117,9 +124,6 @@ python_version = "3.11"
 show_error_codes = true
 strict = true
 overrides = [{ module = ["virtualenv.*", "vcr.*"], ignore_missing_imports = true }]
-
-[tool.pep8]
-max-line-length = "120"
 
 [tool.towncrier]
 name = "pypi_changes"

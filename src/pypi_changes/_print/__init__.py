@@ -1,10 +1,13 @@
 from __future__ import annotations
 
-from datetime import datetime
-from typing import Iterable
+from typing import TYPE_CHECKING
 
-from .._cli import Options
-from .._pkg import Package
+if TYPE_CHECKING:
+    from collections.abc import Iterable
+    from datetime import datetime
+
+    from pypi_changes._cli import Options
+    from pypi_changes._pkg import Package
 
 
 class _Reversor:

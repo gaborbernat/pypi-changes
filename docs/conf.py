@@ -1,14 +1,16 @@
+"""Configuration for documentation generation."""  # noqa: INP001
 from __future__ import annotations
 
-from datetime import date, datetime
+from datetime import datetime, timezone
 
 from pypi_changes import __version__
 
 company = "gaborbernat"
 name = "pypi-changes"
+now = datetime.now(tz=timezone.utc)
 version = ".".join(__version__.split(".")[:2])
 release = __version__
-copyright = f"2021-{date.today().year}, {company}"
+copyright = f"2021-{now.year}, {company}"  # noqa: A001
 
 extensions = [
     "sphinx.ext.autodoc",
@@ -37,7 +39,7 @@ html_theme_options = {
     "navigation_with_keys": True,
 }
 html_title = "pypi changes"
-html_last_updated_fmt = datetime.now().isoformat()
+html_last_updated_fmt = now.isoformat()
 
 autoclass_content = "class"
 autodoc_member_order = "bysource"

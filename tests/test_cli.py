@@ -1,14 +1,18 @@
 from __future__ import annotations
 
-from pathlib import Path
+from typing import TYPE_CHECKING
 from unittest.mock import call
 
 import pytest
-from _pytest.capture import CaptureFixture
-from pytest_mock import MockerFixture
 
 from pypi_changes import __version__
 from pypi_changes._cli import Options, parse_cli_arguments
+
+if TYPE_CHECKING:
+    from pathlib import Path
+
+    from _pytest.capture import CaptureFixture
+    from pytest_mock import MockerFixture
 
 
 def test_cli_ok_default(tmp_path: Path, mocker: MockerFixture) -> None:

@@ -3,15 +3,18 @@ from __future__ import annotations
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
+from typing import TYPE_CHECKING
 from unittest.mock import create_autospec
 
-from _pytest.capture import CaptureFixture
-from pytest_mock import MockerFixture
-
-from pypi_changes._cli import Options
 from pypi_changes._pkg import Package
 from pypi_changes._print.tree import print_tree
 from tests import PathDistribution
+
+if TYPE_CHECKING:
+    from _pytest.capture import CaptureFixture
+    from pytest_mock import MockerFixture
+
+    from pypi_changes._cli import Options
 
 
 def test_print(capsys: CaptureFixture[str], option_simple: Options, mocker: MockerFixture) -> None:
