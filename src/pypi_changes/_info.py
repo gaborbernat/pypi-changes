@@ -130,8 +130,7 @@ def _merge_with_index_server(
     missing = {ver: values for ver, values in index_releases.items() if ver not in releases}
     if missing:
         missing.update(releases)
-        missing = dict(sorted(missing.items(), key=sort_by_version_release, reverse=True))
-        return missing
+        return dict(sorted(missing.items(), key=sort_by_version_release, reverse=True))
     return releases
 
 
