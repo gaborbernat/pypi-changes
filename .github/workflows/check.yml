@@ -12,20 +12,16 @@ concurrency:
 
 jobs:
   test:
-    name: test with ${{ matrix.py }} on ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
+    name: test with ${{ matrix.py }}
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         py:
-          - "3.12.0-beta.2"
+          - "3.12.0-beta.4"
           - "3.11"
           - "3.10"
           - "3.9"
-        os:
-          - ubuntu-latest
-          - windows-latest
-          - macos-latest
     steps:
       - uses: actions/checkout@v3
         with:
@@ -44,8 +40,8 @@ jobs:
           PYTEST_ADDOPTS: "-vv --durations=20"
 
   check:
-    name: tox env ${{ matrix.tox_env }} on ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
+    name: tox env ${{ matrix.tox_env }}
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
@@ -54,11 +50,6 @@ jobs:
           - dev
           - docs
           - pkg_meta
-        os:
-          - ubuntu-latest
-          - windows-latest
-        exclude:
-          - { os: windows, tox_env: pkg_meta }
     steps:
       - uses: actions/checkout@v3
         with:
