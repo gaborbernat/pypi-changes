@@ -53,7 +53,7 @@ def pypi_info(distributions: Sequence[PathDistribution], options: Options) -> Ge
             progress.update(task, advance=1)
             try:
                 result: Exception | dict[str, Any] | None = future.result()
-            except Exception as exc:  # noqa: BLE001, PERF203
+            except Exception as exc:  # noqa: BLE001
                 result = exc
             yield Package(dist, result)
 
