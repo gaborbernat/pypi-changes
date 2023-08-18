@@ -7,6 +7,6 @@ versions](https://img.shields.io/pypi/pyversions/pypi-changes.svg)](https://pypi
 [![Documentation Status](https://readthedocs.org/projects/pypi-changes/badge/?version=latest)](https://pypi-changes.readthedocs.io/en/latest/?badge=latest)
 [![Code style:
 black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
-[![Downloads](https://pepy.tech/badge/pypi-changes/month)](https://pepy.tech/project/pypi-changes/month)
+[![Downloads](https://static.pepy.tech/badge/pypi-changes/month)](https://pepy.tech/project/pypi-changes)
 
 [![asciicast](https://asciinema.org/a/446966.svg)](https://asciinema.org/a/446966)
