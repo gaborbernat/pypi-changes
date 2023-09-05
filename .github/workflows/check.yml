@@ -23,7 +23,7 @@ jobs:
           - "3.10"
           - "3.9"
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: Setup python for test ${{ matrix.py }}
@@ -51,7 +51,7 @@ jobs:
           - docs
           - pkg_meta
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: Setup Python 3.11
