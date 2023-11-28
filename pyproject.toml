@@ -119,12 +119,6 @@ report.omit = []
 run.parallel = true
 run.plugins = ["covdefaults"]
 
-[tool.mypy]
-python_version = "3.11"
-show_error_codes = true
-strict = true
-overrides = [{ module = ["virtualenv.*", "vcr.*"], ignore_missing_imports = true }]
-
 [tool.towncrier]
 name = "pypi_changes"
 filename = "docs/changelog.rst"
@@ -132,3 +126,9 @@ directory = "docs/changelog"
 title_format = false
 issue_format = "`#{issue} <https://github.com/gaborbernat/pypi_changes/issues/{issue}>`_"
 template = "docs/changelog/template.jinja2"
+
+[tool.mypy]
+python_version = "3.11"
+show_error_codes = true
+strict = true
+overrides = [{ module = ["virtualenv.*", "vcr.*"], ignore_missing_imports = true }]
