@@ -43,7 +43,7 @@ class Package:
 
     @property
     def path(self) -> Path:
-        return self.dist._path  # type: ignore[no-any-return,attr-defined] # it exists  # noqa: SLF001
+        return self.dist._path  # noqa: SLF001
 
     @property
     def current_release(self) -> dict[str, Any]:
