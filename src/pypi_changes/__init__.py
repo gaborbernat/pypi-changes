@@ -1,4 +1,5 @@
 """Detect and visualize PyPI changes."""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
