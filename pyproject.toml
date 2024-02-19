@@ -2,7 +2,7 @@
 build-backend = "hatchling.build"
 requires = [
   "hatch-vcs>=0.4",
-  "hatchling>=1.18",
+  "hatchling>=1.21.1",
 ]
 
 [project]
@@ -41,21 +41,19 @@ dynamic = [
   "version",
 ]
 dependencies = [
-  'backports.cached-property>=1.0.2; python_version < "3.8"',
   "humanize>=4.9",
-  'importlib-metadata>=7; python_version < "3.8"',
   "packaging>=23.2",
-  "platformdirs>=4.1",
-  "pypi-simple>=1.4",
+  "platformdirs>=4.2",
+  "pypi-simple>=1.4.1",
   "requests>=2.31",
-  "requests-cache>=1.1.1",
+  "requests-cache>=1.2",
   "rich>=13.7",
 ]
 optional-dependencies.docs = [
   "furo>=2023.9.10",
   "sphinx>=7.2.6",
-  "sphinx-argparse-cli>=1.11.1",
-  "sphinx-autodoc-typehints!=1.23.4,>=1.25.2",
+  "sphinx-argparse-cli>=1.13",
+  "sphinx-autodoc-typehints>=2",
   "sphinx-copybutton>=0.5.2",
   "sphinx-inline-tabs>=2023.4.21",
   "sphinxcontrib-towncrier>=0.2.1a0",
@@ -63,11 +61,11 @@ optional-dependencies.docs = [
 ]
 optional-dependencies.testing = [
   "covdefaults>=2.3",
-  "pytest>=7.4.3",
+  "pytest>=8.0.1",
   "pytest-cov>=4.1",
   "pytest-mock>=3.12",
   "urllib3<2",
-  "vcrpy>=5.1",
+  "vcrpy>=6.0.1",
   "virtualenv>=20.25",
 ]
 urls.Homepage = "http://pypi_changes.readthedocs.org"
@@ -78,30 +76,34 @@ urls.Tracker = "https://github.com/gaborbernat/pypi_changes/issues"
 build.hooks.vcs.version-file = "src/pypi_changes/_version.py"
 version.source = "vcs"
 
-[tool.black]
-line-length = 120
-
 [tool.ruff]
 select = ["ALL"]
 line-length = 120
 target-version = "py39"
-isort = {known-first-party = ["pypi_changes"], required-imports = ["from __future__ import annotations"]}
+isort = { known-first-party = ["pypi_changes"], required-imports = ["from __future__ import annotations"] }
 ignore = [
-  "ANN101",  # no typoe annotation for self
-  "ANN401",  # allow Any as type annotation
-  "D203",  # `one-blank-line-before-class` (D203) and `no-blank-line-before-class` (D211) are incompatible
-  "D212",  # `multi-line-summary-first-line` (D212) and `multi-line-summary-second-line` (D213) are incompatible
-  "S104",  # Possible binding to all interface
+  "CPY",    # No copyright header
+  "INP001", # no implicit namespaces here
+  "ANN101", # no type annotation for self
+  "ANN401", # allow Any as type annotation
+  "D203",   # `one-blank-line-before-class` (D203) and `no-blank-line-before-class` (D211) are incompatible
+  "D212",   # `multi-line-summary-first-line` (D212) and `multi-line-summary-second-line` (D213) are incompatible
+  "S104",   # Possible binding to all interface
 ]
 [tool.ruff.per-file-ignores]
 "tests/**/*.py" = [
-  "S101",  # asserts allowed in tests...
-  "FBT",  # don"t care about booleans as positional arguments in tests
-  "INP001", # no implicit namespace
-  "D",  # don"t care about documentation in tests
-  "S603",  # `subprocess` call: check for execution of untrusted input
-  "PLR2004",  # Magic value used in comparison, consider replacing with a constant variable
+  "S101",    # asserts allowed in tests...
+  "FBT",     # don't care about booleans as positional arguments in tests
+  "D",       # don"t care about documentation in tests
+  "S603",    # `subprocess` call: check for execution of untrusted input
+  "PLR2004", # Magic value used in comparison, consider replacing with a constant variable
 ]
+
+[tool.codespell]
+builtin = "clear,usage,en-GB_to_en-US"
+write-changes = true
+count = true
+skip = "*.yaml"
 
 [tool.coverage]
 html.show_contexts = true

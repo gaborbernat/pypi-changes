@@ -30,7 +30,7 @@ def pypi_info(distributions: Sequence[PathDistribution], options: Options) -> Ge
     with ExitStack() as stack:
         enter = stack.enter_context
         session = enter(CachedSession(str(options.cache_path), backend="sqlite", expire_after=options.cache_duration))
-        session.remove_expired_responses()  # cleanup old entries
+        session.cache.delete(expired=True)  # cleanup old entries
 
         client = enter(_pypi_client(session))
 
