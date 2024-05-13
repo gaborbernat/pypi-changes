@@ -17,8 +17,12 @@ keywords = [
   "virtual",
 ]
 license = "MIT"
-maintainers = [{ name = "Bernát Gábor", email = "gaborjbernat@gmail.com" }]
-authors = [{ name = "Bernát Gábor", email = "gaborjbernat@gmail.com" }]
+maintainers = [
+  { name = "Bernát Gábor", email = "gaborjbernat@gmail.com" },
+]
+authors = [
+  { name = "Bernát Gábor", email = "gaborjbernat@gmail.com" },
+]
 requires-python = ">=3.9"
 classifiers = [
   "Development Status :: 5 - Production/Stable",
@@ -68,10 +72,16 @@ build.hooks.vcs.version-file = "src/pypi_changes/_version.py"
 version.source = "vcs"
 
 [tool.ruff]
-select = ["ALL"]
+select = [
+  "ALL",
+]
 line-length = 120
 target-version = "py39"
-isort = { known-first-party = ["pypi_changes"], required-imports = ["from __future__ import annotations"] }
+isort = { known-first-party = [
+  "pypi_changes",
+], required-imports = [
+  "from __future__ import annotations",
+] }
 ignore = [
   "CPY",    # No copyright header
   "INP001", # no implicit namespaces here
@@ -108,12 +118,20 @@ paths.source = [
   "*\\src",
 ]
 report.fail_under = 98
-report.omit = []
+report.omit = [
+]
 run.parallel = true
-run.plugins = ["covdefaults"]
+run.plugins = [
+  "covdefaults",
+]
 
 [tool.mypy]
 python_version = "3.11"
 show_error_codes = true
 strict = true
-overrides = [{ module = ["virtualenv.*", "vcr.*"], ignore_missing_imports = true }]
+overrides = [
+  { module = [
+    "virtualenv.*",
+    "vcr.*",
+  ], ignore_missing_imports = true },
+]
