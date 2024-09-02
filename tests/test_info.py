@@ -20,7 +20,7 @@ if TYPE_CHECKING:
     from tests import MakeDist
 
 
-@pytest.fixture()
+@pytest.fixture
 def _force_pypi_index(mocker: MockerFixture, _no_index: None) -> None:
     mocker.patch("pypi_changes._info.PYPI_INDEX", "")
     mocker.patch.dict(os.environ, {"PIP_INDEX_URL": "https://pypi.org/simple"})
