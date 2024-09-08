@@ -4,7 +4,7 @@ import json
 import re
 from importlib.metadata import Distribution, PathDistribution
 from pathlib import Path
-from subprocess import check_output
+from subprocess import check_output  # noqa: S404
 from typing import TYPE_CHECKING
 
 from rich.console import Console

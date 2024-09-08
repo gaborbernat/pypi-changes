@@ -62,7 +62,7 @@ class SpeedColumn(TextColumn):
     def __init__(self) -> None:
         super().__init__("[bold cyan]")
 
-    def render(self, task: Task) -> Text:
+    def render(self, task: Task) -> Text:  # noqa: PLR6301
         if task.speed is None:
             return Text("no speed")
         return Text(f"{task.speed:.3f} steps/s")
@@ -135,6 +135,6 @@ def _merge_with_index_server(
 
 
 __all__ = [
-    "pypi_info",
     "Package",
+    "pypi_info",
 ]

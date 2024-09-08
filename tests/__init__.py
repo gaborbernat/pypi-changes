@@ -8,6 +8,6 @@ from unittest.mock import MagicMock
 MakeDist = Callable[[Path, str, str], MagicMock]
 
 __all__ = [
-    "PathDistribution",
     "MakeDist",
+    "PathDistribution",
 ]

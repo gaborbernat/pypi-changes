@@ -1,13 +1,13 @@
 from __future__ import annotations
 
 from datetime import datetime, timezone
-from typing import TYPE_CHECKING, Any
+from pathlib import Path
+from typing import TYPE_CHECKING, Any, cast
 
 from packaging.version import Version
 
 if TYPE_CHECKING:
     from importlib.metadata import PathDistribution
-    from pathlib import Path
 
 
 class Package:
@@ -43,7 +43,7 @@ class Package:
 
     @property
     def path(self) -> Path:
-        return self.dist._path  # noqa: SLF001
+        return cast(Path, self.dist._path)  # noqa: SLF001
 
     @property
     def current_release(self) -> dict[str, Any]:
