@@ -1,17 +1,17 @@
 from __future__ import annotations
 
 from datetime import datetime, timezone
-from pathlib import Path
 from typing import TYPE_CHECKING, Any, cast
 
 from packaging.version import Version
 
 if TYPE_CHECKING:
     from importlib.metadata import PathDistribution
+    from pathlib import Path
 
 
 class Package:
-    def __init__(self, dist: PathDistribution, info: dict[str, Any] | None | Exception) -> None:
+    def __init__(self, dist: PathDistribution, info: dict[str, Any] | Exception | None) -> None:
         self.dist: PathDistribution = dist
         self.info: dict[str, Any] | None = None if isinstance(info, Exception) else info
         self.exc = info if isinstance(info, Exception) else None
@@ -43,7 +43,7 @@ class Package:
 
     @property
     def path(self) -> Path:
-        return cast(Path, self.dist._path)  # noqa: SLF001
+        return cast("Path", self.dist._path)  # noqa: SLF001
 
     @property
     def current_release(self) -> dict[str, Any]:
