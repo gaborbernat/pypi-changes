@@ -1,7 +1,7 @@
 [build-system]
 build-backend = "hatchling.build"
 requires = [
-  "hatch-vcs>=0.4",
+  "hatch-vcs>=0.5",
   "hatchling>=1.27",
 ]
 
@@ -38,6 +38,7 @@ classifiers = [
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
   "Topic :: Software Development :: Libraries",
   "Topic :: Software Development :: Testing",
   "Topic :: Utilities",
@@ -46,22 +47,22 @@ dynamic = [
   "version",
 ]
 dependencies = [
-  "humanize>=4.11",
-  "packaging>=24.2",
-  "platformdirs>=4.3.6",
-  "pypi-simple>=1.6.1",
-  "requests>=2.32.3",
+  "humanize>=4.13",
+  "packaging>=25",
+  "platformdirs>=4.4",
+  "pypi-simple>=1.8",
+  "requests>=2.32.5",
   "requests-cache>=1.2.1",
-  "rich>=13.9.4",
+  "rich>=14.1",
 ]
 optional-dependencies.testing = [
   "covdefaults>=2.3",
-  "pytest>=8.3.4",
-  "pytest-cov>=6",
-  "pytest-mock>=3.14",
+  "pytest>=8.4.2",
+  "pytest-cov>=7",
+  "pytest-mock>=3.15.1",
   "urllib3<2",
   "vcrpy>=7",
-  "virtualenv>=20.28.1",
+  "virtualenv>=20.34",
 ]
 urls.Homepage = "https://github.com/gaborbernat/pypi_changes"
 urls.Source = "https://github.com/gaborbernat/pypi_changes"
@@ -111,9 +112,6 @@ builtin = "clear,usage,en-GB_to_en-US"
 write-changes = true
 count = true
 skip = "*.yaml"
-
-[tool.pyproject-fmt]
-max_supported_python = "3.13"
 
 [tool.coverage]
 html.show_contexts = true
