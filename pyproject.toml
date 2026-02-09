@@ -126,8 +126,7 @@ paths.source = [
   "*\\src",
 ]
 report.fail_under = 98
-report.omit = [
-]
+report.omit = []
 run.parallel = true
 run.plugins = [
   "covdefaults",
