@@ -115,8 +115,10 @@ count = true
 skip = "*.yaml"
 
 [tool.coverage]
-html.show_contexts = true
-html.skip_covered = false
+run.parallel = true
+run.plugins = [
+  "covdefaults",
+]
 paths.source = [
   "src",
   ".tox*/*/lib/python*/site-packages",
@@ -127,10 +129,8 @@ paths.source = [
 ]
 report.fail_under = 98
 report.omit = []
-run.parallel = true
-run.plugins = [
-  "covdefaults",
-]
+html.show_contexts = true
+html.skip_covered = false
 
 [tool.mypy]
 python_version = "3.11"
