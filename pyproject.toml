@@ -132,13 +132,5 @@ report.omit = []
 html.show_contexts = true
 html.skip_covered = false
 
-[tool.mypy]
-python_version = "3.11"
-show_error_codes = true
-strict = true
-overrides = [
-  { module = [
-    "virtualenv.*",
-    "vcr.*",
-  ], ignore_missing_imports = true },
-]
+[tool.ty]
+environment.python-version = "3.14"
