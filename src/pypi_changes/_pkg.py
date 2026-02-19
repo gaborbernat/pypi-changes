@@ -30,8 +30,8 @@ class Package:
         for version_str, releases in self.info["releases"].items():
             version = Version(version_str)
             if not version.is_devrelease and not version.is_prerelease:
-                return releases[0]  # type: ignore[no-any-return]
-        return next(iter(self.info["releases"].values()))[0]  # type: ignore[no-any-return]
+                return releases[0]
+        return next(iter(self.info["releases"].values()))[0]
 
     @property
     def name(self) -> str:
