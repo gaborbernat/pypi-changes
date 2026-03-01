@@ -67,7 +67,7 @@ def _define_cli_arguments() -> ArgumentParser:
         "--output",
         "-o",
         help="Choose output format",
-        choices=["tree", "json"],
+        choices=["tree", "json", "requirements"],
         default="tree",
         dest="output",
     )

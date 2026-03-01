@@ -8,6 +8,7 @@ from ._cli import parse_cli_arguments
 from ._distributions import collect_distributions
 from ._info import pypi_info
 from ._print.json import print_json
+from ._print.requirements import print_requirements
 from ._print.tree import print_tree
 from ._version import version
 
@@ -31,8 +32,10 @@ def main(args: Sequence[str] | None = None) -> int:
 
     if options.output == "tree":
         print_tree(info, options)
-    else:  # output == "json"
+    elif options.output == "json":
         print_json(info, options)
+    else:  # output == "requirements"
+        print_requirements(info, options)
     return 0
 
 
