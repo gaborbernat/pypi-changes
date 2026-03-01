@@ -101,7 +101,12 @@ def _load_from_pypi_json_api(name: str, session: CachedSession) -> dict[str, Any
             prev_release_at = artifact_release[0]["upload_time_iso_8601"]
         else:  # if no releases make up a release time and enrich version
             prev_release_at -= timedelta(seconds=1)
-            release = {"packagetype": "sdist", "version": a_version, "upload_time_iso_8601": prev_release_at}
+            release = {
+                "packagetype": "sdist",
+                "version": a_version,
+                "upload_time_iso_8601": prev_release_at,
+                "synthesized": True,
+            }
             artifact_release.append(release)
     result["releases"] = dict(sorted(result["releases"].items(), key=sort_by_version_release, reverse=True))
     return result

@@ -18,7 +18,7 @@ if TYPE_CHECKING:
 def release_info(release: dict[str, Any] | None, now: datetime) -> dict[str, Any]:
     if release is None:
         return {}
-    release_at = release.get("upload_time_iso_8601")
+    release_at = release.get("upload_time_iso_8601") if not release.get("synthesized") else None
     release_since = naturaldelta(now - release_at) if release_at else None
     return {
         "version": release.get("version"),
