@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import shutil
 from argparse import Action, ArgumentDefaultsHelpFormatter, ArgumentError, ArgumentParser, Namespace
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -24,6 +25,10 @@ def parse_cli_arguments(args: Sequence[str] | None = None) -> Options:
     parser = _define_cli_arguments()
     options = Options()
     parser.parse_args(args, options)
+    if options.python is None:
+        if (resolved := shutil.which("python")) is None:
+            parser.error("no python interpreter found on PATH, provide PYTHON_EXE explicitly")
+        options.python = Path(resolved).absolute()
     return options
 
 
@@ -67,7 +72,14 @@ def _define_cli_arguments() -> ArgumentParser:
         dest="output",
     )
 
-    parser.add_argument("python", help="python interpreter to inspect", metavar="PYTHON_EXE", action=_Python)
+    parser.add_argument(
+        "python",
+        help="python interpreter to inspect (default: python on PATH)",
+        metavar="PYTHON_EXE",
+        action=_Python,
+        nargs="?",
+        default=None,
+    )
 
     return parser
 
@@ -80,6 +92,8 @@ class _Python(Action):
         values: str | Sequence[str] | None,
         option_string: str | None = None,  # noqa: ARG002
     ) -> None:
+        if values is None:
+            return
         assert isinstance(values, str)  # noqa: S101
         path = Path(values).absolute()
         if not path.exists():

@@ -15,7 +15,7 @@ if TYPE_CHECKING:
     from pytest_mock import MockerFixture
 
 
-def test_cli_ok_default(tmp_path: Path, mocker: MockerFixture) -> None:
+def test_cli_ok_explicit_python(tmp_path: Path, mocker: MockerFixture) -> None:
     user_cache_path = mocker.patch("pypi_changes._cli.user_cache_path", return_value=tmp_path / "cache")
 
     options = parse_cli_arguments([str(tmp_path)])
@@ -30,6 +30,29 @@ def test_cli_ok_default(tmp_path: Path, mocker: MockerFixture) -> None:
         "output": "tree",
     }
     assert user_cache_path.call_args == call(appname="pypi_changes", appauthor="gaborbernat", version=__version__)
+
+
+def test_cli_default_python_from_path(tmp_path: Path, mocker: MockerFixture) -> None:
+    python_path = tmp_path / "python"
+    python_path.touch()
+    mocker.patch("pypi_changes._cli.shutil.which", return_value=str(python_path))
+    mocker.patch("pypi_changes._cli.user_cache_path", return_value=tmp_path / "cache")
+
+    options = parse_cli_arguments([])
+
+    assert options.python == python_path.absolute()
+
+
+def test_cli_default_python_not_found(mocker: MockerFixture, capsys: CaptureFixture[str]) -> None:
+    mocker.patch("pypi_changes._cli.shutil.which", return_value=None)
+
+    with pytest.raises(SystemExit) as context:
+        parse_cli_arguments([])
+
+    assert context.value.code == 2
+    out, err = capsys.readouterr()
+    assert not out
+    assert "no python interpreter found on PATH" in err
 
 
 def test_cli_python_not_exist(tmp_path: Path, capsys: CaptureFixture[str]) -> None:
