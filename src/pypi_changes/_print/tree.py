@@ -4,6 +4,7 @@ from datetime import datetime, timezone
 from typing import TYPE_CHECKING
 
 from humanize import naturaldelta
+from packaging.version import InvalidVersion, Version
 from rich import print as rich_print
 from rich.markup import escape
 from rich.text import Text
@@ -35,13 +36,23 @@ def print_tree(distributions: Iterable[Package], options: Options) -> None:
         if current_release_at is not None:
             text.append(" ")  # pragma: no cover
             text.append(naturaldelta(now - current_release_at), "green")  # pragma: no cover
-        if pkg.version != last_release.get("version"):
-            text.append(f" remote {last_release.get('version')}", "red")
+        if pkg.version != (remote_version := last_release.get("version")):
+            style = "bold red" if _is_major_bump(pkg.version, remote_version) else "red"
+            text.append(f" remote {remote_version}", style)
             if last_release_at is not None:  # pragma: no branch
                 text.append(" ", "white")
                 text.append(naturaldelta(now - last_release_at), "green")
         tree.add(text)
     rich_print(tree)
+
+
+def _is_major_bump(current: str, remote: str | None) -> bool:
+    if remote is None:
+        return False
+    try:
+        return Version(current).major != Version(remote).major
+    except InvalidVersion:
+        return False
 
 
 __all__ = [
