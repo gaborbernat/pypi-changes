@@ -39,7 +39,7 @@ def print_tree(distributions: Iterable[Package], options: Options) -> None:
         if pkg.version != (remote_version := last_release.get("version")):
             style = "bold red" if _is_major_bump(pkg.version, remote_version) else "red"
             text.append(f" remote {remote_version}", style)
-            if last_release_at is not None:  # pragma: no branch
+            if last_release_at is not None:
                 text.append(" ", "white")
                 text.append(naturaldelta(now - last_release_at), "green")
         tree.add(text)

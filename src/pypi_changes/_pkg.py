@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-from datetime import datetime, timezone
 from typing import TYPE_CHECKING, Any, cast
 
 from packaging.version import Version
 
 if TYPE_CHECKING:
+    from datetime import datetime
     from importlib.metadata import PathDistribution
     from pathlib import Path
 
@@ -17,11 +17,10 @@ class Package:
         self.exc = info if isinstance(info, Exception) else None
 
     @property
-    def last_release_at(self) -> datetime:
-        last_release = self.last_release
-        if last_release is None:
-            return datetime.now(timezone.utc)
-        return self.last_release["upload_time_iso_8601"]  # type: ignore[no-any-return,index] # Any instead of datetime
+    def last_release_at(self) -> datetime | None:
+        if (last_release := self.last_release) is None or last_release.get("synthesized"):
+            return None
+        return last_release["upload_time_iso_8601"]
 
     @property
     def last_release(self) -> dict[str, Any] | None:

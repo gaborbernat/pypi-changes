@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import os
-from datetime import datetime, timezone
 from pathlib import Path
 from typing import TYPE_CHECKING
 from unittest.mock import create_autospec
@@ -54,9 +53,7 @@ def test_info_missing(tmp_path: Path, option_simple: Options, make_dist: MakeDis
     assert len(packages) == 1
     pkg = packages[0]
     assert pkg.info is None
-    current = datetime.now(timezone.utc)
-    last_release_at = pkg.last_release_at
-    assert current <= last_release_at
+    assert pkg.last_release_at is None
 
 
 @pytest.mark.usefixtures("_no_proxy")
