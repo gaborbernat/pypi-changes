@@ -134,6 +134,9 @@ write-changes = true
 count = true
 skip = "*.yaml"
 
+[tool.ty]
+environment.python-version = "3.14"
+
 [tool.coverage]
 run.parallel = true
 run.plugins = [
@@ -151,6 +154,3 @@ report.fail_under = 98
 report.omit = []
 html.show_contexts = true
 html.skip_covered = false
-
-[tool.ty]
-environment.python-version = "3.14"
