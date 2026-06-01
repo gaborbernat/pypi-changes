@@ -90,8 +90,8 @@ pkg-meta = [
 ]
 
 [tool.hatch]
-build.hooks.vcs.version-file = "src/pypi_changes/_version.py"
 version.source = "vcs"
+build.hooks.vcs.version-file = "src/pypi_changes/_version.py"
 
 [tool.ruff]
 line-length = 120
@@ -130,9 +130,9 @@ lint.preview = true
 
 [tool.codespell]
 builtin = "clear,usage,en-GB_to_en-US"
+skip = "*.yaml"
 write-changes = true
 count = true
-skip = "*.yaml"
 
 [tool.ty]
 environment.python-version = "3.14"
