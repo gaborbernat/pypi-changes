@@ -16,12 +16,12 @@ if TYPE_CHECKING:
     from tests import MakeDist
 
 
-@pytest.fixture(autouse=True)  # noqa: RUF076
+@pytest.fixture(autouse=True)
 def _no_index(monkeypatch: MonkeyPatch) -> None:
     monkeypatch.delenv("PIP_INDEX_URL", raising=False)
 
 
-@pytest.fixture(autouse=True)  # noqa: RUF076
+@pytest.fixture(autouse=True)
 def _no_proxy(monkeypatch: MonkeyPatch) -> None:
     monkeypatch.delenv("https_proxy", raising=False)
     monkeypatch.delenv("http_proxy", raising=False)
