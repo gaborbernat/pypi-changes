@@ -14,10 +14,7 @@ interactions:
       uri: https://pypi.org/pypi/missing-package/json
     response:
       body:
-        string:
-          "<html>\n <head>\n  <title>301 Moved Permanently</title>\n </head>\n <body>\n  <h1>301 Moved
-          Permanently</h1>\n  The resource has been moved to /pypi/missing-package/json/; you should be redirected
-          automatically.\n\n\n </body>\n</html>"
+        string: "<html>\n <head>\n  <title>301 Moved Permanently</title>\n </head>\n <body>\n  <h1>301 Moved Permanently</h1>\n  The resource has been moved to /pypi/missing-package/json/; you should be redirected automatically.\n\n\n </body>\n</html>"
       headers:
         Accept-Ranges:
           - bytes
@@ -26,13 +23,7 @@ interactions:
         Content-Length:
           - "224"
         Content-Security-Policy:
-          - base-uri 'self'; block-all-mixed-content; connect-src 'self' https://api.github.com/repos/
-            *.fastly-insights.com sentry.io https://api.pwnedpasswords.com https://2p66nmmycsj3.statuspage.io;
-            default-src 'none'; font-src 'self' fonts.gstatic.com; form-action 'self'; frame-ancestors 'none'; frame-src
-            'none'; img-src 'self' https://warehouse-camo.ingress.cmh1.psfhosted.org/ www.google-analytics.com
-            *.fastly-insights.com; script-src 'self' www.googletagmanager.com www.google-analytics.com
-            *.fastly-insights.com https://cdn.ravenjs.com; style-src 'self' fonts.googleapis.com; worker-src
-            *.fastly-insights.com
+          - base-uri 'self'; block-all-mixed-content; connect-src 'self' https://api.github.com/repos/ *.fastly-insights.com sentry.io https://api.pwnedpasswords.com https://2p66nmmycsj3.statuspage.io; default-src 'none'; font-src 'self' fonts.gstatic.com; form-action 'self'; frame-ancestors 'none'; frame-src 'none'; img-src 'self' https://warehouse-camo.ingress.cmh1.psfhosted.org/ www.google-analytics.com *.fastly-insights.com; script-src 'self' www.googletagmanager.com www.google-analytics.com *.fastly-insights.com https://cdn.ravenjs.com; style-src 'self' fonts.googleapis.com; worker-src *.fastly-insights.com
         Content-Type:
           - text/html; charset=UTF-8
         Date:
@@ -126,13 +117,7 @@ interactions:
         Content-Length:
           - "1893"
         Content-Security-Policy:
-          - base-uri 'self'; block-all-mixed-content; connect-src 'self' https://api.github.com/repos/
-            *.fastly-insights.com sentry.io https://api.pwnedpasswords.com https://2p66nmmycsj3.statuspage.io;
-            default-src 'none'; font-src 'self' fonts.gstatic.com; form-action 'self'; frame-ancestors 'none'; frame-src
-            'none' https://www.youtube-nocookie.com; img-src 'self' https://warehouse-camo.ingress.cmh1.psfhosted.org/
-            www.google-analytics.com *.fastly-insights.com; script-src 'self' www.googletagmanager.com
-            www.google-analytics.com *.fastly-insights.com https://cdn.ravenjs.com https://www.youtube.com
-            https://s.ytimg.com; style-src 'self' fonts.googleapis.com; worker-src *.fastly-insights.com
+          - base-uri 'self'; block-all-mixed-content; connect-src 'self' https://api.github.com/repos/ *.fastly-insights.com sentry.io https://api.pwnedpasswords.com https://2p66nmmycsj3.statuspage.io; default-src 'none'; font-src 'self' fonts.gstatic.com; form-action 'self'; frame-ancestors 'none'; frame-src 'none' https://www.youtube-nocookie.com; img-src 'self' https://warehouse-camo.ingress.cmh1.psfhosted.org/ www.google-analytics.com *.fastly-insights.com; script-src 'self' www.googletagmanager.com www.google-analytics.com *.fastly-insights.com https://cdn.ravenjs.com https://www.youtube.com https://s.ytimg.com; style-src 'self' fonts.googleapis.com; worker-src *.fastly-insights.com
         Content-Type:
           - text/html; charset=UTF-8
         Date:
