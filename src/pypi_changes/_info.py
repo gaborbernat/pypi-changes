@@ -53,7 +53,7 @@ def pypi_info(distributions: Sequence[PathDistribution], options: Options) -> Ge
             progress.update(task, advance=1)
             try:
                 result: Exception | dict[str, Any] | None = future.result()
-            except Exception as exc:  # noqa: BLE001
+            except Exception as exc:  # ruff:ignore[blind-except]
                 result = exc
             yield Package(dist, result)
 
@@ -62,7 +62,7 @@ class SpeedColumn(TextColumn):
     def __init__(self) -> None:
         super().__init__("[bold cyan]")
 
-    def render(self, task: Task) -> Text:  # noqa: PLR6301
+    def render(self, task: Task) -> Text:  # ruff:ignore[no-self-use]
         if task.speed is None:
             return Text("no speed")
         return Text(f"{task.speed:.3f} steps/s")

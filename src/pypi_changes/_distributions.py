@@ -4,7 +4,7 @@ import json
 import re
 from importlib.metadata import Distribution, PathDistribution
 from pathlib import Path
-from subprocess import check_output  # noqa: S404
+from subprocess import check_output  # ruff:ignore[suspicious-subprocess-import]
 from typing import TYPE_CHECKING
 
 from rich.console import Console
@@ -29,7 +29,7 @@ def collect_distributions(options: Options) -> list[PathDistribution]:
 
 def _get_py_info(python: str) -> list[Path]:
     cmd = [python, "-c", "import sys, json; print(json.dumps(sys.path))"]
-    return [Path(i) for i in json.loads(check_output(cmd, text=True))]  # noqa: S603
+    return [Path(i) for i in json.loads(check_output(cmd, text=True))]  # ruff:ignore[subprocess-without-shell-equals-true]
 
 
 def _iter_distributions(paths: Iterable[Path]) -> Generator[PathDistribution, None, None]:

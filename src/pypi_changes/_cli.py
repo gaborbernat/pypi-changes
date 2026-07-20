@@ -87,14 +87,14 @@ def _define_cli_arguments() -> ArgumentParser:
 class _Python(Action):
     def __call__(
         self,
-        parser: ArgumentParser,  # noqa: ARG002
+        parser: ArgumentParser,  # ruff:ignore[unused-method-argument]
         namespace: Namespace,
         values: str | Sequence[str] | None,
-        option_string: str | None = None,  # noqa: ARG002
+        option_string: str | None = None,  # ruff:ignore[unused-method-argument]
     ) -> None:
         if values is None:
             return
-        assert isinstance(values, str)  # noqa: S101
+        assert isinstance(values, str)  # ruff:ignore[assert]
         path = Path(values).absolute()
         if not path.exists():
             raise ArgumentError(self, f"path {path} does not exist")

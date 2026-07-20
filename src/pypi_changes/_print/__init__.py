@@ -10,7 +10,7 @@ if TYPE_CHECKING:
     from pypi_changes._pkg import Package
 
 
-class _Reversor:  # noqa: PLW1641
+class _Reversor:  # ruff:ignore[eq-without-hash]
     def __init__(self, obj: str) -> None:
         self.obj = obj
 
