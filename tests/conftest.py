@@ -39,7 +39,7 @@ def make_dist() -> MakeDist:
         of_type = f"importlib{'.' if sys.version_info >= (3, 8) else '_'}metadata.PathDistribution"
         dist: MagicMock = create_autospec(of_type)
         dist.metadata = {"Name": name}
-        dist._path = path / "dist"  # noqa: SLF001
+        dist._path = path / "dist"  # ruff:ignore[private-member-access]
         dist.version = version
         return dist
 

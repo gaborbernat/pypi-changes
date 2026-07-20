@@ -43,7 +43,7 @@ def print_json(distributions: Iterable[Package], options: Options) -> None:
                 "latest": latest_release,
             },
         )
-    print(json.dumps(pkg_list, indent=2))  # noqa: T201
+    print(json.dumps(pkg_list, indent=2))  # ruff:ignore[print]
 
 
 __all__ = [

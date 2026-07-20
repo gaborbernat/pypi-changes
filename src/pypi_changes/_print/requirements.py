@@ -17,7 +17,7 @@ def print_requirements(distributions: Iterable[Package], options: Options) -> No
     for pkg in get_sorted_pkg_list(distributions, options, now):
         last_release = pkg.last_release or {}
         if (remote_version := last_release.get("version")) and pkg.version != remote_version:
-            print(f"{pkg.name}=={remote_version}")  # noqa: T201
+            print(f"{pkg.name}=={remote_version}")  # ruff:ignore[print]
 
 
 __all__ = [

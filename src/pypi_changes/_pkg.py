@@ -42,7 +42,7 @@ class Package:
 
     @property
     def path(self) -> Path:
-        return cast("Path", self.dist._path)  # noqa: SLF001
+        return cast("Path", self.dist._path)  # ruff:ignore[private-member-access]
 
     @property
     def current_release(self) -> dict[str, Any]:
