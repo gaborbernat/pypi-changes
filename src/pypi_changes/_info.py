@@ -16,7 +16,7 @@ from rich.text import Text
 from ._pkg import Package
 
 if TYPE_CHECKING:
-    from collections.abc import Generator, Iterator, Sequence
+    from collections.abc import Generator, Sequence
     from importlib.metadata import PathDistribution
 
     from requests import Session
@@ -69,7 +69,7 @@ class SpeedColumn(TextColumn):
 
 
 @contextmanager
-def _pypi_client(session: Session) -> Iterator[PyPISimple | None]:
+def _pypi_client(session: Session) -> Generator[PyPISimple | None, None, None]:
     url = os.environ.get("PIP_INDEX_URL")
     if url is not None and url.lstrip("/") != PYPI_INDEX:
         with PyPISimple(endpoint=url, session=session) as client:
