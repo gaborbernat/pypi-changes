@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import json
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import TYPE_CHECKING, Any
 
 from humanize import naturaldelta
@@ -28,7 +28,7 @@ def release_info(release: dict[str, Any] | None, now: datetime) -> dict[str, Any
 
 
 def print_json(distributions: Iterable[Package], options: Options) -> None:
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     pkg_list = []
 
     for pkg in get_sorted_pkg_list(distributions, options, now):

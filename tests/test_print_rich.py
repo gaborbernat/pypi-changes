@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import sys
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import TYPE_CHECKING
 from unittest.mock import create_autospec
@@ -21,7 +21,7 @@ if TYPE_CHECKING:
 
 def test_print(capsys: pytest.CaptureFixture[str], option_simple: Options, mocker: MockerFixture) -> None:
     mocked_datetime = mocker.patch("pypi_changes._print.tree.datetime")
-    mocked_datetime.now.return_value = datetime(2021, 11, 6, 10, tzinfo=timezone.utc)
+    mocked_datetime.now.return_value = datetime(2021, 11, 6, 10, tzinfo=UTC)
     option_simple.python = Path(sys.executable)
     option_simple.sort = "updated"
     packages = [
@@ -30,8 +30,8 @@ def test_print(capsys: pytest.CaptureFixture[str], option_simple: Options, mocke
             info={"releases": {v_u: [{"version": v_u, "upload_time_iso_8601": t}]}},
         )
         for n, v_l, v_u, t in [
-            ("a", "1", "2", datetime(2021, 10, 5, 10, tzinfo=timezone.utc)),
-            ("b", "3", "3", datetime(2021, 11, 5, 10, tzinfo=timezone.utc)),
+            ("a", "1", "2", datetime(2021, 10, 5, 10, tzinfo=UTC)),
+            ("b", "3", "3", datetime(2021, 11, 5, 10, tzinfo=UTC)),
             ("d", "1", "1", None),
             ("c", "1", "2", None),
         ]
@@ -54,7 +54,7 @@ def test_print(capsys: pytest.CaptureFixture[str], option_simple: Options, mocke
 
 def test_print_alphabetical(capsys: pytest.CaptureFixture[str], option_simple: Options, mocker: MockerFixture) -> None:
     mocked_datetime = mocker.patch("pypi_changes._print.tree.datetime")
-    mocked_datetime.now.return_value = datetime(2021, 11, 6, 10, tzinfo=timezone.utc)
+    mocked_datetime.now.return_value = datetime(2021, 11, 6, 10, tzinfo=UTC)
     option_simple.python = Path(sys.executable)
     option_simple.sort = "alphabetic"
     packages = [
@@ -63,8 +63,8 @@ def test_print_alphabetical(capsys: pytest.CaptureFixture[str], option_simple: O
             info={"releases": {v_u: [{"version": v_u, "upload_time_iso_8601": t}]}},
         )
         for n, v_l, v_u, t in [
-            ("a", "1", "2", datetime(2021, 10, 5, 10, tzinfo=timezone.utc)),
-            ("b", "3", "3", datetime(2021, 11, 5, 10, tzinfo=timezone.utc)),
+            ("a", "1", "2", datetime(2021, 10, 5, 10, tzinfo=UTC)),
+            ("b", "3", "3", datetime(2021, 11, 5, 10, tzinfo=UTC)),
             ("d", "1", "1", None),
             ("c", "1", "2", None),
         ]
@@ -87,7 +87,7 @@ def test_print_alphabetical(capsys: pytest.CaptureFixture[str], option_simple: O
 
 def test_major_bump_bold_style(option_simple: Options, mocker: MockerFixture) -> None:
     mocked_datetime = mocker.patch("pypi_changes._print.tree.datetime")
-    mocked_datetime.now.return_value = datetime(2021, 11, 6, 10, tzinfo=timezone.utc)
+    mocked_datetime.now.return_value = datetime(2021, 11, 6, 10, tzinfo=UTC)
     mock_print = mocker.patch("pypi_changes._print.tree.rich_print")
     option_simple.python = Path(sys.executable)
     option_simple.sort = "alphabetic"
