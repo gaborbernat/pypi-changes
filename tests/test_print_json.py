@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 import sys
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import TYPE_CHECKING
 from unittest.mock import create_autospec
@@ -20,7 +20,7 @@ if TYPE_CHECKING:
 
 def test_print_json(capsys: CaptureFixture[str], option_simple: Options, mocker: MockerFixture) -> None:
     mocked_datetime = mocker.patch("pypi_changes._print.json.datetime")
-    mocked_datetime.now.return_value = datetime(2021, 11, 6, 10, tzinfo=timezone.utc)
+    mocked_datetime.now.return_value = datetime(2021, 11, 6, 10, tzinfo=UTC)
     option_simple.python = Path(sys.executable)
     option_simple.sort = "unsorted"
     packages = [
@@ -36,8 +36,8 @@ def test_print_json(capsys: CaptureFixture[str], option_simple: Options, mocker:
         for n, (v_last, t_last), (v_cur, t_cur) in [
             (
                 "a",
-                ("2", datetime(2021, 10, 5, 10, tzinfo=timezone.utc)),
-                ("1", datetime(2020, 3, 8, 10, tzinfo=timezone.utc)),
+                ("2", datetime(2021, 10, 5, 10, tzinfo=UTC)),
+                ("1", datetime(2020, 3, 8, 10, tzinfo=UTC)),
             ),
             (
                 "b",
@@ -80,6 +80,6 @@ def test_print_json(capsys: CaptureFixture[str], option_simple: Options, mocker:
 
 
 def test_release_info_no_release() -> None:
-    result = release_info(None, datetime.now(timezone.utc))
+    result = release_info(None, datetime.now(UTC))
 
     assert result == {}

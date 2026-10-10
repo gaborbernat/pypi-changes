@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import TYPE_CHECKING
 
 from humanize import naturaldelta
@@ -20,7 +20,7 @@ if TYPE_CHECKING:
 
 
 def print_tree(distributions: Iterable[Package], options: Options) -> None:
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     tree = Tree(f"🐍 Distributions within {escape(str(options.python))}", guide_style="cyan")
     for pkg in get_sorted_pkg_list(distributions, options, now):
         text = Text(pkg.name, "yellow")

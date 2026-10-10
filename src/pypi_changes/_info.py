@@ -4,7 +4,7 @@ import os
 from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from contextlib import ExitStack, contextmanager
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from typing import TYPE_CHECKING, Any
 
 from packaging.version import InvalidVersion, Version
@@ -92,11 +92,11 @@ def _load_from_pypi_json_api(name: str, session: CachedSession) -> dict[str, Any
     result: dict[str, Any] = response.json() if response.ok else {"releases": {}}
 
     # normalize response
-    prev_release_at = datetime.now(timezone.utc)
+    prev_release_at = datetime.now(UTC)
     for a_version, artifact_release in sorted(result["releases"].items(), reverse=True):
         if artifact_release:  # enrich into releases version and transform upload time to python datetime
             for release in artifact_release:
-                upload_time = datetime.fromisoformat(release.get("upload_time_iso_8601").replace("Z", "+00:00"))
+                upload_time = datetime.fromisoformat(release.get("upload_time_iso_8601"))
                 release.update({"version": a_version, "upload_time_iso_8601": upload_time})
             prev_release_at = artifact_release[0]["upload_time_iso_8601"]
         else:  # if no releases make up a release time and enrich version
