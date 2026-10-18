@@ -5,13 +5,10 @@ on:
       version:
         description: Version to release, without a v prefix
         required: true
-
 permissions: {}
-
 concurrency:
   group: prepare-release
   cancel-in-progress: false
-
 jobs:
   prepare:
     if: github.ref == 'refs/heads/main'
