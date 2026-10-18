@@ -2,6 +2,17 @@
 
 <!-- towncrier release notes start -->
 
+## 1.7.2 (2026-10-18)
+
+### Bug fixes
+
+- Prepare releases without creating a GitHub deployment record. (#270)
+
+### Documentation
+
+- Link GitHub Releases from the README. (#269)
+
+
 ## 1.7.1 (2026-10-18)
 
 ### Documentation
