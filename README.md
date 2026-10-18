@@ -1,5 +1,8 @@
 # pypi-changes
 
+See the [changelog](CHANGELOG.md) for released changes. Pull requests need a `changelog.d/<PR>.<type>.md` fragment; use
+the `skip news` label for changes that do not need release notes.
+
 [![PyPI](https://img.shields.io/pypi/v/pypi-changes?style=flat-square)](https://pypi.org/project/pypi-changes/)
 [![Supported Python versions](https://img.shields.io/pypi/pyversions/pypi-changes.svg)](https://pypi.org/project/pypi-changes/)
 [![check](https://github.com/gaborbernat/pypi_changes/actions/workflows/check.yaml/badge.svg)](https://github.com/gaborbernat/pypi_changes/actions/workflows/check.yaml)
