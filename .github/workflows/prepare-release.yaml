@@ -7,7 +7,7 @@ on:
         required: true
 permissions: {}
 concurrency:
-  group: prepare-release
+  group: prepare-release-v2
   cancel-in-progress: false
 jobs:
   assemble:
@@ -53,7 +53,9 @@ jobs:
   push:
     needs: assemble
     runs-on: ubuntu-26.04
-    environment: release-auth
+    environment:
+      name: release-auth
+      deployment: false
     permissions:
       contents: read
     steps:
