@@ -2,6 +2,13 @@
 
 <!-- towncrier release notes start -->
 
+## 1.7.1 (2026-10-18)
+
+### Documentation
+
+- Document earlier releases and require changelog entries for pull requests. (#266)
+
+
 ## 1.7.0 (2026-10-10)
 
 - Require Python 3.11 and use Python 3.15 by default.
