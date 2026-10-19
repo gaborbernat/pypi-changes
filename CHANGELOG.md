@@ -42,6 +42,13 @@
 
 ## 1.6.0 (2026-07-20)
 
+<a name="release-1-6-0-added"></a>
+
+### Added
+
+- Add Python 3.15 support ([#244](https://github.com/gaborbernat/pypi-changes/pull/244)) by
+  [@gaborbernat](https://github.com/gaborbernat).
+
 <a name="release-1-5-1"></a>
 
 ## 1.5.1 (2026-03-01)
@@ -123,6 +130,14 @@
 <a name="release-1-2-1"></a>
 
 ## 1.2.1 (2023-06-16)
+
+<a name="release-1-2-1-added"></a>
+
+### Added
+
+- Add Python 3.12 support
+  ([37db60f](https://github.com/gaborbernat/pypi-changes/commit/37db60fb716670eb980d0fe90fb7bb5cfb2b784a)) by
+  [@gaborbernat](https://github.com/gaborbernat).
 
 <a name="release-1-2-0"></a>
 
