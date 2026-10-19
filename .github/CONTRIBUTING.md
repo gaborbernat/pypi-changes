@@ -11,8 +11,8 @@ how to get started with contributing to `tox`, and details of our development pr
 ## Release notes
 
 Add a `changelog.d/+short-name.<type>.md` fragment for each user-facing change. The name must be unique in the pull
-request. Towncrier links the fragment to its merged squash pull request, so the filename does not need an issue or pull
-request number.
+request. During release preparation, `release-creator fragments --git` links each fragment to its merged squash pull
+request. It reads the number from the squash commit subject, so you can name fragments before a pull request exists.
 
 Use these fragment types:
 

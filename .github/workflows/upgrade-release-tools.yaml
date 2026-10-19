@@ -38,9 +38,20 @@ jobs:
         run: |
           set -euo pipefail
           uv venv --python 3.15 "$RUNNER_TEMP/release-tools"
-          uv pip sync --preview-features pylock --python "$RUNNER_TEMP/release-tools/bin/python" --group release pylock.toml
+          uv pip sync \
+            --preview-features pylock \
+            --python "$RUNNER_TEMP/release-tools/bin/python" \
+            --group release \
+            pylock.toml
           "$RUNNER_TEMP/release-tools/bin/prek" run --all-files
-          unexpected=$(git status --short --untracked-files=all | awk 'substr($0, 4) != "pylock.toml"')
+          unexpected=$(
+            while IFS= read -r entry; do
+              path=${entry:3}
+              if [[ "$path" != pylock.toml ]]; then
+                printf '%s\n' "$path"
+              fi
+            done < <(git status --short --untracked-files=all)
+          )
           if [[ -n "$unexpected" ]]; then
             echo "::error::prek changed files outside pylock.toml"
             echo "$unexpected"
@@ -109,8 +120,18 @@ jobs:
           EOF
           pr_number=$(gh pr list --base main --head "$BRANCH" --state open --json number --jq '.[0].number')
           if [[ -n "$pr_number" ]]; then
-            gh pr edit "$pr_number" --title "🔧 build(deps): refresh release tool lock" --body-file "$RUNNER_TEMP/pull-request.md" --add-label dependencies --add-label "skip news"
+            gh pr edit "$pr_number" \
+              --title "🔧 build(deps): refresh release tool lock" \
+              --body-file "$RUNNER_TEMP/pull-request.md" \
+              --add-label dependencies \
+              --add-label "skip news"
           else
-            gh pr create --base main --head "$BRANCH" --title "🔧 build(deps): refresh release tool lock" --body-file "$RUNNER_TEMP/pull-request.md" --label dependencies --label "skip news"
+            gh pr create \
+              --base main \
+              --head "$BRANCH" \
+              --title "🔧 build(deps): refresh release tool lock" \
+              --body-file "$RUNNER_TEMP/pull-request.md" \
+              --label dependencies \
+              --label "skip news"
           fi
           gh workflow run check.yaml --ref "$BRANCH"

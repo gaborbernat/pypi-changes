@@ -38,7 +38,11 @@ jobs:
         run: |
           set -euo pipefail
           uv venv --python 3.15 "$RUNNER_TEMP/release-tools"
-          uv pip sync --preview-features pylock --python "$RUNNER_TEMP/release-tools/bin/python" --group release pylock.toml
+          uv pip sync \
+            --preview-features pylock \
+            --python "$RUNNER_TEMP/release-tools/bin/python" \
+            --group release \
+            pylock.toml
           echo "$RUNNER_TEMP/release-tools/bin" >> "$GITHUB_PATH"
       - id: version
         name: Calculate release version
@@ -57,7 +61,15 @@ jobs:
           release-creator fragments --repository "$GITHUB_REPOSITORY" --git
           towncrier build --yes --version "$VERSION"
           prek run --all-files --show-diff-on-failure || prek run --all-files --show-diff-on-failure
-          unexpected=$(git status --short --untracked-files=all | awk 'substr($0, 4) !~ /^(CHANGELOG\.md|changelog\.d\/.*\.md)$/')
+          unexpected=$(
+            while IFS= read -r entry; do
+              path=${entry:3}
+              case "$path" in
+                CHANGELOG.md|changelog.d/*.md) ;;
+                *) printf '%s\n' "$path" ;;
+              esac
+            done < <(git status --short --untracked-files=all)
+          )
           if [[ -n "$unexpected" ]]; then
             echo "::error::release preparation changed paths outside CHANGELOG.md and changelog.d"
             echo "$unexpected"
@@ -97,7 +109,11 @@ jobs:
         run: |
           set -euo pipefail
           uv venv --python 3.15 "$RUNNER_TEMP/release-tools"
-          uv pip sync --preview-features pylock --python "$RUNNER_TEMP/release-tools/bin/python" --group release pylock.toml
+          uv pip sync \
+            --preview-features pylock \
+            --python "$RUNNER_TEMP/release-tools/bin/python" \
+            --group release \
+            pylock.toml
           echo "$RUNNER_TEMP/release-tools/bin" >> "$GITHUB_PATH"
       - name: Validate release patch
         env:

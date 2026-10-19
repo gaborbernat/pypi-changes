@@ -14,19 +14,6 @@ jobs:
         with:
           fetch-depth: 0
           persist-credentials: false
-      - name: Require a changelog section for the tag
-        env:
-          TAG: ${{ github.ref_name }}
-        run: |
-          set -euo pipefail
-          if [[ ! "$TAG" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-            echo "::error::unexpected release tag $TAG"
-            exit 1
-          fi
-          if ! grep -qF "## $TAG (" CHANGELOG.md; then
-            echo "::error::CHANGELOG.md has no section for $TAG"
-            exit 1
-          fi
       - name: Install the latest version of uv
         uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884 # v10.3.0
         with:
@@ -34,6 +21,26 @@ jobs:
           enable-cache: false
           cache-dependency-glob: "pyproject.toml"
           github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Install locked release tools
+        run: |
+          set -euo pipefail
+          uv venv --python 3.15 "$RUNNER_TEMP/release-tools"
+          uv pip sync \
+            --preview-features pylock \
+            --python "$RUNNER_TEMP/release-tools/bin/python" \
+            --group release \
+            pylock.toml
+          echo "$RUNNER_TEMP/release-tools/bin" >> "$GITHUB_PATH"
+      - name: Require a changelog section for the tag
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          release-creator tags "$TAG"
+          if ! grep -qF "## $TAG (" CHANGELOG.md; then
+            echo "::error::CHANGELOG.md has no section for $TAG"
+            exit 1
+          fi
       - name: Build package
         run: uv build --python 3.15 --python-preference only-managed --sdist --wheel . --out-dir dist
       - name: Store the distribution packages
@@ -78,7 +85,11 @@ jobs:
         run: |
           set -euo pipefail
           uv venv --python 3.15 "$RUNNER_TEMP/release-tools"
-          uv pip sync --preview-features pylock --python "$RUNNER_TEMP/release-tools/bin/python" --group release pylock.toml
+          uv pip sync \
+            --preview-features pylock \
+            --python "$RUNNER_TEMP/release-tools/bin/python" \
+            --group release \
+            pylock.toml
           echo "$RUNNER_TEMP/release-tools/bin" >> "$GITHUB_PATH"
       - name: Publish GitHub Release
         env:
@@ -96,7 +107,11 @@ jobs:
           if [[ -n "$previous" ]]; then
             args+=(--previous "$previous")
           fi
-          gh api -X POST "repos/${GITHUB_REPOSITORY}/releases/generate-notes" -f tag_name="$TAG" --jq .body > "$RUNNER_TEMP/generated-notes.md"
-          release-creator notes "${args[@]}" --generated-notes "$RUNNER_TEMP/generated-notes.md" > "$RUNNER_TEMP/release-notes.md"
+          gh api -X POST "repos/${GITHUB_REPOSITORY}/releases/generate-notes" \
+            -f tag_name="$TAG" \
+            --jq .body > "$RUNNER_TEMP/generated-notes.md"
+          release-creator notes "${args[@]}" \
+            --generated-notes "$RUNNER_TEMP/generated-notes.md" \
+            > "$RUNNER_TEMP/release-notes.md"
           test -s "$RUNNER_TEMP/release-notes.md"
           gh release create "$TAG" --verify-tag --title "$TAG" --notes-file "$RUNNER_TEMP/release-notes.md"
