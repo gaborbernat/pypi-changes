@@ -1,8 +1,9 @@
 # pypi-changes
 
 See the [changelog](CHANGELOG.md) or [GitHub Releases](https://github.com/gaborbernat/pypi-changes/releases) for
-versioned release notes. Pull requests need a `changelog.d/<PR>.<type>.md` fragment; use the `skip news` label for
-changes that do not need release notes.
+versioned release notes. Add a named changelog fragment for each user-facing change; the
+[contribution guide](.github/CONTRIBUTING.md) lists the fragment types and author-credit format. Use the `skip news`
+label for changes that do not need release notes.
 
 [![PyPI](https://img.shields.io/pypi/v/pypi-changes?style=flat-square)](https://pypi.org/project/pypi-changes/)
 [![Supported Python versions](https://img.shields.io/pypi/pyversions/pypi-changes.svg)](https://pypi.org/project/pypi-changes/)

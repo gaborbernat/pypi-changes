@@ -87,6 +87,11 @@ pkg-meta = [
   "twine>=6.2",
   "uv>=0.12.22",
 ]
+release = [
+  "prek",
+  "release-creator",
+  "towncrier",
+]
 
 [tool.hatch]
 version.source = "vcs"
@@ -162,9 +167,17 @@ html.skip_covered = false
 name = "pypi-changes"
 directory = "changelog.d"
 filename = "CHANGELOG.md"
-title_format = "## {version} ({project_date})"
+template = "release_creator.fragments:template.jinja2"
+title_format = false
 type = [
-  { directory = "feature", name = "Features", showcontent = true },
-  { directory = "bugfix", name = "Bug fixes", showcontent = true },
+  { directory = "feature", name = "Added", showcontent = true },
+  { directory = "change", name = "Changes", showcontent = true },
+  { directory = "bugfix", name = "Fixed", showcontent = true },
   { directory = "doc", name = "Documentation", showcontent = true },
+  { directory = "breaking", name = "Breaking changes", showcontent = true },
+  { directory = "security", name = "Security", showcontent = true },
+  { directory = "performance", name = "Performance", showcontent = true },
+  { directory = "deprecation", name = "Deprecated", showcontent = true },
+  { directory = "removal", name = "Removed", showcontent = true },
+  { directory = "packaging", name = "Packaging", showcontent = true },
 ]
