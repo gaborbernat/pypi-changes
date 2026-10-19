@@ -2,6 +2,16 @@
 
 <!-- towncrier release notes start -->
 
+<a name="release-1-7-3"></a>
+
+## 1.7.3 (2026-10-19)
+
+<a name="release-1-7-3-documentation"></a>
+
+### Documentation
+
+- GitHub release notes now link to their changelog sections, PyPI versions, and comparison ranges.
+
 <a name="release-1-7-2"></a>
 
 ## 1.7.2 (2026-10-18)
