@@ -103,7 +103,7 @@ jobs:
           fi
   release-dry-run:
     name: Release without publishing
-    if: github.event_name == 'pull_request'
+    if: github.event_name == 'pull_request' || (github.event_name == 'workflow_dispatch' && github.ref != 'refs/heads/main')
     runs-on: ubuntu-26.04
     permissions:
       contents: read
@@ -113,7 +113,7 @@ jobs:
         with:
           fetch-depth: 0
           persist-credentials: false
-          ref: ${{ github.event.pull_request.head.sha }}
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
       - uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884 # v10.3.0
         with:
           python-version: "3.15"
@@ -132,11 +132,21 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          git checkout -B release-validation "$BASE_SHA"
-          git merge --squash "$HEAD_SHA"
-          printf 'Verify a user-visible release fix.\n' > "changelog.d/+validation-${PR_NUMBER}.bugfix.md"
+          base_sha=${BASE_SHA:-$(git rev-parse origin/main)}
+          head_sha=${HEAD_SHA:-$GITHUB_SHA}
+          pr_number=$PR_NUMBER
+          if [[ -z "$pr_number" ]]; then
+            pr_number=$(gh pr list --head "$GITHUB_REF_NAME" --base main --state open --json number --jq '.[0].number')
+            if [[ -z "$pr_number" ]]; then
+              echo "::error::no open pull request for $GITHUB_REF_NAME"
+              exit 1
+            fi
+          fi
+          git checkout -B release-validation "$base_sha"
+          git merge --squash "$head_sha"
+          printf 'Verify a user-visible release fix.\n' > "changelog.d/+validation-${pr_number}.bugfix.md"
           git add -A
-          git -c user.name=release-validation -c user.email=release-validation@users.noreply.github.com commit -m "Validate release pipeline (#${PR_NUMBER})"
+          git -c user.name=release-validation -c user.email=release-validation@users.noreply.github.com commit -m "Validate release pipeline (#${pr_number})"
           version=$(git tag --list | release-creator tags --next auto --directory changelog.d)
           git tag --list | release-creator tags "$version" --require-newer
           previous=$(git tag --list | release-creator tags "$version" --previous)
@@ -192,13 +202,15 @@ jobs:
       - env:
           NEEDS_JSON: ${{ toJSON(needs) }}
           EVENT_NAME: ${{ github.event_name }}
+          REF: ${{ github.ref }}
         run: |
-          jq -e --arg event "$EVENT_NAME" '
+          jq -e --arg event "$EVENT_NAME" --arg ref "$REF" '
             all(
               to_entries[];
               .value.result == "success" or
               (.value.result == "skipped" and
                 ((.key == "changelog" and $event != "pull_request") or
-                 (.key == "release-dry-run" and $event != "pull_request")))
+                 (.key == "release-dry-run" and $event != "pull_request" and
+                    ($event != "workflow_dispatch" or $ref == "refs/heads/main"))))
             )
           ' <<< "$NEEDS_JSON"
