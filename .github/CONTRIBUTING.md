@@ -12,7 +12,8 @@ how to get started with contributing to `tox`, and details of our development pr
 
 Add a `changelog.d/+short-name.<type>.md` fragment for each user-facing change. The name must be unique in the pull
 request. During release preparation, `release-creator fragments --git` links each fragment to its merged squash pull
-request. It reads the number from the squash commit subject, so you can name fragments before a pull request exists.
+request and credits the pull request author. It reads the number from the squash commit subject, so you can name
+fragments before a pull request exists.
 
 Use these fragment types:
 
@@ -24,8 +25,9 @@ Use these fragment types:
 - `security`, `performance`, `deprecation`, `removal`, and `packaging` for changes in those areas.
 
 Write each fragment for package users. Omit internal maintenance with the `skip news` label; the label can be added
-after the pull request opens. For human authors, add a credit such as `by [@alice](https://github.com/alice)` at the end
-of the fragment. List multiple authors in the same `by` phrase. Do not credit bots or reviewers. A bot-authored pull
-request needs no fragment unless it contains a user-facing change and provides one.
+after the pull request opens. Add a `by` credit only when multiple people wrote the change. List each human author in
+the same `by` phrase, such as `by [@alice](https://github.com/alice) and [@bob](https://github.com/bob)`. Do not credit
+bots or reviewers. A bot-authored pull request needs no fragment unless it contains a user-facing change and provides
+one.
 
 [coc]: https://www.pypa.io/en/latest/code-of-conduct/

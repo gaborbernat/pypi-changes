@@ -23,6 +23,7 @@ jobs:
     runs-on: ubuntu-26.04
     permissions:
       contents: read
+      pull-requests: read
     outputs:
       version: ${{ steps.version.outputs.version }}
     steps:
@@ -55,10 +56,11 @@ jobs:
           echo "version=$version" >> "$GITHUB_OUTPUT"
       - name: Build and validate release patch
         env:
+          GH_TOKEN: ${{ github.token }}
           VERSION: ${{ steps.version.outputs.version }}
         run: |
           set -euo pipefail
-          release-creator fragments --repository "$GITHUB_REPOSITORY" --git
+          release-creator fragments --repository "$GITHUB_REPOSITORY" --git --resolve-authors
           towncrier build --yes --version "$VERSION"
           prek run --all-files --show-diff-on-failure || prek run --all-files --show-diff-on-failure
           unexpected=$(

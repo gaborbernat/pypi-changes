@@ -106,10 +106,15 @@ jobs:
           )
           if [[ -n "$previous" ]]; then
             args+=(--previous "$previous")
+            gh api -X POST "repos/${GITHUB_REPOSITORY}/releases/generate-notes" \
+              -f tag_name="$TAG" \
+              -f previous_tag_name="$previous" \
+              --jq .body > "$RUNNER_TEMP/generated-notes.md"
+          else
+            gh api -X POST "repos/${GITHUB_REPOSITORY}/releases/generate-notes" \
+              -f tag_name="$TAG" \
+              --jq .body > "$RUNNER_TEMP/generated-notes.md"
           fi
-          gh api -X POST "repos/${GITHUB_REPOSITORY}/releases/generate-notes" \
-            -f tag_name="$TAG" \
-            --jq .body > "$RUNNER_TEMP/generated-notes.md"
           release-creator notes "${args[@]}" \
             --generated-notes "$RUNNER_TEMP/generated-notes.md" \
             > "$RUNNER_TEMP/release-notes.md"
