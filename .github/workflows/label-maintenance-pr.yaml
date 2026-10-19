@@ -9,8 +9,7 @@ permissions:
 jobs:
   label:
     if: >-
-      github.event.pull_request.user.login == 'pre-commit-ci[bot]' ||
-      github.event.pull_request.user.login == 'github-actions[bot]'
+      github.event.pull_request.user.login == 'pre-commit-ci[bot]' || github.event.pull_request.user.login == 'github-actions[bot]'
     runs-on: ubuntu-26.04
     steps:
       - name: Set news exception when no fragment exists
