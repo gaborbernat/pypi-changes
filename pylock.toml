@@ -106,9 +106,9 @@ wheels = [
 
 [[packages]]
 name = "release-creator"
-version = "0.1.1"
-sdist = { url = "https://files.pythonhosted.org/packages/37/08/501bd0fc4de8faa2313eae83585b3658d019cbad1d83d8d7096109151657/release_creator-0.1.1.tar.gz", upload-time = 2026-10-19T08:18:47Z, size = 53796, hashes = { sha256 = "7c5919d0c874489dd5df831488e3ed2a9a42b1ed331177ca80ede40c70060a45" } }
-wheels = [{ url = "https://files.pythonhosted.org/packages/a8/7e/3373bcc51763e5ad4f61457e3e9d5fcf3355aa0ff5a09a00775ad97185cf/release_creator-0.1.1-py3-none-any.whl", upload-time = 2026-10-19T08:18:46Z, size = 15578, hashes = { sha256 = "015a760523a1b47b576ba9d000a7fe1a086ccaabc35528c944762ddb03097eaf" } }]
+version = "0.2.0"
+sdist = { url = "https://files.pythonhosted.org/packages/33/d3/53cb5750ade69aa7fc3ee7a18ff84468a1a66eed8851f93eebbed006873b/release_creator-0.2.0.tar.gz", upload-time = 2026-10-19T17:55:49Z, size = 58905, hashes = { sha256 = "5b8b80dc2ba059c49850405d047b510995fb2c008dac9b859b02b9edfd40d920" } }
+wheels = [{ url = "https://files.pythonhosted.org/packages/5e/68/85abeee4b24520209abd32f25db95f888b403b7fb94fbdadf79b216db566/release_creator-0.2.0-py3-none-any.whl", upload-time = 2026-10-19T17:55:48Z, size = 18653, hashes = { sha256 = "11b7e19ff52ad1d5880318d320249dd2b32c0d71237ca6c8065367d3be44ee60" } }]
 
 [[packages]]
 name = "towncrier"

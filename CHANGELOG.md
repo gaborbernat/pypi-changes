@@ -10,7 +10,8 @@
 
 ### Documentation
 
-- GitHub release notes now link to their changelog sections, PyPI versions, and comparison ranges.
+- GitHub release notes now link to their changelog sections, PyPI versions, and comparison ranges
+  ([#272](https://github.com/gaborbernat/pypi-changes/pull/272)) by [@gaborbernat](https://github.com/gaborbernat).
 
 <a name="release-1-7-2"></a>
 
