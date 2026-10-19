@@ -32,11 +32,18 @@
 
 ## 1.7.0 (2026-10-10)
 
-<a name="release-1-7-0-breaking-changes"></a>
+<a name="release-1-7-0-breaking-changes"></a> <a name="release-1-7-0-added"></a>
 
-### Breaking changes
+### Added
 
-- Require Python 3.11 and use Python 3.15 by default ([#263](https://github.com/gaborbernat/pypi-changes/pull/263)) by
+- Require Python 3.11 ([#263](https://github.com/gaborbernat/pypi-changes/pull/263)) by
+  [@gaborbernat](https://github.com/gaborbernat).
+
+<a name="release-1-7-0-changes"></a>
+
+### Changes
+
+- Use Python 3.15 by default ([#263](https://github.com/gaborbernat/pypi-changes/pull/263)) by
   [@gaborbernat](https://github.com/gaborbernat).
 
 <a name="release-1-6-0"></a>
@@ -92,9 +99,9 @@
 
 ## 1.4.0 (2025-10-09)
 
-<a name="release-1-4-0-breaking-changes"></a>
+<a name="release-1-4-0-breaking-changes"></a> <a name="release-1-4-0-added"></a>
 
-### Breaking changes
+### Added
 
 - Drop support for Python 3.9 ([#173](https://github.com/gaborbernat/pypi-changes/pull/173)) by
   [@gaborbernat](https://github.com/gaborbernat).

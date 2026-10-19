@@ -17,11 +17,11 @@ fragments before a pull request exists.
 
 Use these fragment types:
 
-- `feature` for additions, rendered under **Added**.
+- `feature` for additions and Python support additions or removals, rendered under **Added**.
 - `change` for other user-visible changes, rendered under **Changes**.
 - `bugfix` for fixes, rendered under **Fixed**.
 - `doc` for user-facing documentation changes.
-- `breaking` for changes that require users to update their code or configuration.
+- `breaking` for changes that require users to update their code or configuration. Python support removals are features.
 - `security`, `performance`, `deprecation`, `removal`, and `packaging` for changes in those areas.
 
 Write each fragment for package users. Omit internal maintenance with the `skip news` label; the label can be added
