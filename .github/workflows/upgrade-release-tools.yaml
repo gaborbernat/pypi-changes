@@ -50,7 +50,7 @@ jobs:
               if [[ "$path" != pylock.toml ]]; then
                 printf '%s\n' "$path"
               fi
-            done < <(git status --short --untracked-files=all)
+            done < <(git status --porcelain=v1 --untracked-files=all)
           )
           if [[ -n "$unexpected" ]]; then
             echo "::error::prek changed files outside pylock.toml"

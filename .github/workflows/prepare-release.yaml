@@ -71,7 +71,7 @@ jobs:
                 CHANGELOG.md|changelog.d/*.md) ;;
                 *) printf '%s\n' "$path" ;;
               esac
-            done < <(git status --short --untracked-files=all)
+            done < <(git status --porcelain=v1 --untracked-files=all)
           )
           if [[ -n "$unexpected" ]]; then
             echo "::error::release preparation changed paths outside CHANGELOG.md and changelog.d"
