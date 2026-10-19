@@ -20,7 +20,7 @@ jobs:
           set -euo pipefail
           author=$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}" --jq .user.login)
           case "$author" in
-            'pre-commit-ci[bot]'|'github-actions[bot]') ;;
+            'dependabot[bot]'|'pre-commit-ci[bot]'|'github-actions[bot]') ;;
             *) exit 0 ;;
           esac
           has_fragment=false
