@@ -53,7 +53,7 @@ jobs:
         env:
           PYTEST_ADDOPTS: "-vv --durations=5"
   changelog:
-    if: github.event_name == 'pull_request' && !contains(github.event.pull_request.labels.*.name, 'skip news')
+    if: github.event_name == 'pull_request'
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -70,20 +70,135 @@ jobs:
           uv venv --python 3.15 "$RUNNER_TEMP/release-tools"
           uv pip sync --preview-features pylock --python "$RUNNER_TEMP/release-tools/bin/python" --group release pylock.toml
           echo "$RUNNER_TEMP/release-tools/bin" >> "$GITHUB_PATH"
-      - run: towncrier check --compare-with "origin/${GITHUB_BASE_REF}"
+      - name: Require or validate a changelog fragment
+        env:
+          SKIP_NEWS: ${{ contains(github.event.pull_request.labels.*.name, 'skip news') }}
+          BOT_AUTHOR: ${{ github.event.pull_request.user.type == 'Bot' }}
+        run: |
+          set -euo pipefail
+          fragments=0
+          while IFS= read -r path; do
+            name=${path##*/}
+            case "$name" in
+              +*.*.md|[0-9]*.*.md) ;;
+              *) continue ;;
+            esac
+            category=${name%.md}
+            category=${category##*.}
+            case "$category" in
+              feature|change|bugfix|doc|breaking|security|performance|deprecation|removal|packaging) ;;
+              *) echo "::error::unknown changelog category in $path"; exit 1 ;;
+            esac
+            if [[ -z $(tr -d '[:space:]' < "$path") ]]; then
+              echo "::error::empty changelog fragment: $path"
+              exit 1
+            fi
+            fragments=$((fragments + 1))
+          done < <(git diff --diff-filter=AM --name-only "origin/${GITHUB_BASE_REF}...HEAD" -- 'changelog.d/*.md')
+          if ((fragments)); then
+            towncrier check --compare-with "origin/${GITHUB_BASE_REF}"
+          elif [[ "$SKIP_NEWS" != true && "$BOT_AUTHOR" != true ]]; then
+            echo '::error::add a changelog fragment or apply the skip news label'
+            exit 1
+          fi
+  release-dry-run:
+    name: Release without publishing
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-26.04
+    permissions:
+      contents: read
+      pull-requests: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha }}
+      - uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884 # v10.3.0
+        with:
+          python-version: "3.15"
+          enable-cache: false
+      - name: Install locked release tools
+        run: |
+          set -euo pipefail
+          uv venv --python 3.15 "$RUNNER_TEMP/release-tools"
+          uv pip sync --preview-features pylock --python "$RUNNER_TEMP/release-tools/bin/python" --group release pylock.toml
+          echo "$RUNNER_TEMP/release-tools/bin" >> "$GITHUB_PATH"
+      - name: Assemble and validate a local release
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          git checkout -B release-validation "$BASE_SHA"
+          git merge --squash "$HEAD_SHA"
+          printf 'Verify a user-visible release fix.\n' > "changelog.d/+validation-${PR_NUMBER}.bugfix.md"
+          git add -A
+          git -c user.name=release-validation -c user.email=release-validation@users.noreply.github.com commit -m "Validate release pipeline (#${PR_NUMBER})"
+          version=$(git tag --list | release-creator tags --next auto --directory changelog.d)
+          git tag --list | release-creator tags "$version" --require-newer
+          previous=$(git tag --list | release-creator tags "$version" --previous)
+          release-creator fragments --directory changelog.d --repository "$GITHUB_REPOSITORY" --git --resolve-authors
+          towncrier build --yes --version "$version"
+          prek exec mdformat -- mdformat --wrap 120 CHANGELOG.md
+          prek run --all-files
+          git diff HEAD --binary > "$RUNNER_TEMP/release.patch"
+          test -s "$RUNNER_TEMP/release.patch"
+          git reset --hard HEAD
+          git apply --check "$RUNNER_TEMP/release.patch"
+          git apply --index "$RUNNER_TEMP/release.patch"
+          while IFS= read -r path; do
+            case "$path" in
+              CHANGELOG.md|changelog.d/*.md) ;;
+              *) echo "::error::unexpected release path: $path"; exit 1 ;;
+            esac
+          done < <(git diff --cached --name-only)
+          grep -Fq "## $version (" CHANGELOG.md
+          git diff --cached --check
+          prek run --all-files
+          if ! git diff --quiet || [[ -n $(git ls-files --others --exclude-standard) ]]; then
+            echo "::error::prek changed the validated release patch"
+            exit 1
+          fi
+          git -c user.name=release-validation -c user.email=release-validation@users.noreply.github.com commit -m "release $version"
+          git tag "$version"
+          uv build --python 3.15 --python-preference only-managed --sdist --wheel . --out-dir "$RUNNER_TEMP/dist"
+          args=()
+          if [[ -n "$previous" ]]; then
+            args+=(--previous "$previous")
+          fi
+          release-creator notes --changelog CHANGELOG.md --tag "$version" --repository "$GITHUB_REPOSITORY" --artifact-url "https://pypi.org/project/pypi-changes/${version}/" "${args[@]}" > "$RUNNER_TEMP/release-notes.md"
+          test "$(grep -c '^\*\*Full Changelog\*\*:' "$RUNNER_TEMP/release-notes.md")" -eq 1
+          sha256sum "$RUNNER_TEMP"/dist/* > "$RUNNER_TEMP/dist.sha256"
+          cp CHANGELOG.md "$RUNNER_TEMP/changelog.md"
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: release-dry-run
+          path: |
+            ${{ runner.temp }}/release.patch
+            ${{ runner.temp }}/release-notes.md
+            ${{ runner.temp }}/changelog.md
+            ${{ runner.temp }}/dist.sha256
+            ${{ runner.temp }}/dist/*
+          if-no-files-found: error
   gate:
     name: Required checks pass
     if: always()
-    needs: [test, changelog]
+    needs: [test, changelog, release-dry-run]
     runs-on: ubuntu-24.04
     steps:
       - env:
           NEEDS_JSON: ${{ toJSON(needs) }}
+          EVENT_NAME: ${{ github.event_name }}
         run: |
-          jq -e '
+          jq -e --arg event "$EVENT_NAME" '
             all(
               to_entries[];
               .value.result == "success" or
-              (.key == "changelog" and .value.result == "skipped")
+              (.value.result == "skipped" and
+                ((.key == "changelog" and $event != "pull_request") or
+                 (.key == "release-dry-run" and $event != "pull_request")))
             )
           ' <<< "$NEEDS_JSON"
