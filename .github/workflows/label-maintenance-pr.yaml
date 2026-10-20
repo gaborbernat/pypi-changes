@@ -10,6 +10,6 @@ jobs:
   label:
     runs-on: ubuntu-26.04
     steps:
-      - uses: tox-dev/github-workflows/label-bot-news@d5089c6f370857700c96a10c2711cee9112f4852
+      - uses: tox-dev/github-workflows/label-bot-news@d1ba52bb2e519f31fdbee09fc828980a0d5b3536
         with:
           fragments: changelog.d,docs/changelog.d
