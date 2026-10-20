@@ -104,7 +104,7 @@ jobs:
   release-dry-run:
     name: Release without publishing
     if: github.event_name == 'pull_request' || (github.event_name == 'workflow_dispatch' && github.ref != 'refs/heads/main')
-    uses: tox-dev/github-workflows/.github/workflows/validate-python-release.yaml@031a0003b57d5a514fdc700e6995e964bb53a2d4
+    uses: tox-dev/github-workflows/.github/workflows/validate-python-release.yaml@24ee797c7c8deadff818ec603429a976d526fa26
     permissions:
       contents: read
       pull-requests: read

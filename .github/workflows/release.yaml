@@ -8,7 +8,7 @@ env:
   dists-artifact-name: python-package-distributions
 jobs:
   build:
-    uses: tox-dev/github-workflows/.github/workflows/validate-python-release.yaml@031a0003b57d5a514fdc700e6995e964bb53a2d4
+    uses: tox-dev/github-workflows/.github/workflows/validate-python-release.yaml@24ee797c7c8deadff818ec603429a976d526fa26
     permissions:
       contents: read
       pull-requests: read
