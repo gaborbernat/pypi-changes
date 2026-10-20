@@ -31,17 +31,14 @@ jobs:
             --group release \
             pylock.toml
           echo "$RUNNER_TEMP/release-tools/bin" >> "$GITHUB_PATH"
-      - name: Require a changelog section for the tag
-        env:
-          TAG: ${{ github.ref_name }}
-        run: |
-          set -euo pipefail
-          release-creator tags "$TAG"
-          if ! grep -qF "## $TAG (" CHANGELOG.md; then
-            echo "::error::CHANGELOG.md has no section for $TAG"
-            exit 1
-          fi
-      - uses: tox-dev/github-workflows/build-python-distribution@f0c484a3cdf6a144312f4c8d31bc74ea745a2fa4
+      - uses: tox-dev/github-workflows/render-release-notes@47a08c1c289b68ec58548fa848e8c8c561ddc757
+        with:
+          tag: ${{ github.ref_name }}
+          changelog: CHANGELOG.md
+          repository: ${{ github.repository }}
+          artifact-url: https://pypi.org/project/pypi-changes/${{ github.ref_name }}/
+          output: ${{ runner.temp }}/release-notes.md
+      - uses: tox-dev/github-workflows/build-python-distribution@47a08c1c289b68ec58548fa848e8c8c561ddc757
       - name: Store the distribution packages
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
@@ -90,21 +87,14 @@ jobs:
             --group release \
             pylock.toml
           echo "$RUNNER_TEMP/release-tools/bin" >> "$GITHUB_PATH"
-      - name: Publish GitHub Release
+      - name: Fetch contributor metadata
         env:
           GH_TOKEN: ${{ github.token }}
           TAG: ${{ github.ref_name }}
         run: |
           set -euo pipefail
           previous=$(git tag --list | release-creator tags "$TAG" --previous)
-          args=(
-            --changelog CHANGELOG.md
-            --tag "$TAG"
-            --repository "$GITHUB_REPOSITORY"
-            --artifact-url "https://pypi.org/project/pypi-changes/$TAG/"
-          )
           if [[ -n "$previous" ]]; then
-            args+=(--previous "$previous")
             gh api -X POST "repos/${GITHUB_REPOSITORY}/releases/generate-notes" \
               -f tag_name="$TAG" \
               -f previous_tag_name="$previous" \
@@ -114,8 +104,17 @@ jobs:
               -f tag_name="$TAG" \
               --jq .body > "$RUNNER_TEMP/generated-notes.md"
           fi
-          release-creator notes "${args[@]}" \
-            --generated-notes "$RUNNER_TEMP/generated-notes.md" \
-            > "$RUNNER_TEMP/release-notes.md"
-          test -s "$RUNNER_TEMP/release-notes.md"
+      - uses: tox-dev/github-workflows/render-release-notes@47a08c1c289b68ec58548fa848e8c8c561ddc757
+        with:
+          tag: ${{ github.ref_name }}
+          changelog: CHANGELOG.md
+          repository: ${{ github.repository }}
+          artifact-url: https://pypi.org/project/pypi-changes/${{ github.ref_name }}/
+          generated-notes: ${{ runner.temp }}/generated-notes.md
+          output: ${{ runner.temp }}/release-notes.md
+      - name: Publish GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+        run: |
           gh release create "$TAG" --verify-tag --title "$TAG" --notes-file "$RUNNER_TEMP/release-notes.md"
