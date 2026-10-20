@@ -97,6 +97,9 @@ release = [
 version.source = "vcs"
 build.hooks.vcs.version-file = "src/pypi_changes/_version.py"
 
+[tool.uv]
+dependency-groups.release = { requires-python = ">=3.15" }
+
 [tool.ruff]
 line-length = 120
 format.preview = true
