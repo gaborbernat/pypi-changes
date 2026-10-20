@@ -25,7 +25,7 @@ jobs:
       contents: read
       pull-requests: read
     outputs:
-      version: ${{ steps.version.outputs.version }}
+      version: ${{ steps.prepare.outputs.version }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -39,50 +39,16 @@ jobs:
         run: |
           set -euo pipefail
           uv venv --python 3.15 "$RUNNER_TEMP/release-tools"
-          uv pip sync \
-            --preview-features pylock \
-            --python "$RUNNER_TEMP/release-tools/bin/python" \
-            --group release \
-            pylock.toml
+          uv pip sync --preview-features pylock --python "$RUNNER_TEMP/release-tools/bin/python" --group release pylock.toml
           echo "$RUNNER_TEMP/release-tools/bin" >> "$GITHUB_PATH"
-      - id: version
-        name: Calculate release version
-        env:
-          BUMP: ${{ inputs.bump }}
-        run: |
-          set -euo pipefail
-          version=$(git tag --list | release-creator tags --next "$BUMP" --directory changelog.d)
-          echo "Calculated release version: $version"
-          echo "version=$version" >> "$GITHUB_OUTPUT"
-      - name: Build and validate release patch
-        env:
-          GH_TOKEN: ${{ github.token }}
-          VERSION: ${{ steps.version.outputs.version }}
-        run: |
-          set -euo pipefail
-          release-creator fragments --repository "$GITHUB_REPOSITORY" --git --resolve-authors
-          towncrier build --yes --version "$VERSION"
-          prek exec mdformat -- mdformat --wrap 120 CHANGELOG.md
-          prek run --all-files --show-diff-on-failure
-          unexpected=$(
-            while IFS= read -r entry; do
-              path=${entry:3}
-              case "$path" in
-                CHANGELOG.md|changelog.d/*.md) ;;
-                *) printf '%s\n' "$path" ;;
-              esac
-            done < <(git status --porcelain=v1 --untracked-files=all)
-          )
-          if [[ -n "$unexpected" ]]; then
-            echo "::error::release preparation changed paths outside CHANGELOG.md and changelog.d"
-            echo "$unexpected"
-            exit 1
-          fi
-          grep -Fq "## $VERSION (" CHANGELOG.md
-          release-creator notes --changelog CHANGELOG.md --tag "$VERSION" --repository "$GITHUB_REPOSITORY" > "$RUNNER_TEMP/release-notes.md"
-          git diff HEAD --check
-          git diff HEAD --binary > "$RUNNER_TEMP/release.patch"
-          test -s "$RUNNER_TEMP/release.patch"
+      - id: prepare
+        uses: tox-dev/github-workflows/prepare-towncrier@f0c484a3cdf6a144312f4c8d31bc74ea745a2fa4
+        with:
+          bump: ${{ inputs.bump }}
+          changelog: CHANGELOG.md
+          fragments: changelog.d
+          format: markdown
+          patch: ${{ runner.temp }}/release.patch
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: release-patch
@@ -113,38 +79,15 @@ jobs:
         run: |
           set -euo pipefail
           uv venv --python 3.15 "$RUNNER_TEMP/release-tools"
-          uv pip sync \
-            --preview-features pylock \
-            --python "$RUNNER_TEMP/release-tools/bin/python" \
-            --group release \
-            pylock.toml
+          uv pip sync --preview-features pylock --python "$RUNNER_TEMP/release-tools/bin/python" --group release pylock.toml
           echo "$RUNNER_TEMP/release-tools/bin" >> "$GITHUB_PATH"
-      - name: Validate release patch
-        env:
-          VERSION: ${{ needs.assemble.outputs.version }}
-        run: |
-          set -euo pipefail
-          git fetch origin main
-          if [[ $(git rev-parse origin/main) != "$GITHUB_SHA" ]]; then
-            echo "::error::main changed during release preparation; dispatch again"
-            exit 1
-          fi
-          git reset --hard origin/main
-          git apply --check "$RUNNER_TEMP/release-patch/release.patch"
-          git apply --index "$RUNNER_TEMP/release-patch/release.patch"
-          while IFS= read -r path; do
-            case "$path" in
-              CHANGELOG.md|changelog.d/*.md) ;;
-              *) echo "::error::unexpected release path: $path"; exit 1 ;;
-            esac
-          done < <(git diff --cached --name-only)
-          grep -Fq "## $VERSION (" CHANGELOG.md
-          git diff --cached --check
-          prek run --all-files --show-diff-on-failure
-          if ! git diff --quiet || [[ -n $(git ls-files --others --exclude-standard) ]]; then
-            echo "::error::prek changed the validated release patch; inspect the generated changelog and rerun"
-            exit 1
-          fi
+      - uses: tox-dev/github-workflows/validate-release-patch@f0c484a3cdf6a144312f4c8d31bc74ea745a2fa4
+        with:
+          version: ${{ needs.assemble.outputs.version }}
+          changelog: CHANGELOG.md
+          fragments: changelog.d
+          patch: ${{ runner.temp }}/release-patch/release.patch
+          expected-sha: ${{ github.sha }}
       - id: token
         uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3.3.0
         with:
@@ -153,17 +96,9 @@ jobs:
           owner: ${{ github.repository_owner }}
           repositories: ${{ github.event.repository.name }}
           permission-contents: write
-      - name: Commit and tag the release
-        env:
-          VERSION: ${{ needs.assemble.outputs.version }}
-          GH_TOKEN: ${{ steps.token.outputs.token }}
-          APP_SLUG: ${{ steps.token.outputs.app-slug }}
-        run: |
-          set -euo pipefail
-          app_user_id=$(gh api "/users/${APP_SLUG}[bot]" --jq .id)
-          git config user.name "${APP_SLUG}[bot]"
-          git config user.email "${app_user_id}+${APP_SLUG}[bot]@users.noreply.github.com"
-          git commit -m "release $VERSION"
-          git tag "$VERSION"
-          gh auth setup-git --hostname github.com --force
-          git push --atomic origin HEAD:main "refs/tags/$VERSION"
+      - uses: tox-dev/github-workflows/commit-and-tag@f0c484a3cdf6a144312f4c8d31bc74ea745a2fa4
+        with:
+          version: ${{ needs.assemble.outputs.version }}
+          token: ${{ steps.token.outputs.token }}
+          app-slug: ${{ steps.token.outputs.app-slug }}
+          message: release ${{ needs.assemble.outputs.version }}

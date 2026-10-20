@@ -106,9 +106,8 @@ wheels = [
 
 [[packages]]
 name = "release-creator"
-version = "0.3.0"
-sdist = { url = "https://files.pythonhosted.org/packages/bf/40/b655d3922947f20d501c0b10a25e6bb14eb7e098a7501f66410dbe098c61/release_creator-0.3.0.tar.gz", upload-time = 2026-10-19T20:03:15Z, size = 63386, hashes = { sha256 = "f767efce8c35f3daf5659c2fc54e714f822404a05d7ba222f2a796b246cd2f95" } }
-wheels = [{ url = "https://files.pythonhosted.org/packages/3a/37/c1c8813e79c4b79dda75d489408714380d3fa00d8e7899e7a7d4e62fed80/release_creator-0.3.0-py3-none-any.whl", upload-time = 2026-10-19T20:03:13Z, size = 20086, hashes = { sha256 = "a17c1960aa8560fa40a8bb52671dc58aded5df73fcbe72ffe8ba525cfac68e0c" } }]
+version = "0.4.2.dev2+g893fb23f5"
+vcs = { type = "git", url = "https://github.com/tox-dev/release-creator", requested-revision = "893fb23f53288972f0204ffa67a8cc14c0b0f865", commit-id = "893fb23f53288972f0204ffa67a8cc14c0b0f865" }
 
 [[packages]]
 name = "towncrier"

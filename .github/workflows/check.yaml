@@ -122,9 +122,14 @@ jobs:
         run: |
           set -euo pipefail
           uv venv --python 3.15 "$RUNNER_TEMP/release-tools"
-          uv pip sync --preview-features pylock --python "$RUNNER_TEMP/release-tools/bin/python" --group release pylock.toml
+          uv pip sync \
+            --preview-features pylock \
+            --python "$RUNNER_TEMP/release-tools/bin/python" \
+            --group release \
+            pylock.toml
           echo "$RUNNER_TEMP/release-tools/bin" >> "$GITHUB_PATH"
-      - name: Assemble and validate a local release
+      - id: fixture
+        name: Create a local release candidate
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
@@ -147,41 +152,72 @@ jobs:
           printf 'Verify a user-visible release fix.\n' > "changelog.d/+validation-${pr_number}.bugfix.md"
           git add -A
           git -c user.name=release-validation -c user.email=release-validation@users.noreply.github.com commit -m "Validate release pipeline (#${pr_number})"
-          version=$(git tag --list | release-creator tags --next auto --directory changelog.d)
-          git tag --list | release-creator tags "$version" --require-newer
-          previous=$(git tag --list | release-creator tags "$version" --previous)
-          release-creator fragments --directory changelog.d --repository "$GITHUB_REPOSITORY" --git --resolve-authors
-          towncrier build --yes --version "$version"
-          prek exec mdformat -- mdformat --wrap 120 CHANGELOG.md
-          prek run --all-files
-          git diff HEAD --binary > "$RUNNER_TEMP/release.patch"
-          test -s "$RUNNER_TEMP/release.patch"
-          git reset --hard HEAD
-          git apply --check "$RUNNER_TEMP/release.patch"
-          git apply --index "$RUNNER_TEMP/release.patch"
-          while IFS= read -r path; do
-            case "$path" in
-              CHANGELOG.md|changelog.d/*.md) ;;
-              *) echo "::error::unexpected release path: $path"; exit 1 ;;
-            esac
-          done < <(git diff --cached --name-only)
-          grep -Fq "## $version (" CHANGELOG.md
-          git diff --cached --check
-          prek run --all-files
-          if ! git diff --quiet || [[ -n $(git ls-files --others --exclude-standard) ]]; then
-            echo "::error::prek changed the validated release patch"
-            exit 1
-          fi
-          git -c user.name=release-validation -c user.email=release-validation@users.noreply.github.com commit -m "release $version"
-          git tag "$version"
-          uv build --python 3.15 --python-preference only-managed --sdist --wheel . --out-dir "$RUNNER_TEMP/dist"
+          git init --bare "$RUNNER_TEMP/rehearsal.git"
+          git remote add rehearsal "$RUNNER_TEMP/rehearsal.git"
+          git push rehearsal HEAD:main
+          {
+            echo "sha=$(git rev-parse HEAD)"
+            echo "pr=$pr_number"
+            gh api "repos/$GITHUB_REPOSITORY/pulls/$pr_number" \
+              --jq '"author=\(.user.login)\nauthor_type=\(.user.type)"'
+          } >> "$GITHUB_OUTPUT"
+      - id: prepare
+        uses: tox-dev/github-workflows/prepare-towncrier@f0c484a3cdf6a144312f4c8d31bc74ea745a2fa4
+        with:
+          changelog: CHANGELOG.md
+          fragments: changelog.d
+          format: markdown
+          patch: ${{ runner.temp }}/release.patch
+      - name: Restore release candidate
+        run: git reset --hard HEAD
+      - uses: tox-dev/github-workflows/validate-release-patch@f0c484a3cdf6a144312f4c8d31bc74ea745a2fa4
+        with:
+          version: ${{ steps.prepare.outputs.version }}
+          patch: ${{ runner.temp }}/release.patch
+          changelog: CHANGELOG.md
+          fragments: changelog.d
+          remote: rehearsal
+          expected-sha: ${{ steps.fixture.outputs.sha }}
+      - name: Commit and tag the local candidate
+        env:
+          VERSION: ${{ steps.prepare.outputs.version }}
+        run: |
+          git -c user.name=release-validation -c user.email=release-validation@users.noreply.github.com commit -m "release $VERSION"
+          git tag "$VERSION"
+      - uses: tox-dev/github-workflows/build-python-distribution@f0c484a3cdf6a144312f4c8d31bc74ea745a2fa4
+        with:
+          out-dir: ${{ runner.temp }}/dist
+      - name: Inspect the candidate
+        env:
+          VERSION: ${{ steps.prepare.outputs.version }}
+          PR_NUMBER: ${{ steps.fixture.outputs.pr }}
+          PR_AUTHOR: ${{ steps.fixture.outputs.author }}
+          PR_AUTHOR_TYPE: ${{ steps.fixture.outputs.author_type }}
+        run: |
+          set -euo pipefail
+          previous=$(git tag --list | release-creator tags "$VERSION" --previous)
           args=()
           if [[ -n "$previous" ]]; then
             args+=(--previous "$previous")
           fi
-          release-creator notes --changelog CHANGELOG.md --tag "$version" --repository "$GITHUB_REPOSITORY" --artifact-url "https://pypi.org/project/pypi-changes/${version}/" "${args[@]}" > "$RUNNER_TEMP/release-notes.md"
+          printf '* Validate release pipeline by @%s in https://github.com/%s/pull/%s\n' \
+            "$PR_AUTHOR" "$GITHUB_REPOSITORY" "$PR_NUMBER" >"$RUNNER_TEMP/generated-notes.md"
+          release-creator notes --changelog CHANGELOG.md --tag "$VERSION" --repository "$GITHUB_REPOSITORY" --artifact-url "https://pypi.org/project/pypi-changes/${VERSION}/" --generated-notes "$RUNNER_TEMP/generated-notes.md" "${args[@]}" >"$RUNNER_TEMP/release-notes.md"
           test "$(grep -c '^\*\*Full Changelog\*\*:' "$RUNNER_TEMP/release-notes.md")" -eq 1
-          sha256sum "$RUNNER_TEMP"/dist/* > "$RUNNER_TEMP/dist.sha256"
+          grep -Fq "[#${PR_NUMBER}](https://github.com/${GITHUB_REPOSITORY}/pull/${PR_NUMBER})" "$RUNNER_TEMP/release-notes.md"
+          if [[ "$PR_AUTHOR_TYPE" == Bot ]]; then
+            if grep -Fq "by @${PR_AUTHOR}" "$RUNNER_TEMP/release-notes.md"; then
+              echo '::error::bot credit in release notes'
+              exit 1
+            fi
+          else
+            grep -Fq "by @${PR_AUTHOR}" "$RUNNER_TEMP/release-notes.md"
+          fi
+          if grep -Fq '<!-- Release notes generated' "$RUNNER_TEMP/release-notes.md"; then
+            echo '::error::generated-notes banner in release notes'
+            exit 1
+          fi
+          sha256sum "$RUNNER_TEMP"/dist/* >"$RUNNER_TEMP/dist.sha256"
           cp CHANGELOG.md "$RUNNER_TEMP/changelog.md"
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
@@ -189,6 +225,7 @@ jobs:
           path: |
             ${{ runner.temp }}/release.patch
             ${{ runner.temp }}/release-notes.md
+            ${{ runner.temp }}/generated-notes.md
             ${{ runner.temp }}/changelog.md
             ${{ runner.temp }}/dist.sha256
             ${{ runner.temp }}/dist/*

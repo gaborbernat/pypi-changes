@@ -41,8 +41,7 @@ jobs:
             echo "::error::CHANGELOG.md has no section for $TAG"
             exit 1
           fi
-      - name: Build package
-        run: uv build --python 3.15 --python-preference only-managed --sdist --wheel . --out-dir dist
+      - uses: tox-dev/github-workflows/build-python-distribution@f0c484a3cdf6a144312f4c8d31bc74ea745a2fa4
       - name: Store the distribution packages
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
