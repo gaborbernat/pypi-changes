@@ -162,7 +162,7 @@ jobs:
               --jq '"author=\(.user.login)\nauthor_type=\(.user.type)"'
           } >> "$GITHUB_OUTPUT"
       - id: prepare
-        uses: tox-dev/github-workflows/prepare-towncrier@662d0147be4cfa7a3dc82db3688b741a7823dc43
+        uses: tox-dev/github-workflows/prepare-towncrier@662d014f87340ee1cb9d55ba27421abd35a34524
         with:
           changelog: CHANGELOG.md
           fragments: changelog.d
@@ -170,7 +170,7 @@ jobs:
           patch: ${{ runner.temp }}/release.patch
       - name: Restore release candidate
         run: git reset --hard HEAD
-      - uses: tox-dev/github-workflows/validate-release-patch@662d0147be4cfa7a3dc82db3688b741a7823dc43
+      - uses: tox-dev/github-workflows/validate-release-patch@662d014f87340ee1cb9d55ba27421abd35a34524
         with:
           version: ${{ steps.prepare.outputs.version }}
           patch: ${{ runner.temp }}/release.patch
@@ -184,7 +184,7 @@ jobs:
         run: |
           git -c user.name=release-validation -c user.email=release-validation@users.noreply.github.com commit -m "release $VERSION"
           git tag "$VERSION"
-      - uses: tox-dev/github-workflows/build-python-distribution@662d0147be4cfa7a3dc82db3688b741a7823dc43
+      - uses: tox-dev/github-workflows/build-python-distribution@662d014f87340ee1cb9d55ba27421abd35a34524
         with:
           out-dir: ${{ runner.temp }}/dist
       - name: Prepare generated notes fixture
@@ -194,7 +194,7 @@ jobs:
         run: |
           printf '* Validate release pipeline by @%s in https://github.com/%s/pull/%s\n' \
             "$PR_AUTHOR" "$GITHUB_REPOSITORY" "$PR_NUMBER" >"$RUNNER_TEMP/generated-notes.md"
-      - uses: tox-dev/github-workflows/render-release-notes@662d0147be4cfa7a3dc82db3688b741a7823dc43
+      - uses: tox-dev/github-workflows/render-release-notes@662d014f87340ee1cb9d55ba27421abd35a34524
         with:
           tag: ${{ steps.prepare.outputs.version }}
           changelog: CHANGELOG.md
