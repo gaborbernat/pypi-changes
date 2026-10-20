@@ -8,7 +8,7 @@ env:
   dists-artifact-name: python-package-distributions
 jobs:
   build:
-    uses: tox-dev/github-workflows/.github/workflows/validate-python-release.yaml@5e8bf7d128a11823fb168415f22e3a9fac1614c8
+    uses: tox-dev/github-workflows/.github/workflows/validate-python-release.yaml@60edc05324abc8e592818262dc63b36fb7b70f8c
     permissions:
       contents: read
       pull-requests: read
@@ -77,7 +77,7 @@ jobs:
               -f tag_name="$TAG" \
               --jq .body > "$RUNNER_TEMP/generated-notes.md"
           fi
-      - uses: tox-dev/github-workflows/render-release-notes@5e8bf7d128a11823fb168415f22e3a9fac1614c8
+      - uses: tox-dev/github-workflows/render-release-notes@60edc05324abc8e592818262dc63b36fb7b70f8c
         with:
           tag: ${{ github.ref_name }}
           changelog: CHANGELOG.md
