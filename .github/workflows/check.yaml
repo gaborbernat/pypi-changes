@@ -236,10 +236,23 @@ jobs:
             ${{ runner.temp }}/dist.sha256
             ${{ runner.temp }}/dist/*
           if-no-files-found: error
+  publisher-pilot:
+    name: Validate shared publisher
+    if: github.event_name == 'pull_request' || (github.event_name == 'workflow_dispatch' && github.ref != 'refs/heads/main')
+    uses: tox-dev/github-workflows/.github/workflows/validate-python-release.yaml@6a27fa0104753189b76f4960c2faa79089437ffd
+    permissions:
+      contents: read
+      pull-requests: read
+    with:
+      changelog: CHANGELOG.md
+      fragments: changelog.d
+      format: markdown
+      artifact-base-url: https://pypi.org/project/pypi-changes/
+      artifact-prefix: pilot-
   gate:
     name: Required checks pass
     if: always()
-    needs: [test, changelog, release-dry-run]
+    needs: [test, changelog, release-dry-run, publisher-pilot]
     runs-on: ubuntu-24.04
     steps:
       - env:
@@ -254,6 +267,8 @@ jobs:
               (.value.result == "skipped" and
                 ((.key == "changelog" and $event != "pull_request") or
                  (.key == "release-dry-run" and $event != "pull_request" and
+                    ($event != "workflow_dispatch" or $ref == "refs/heads/main")) or
+                 (.key == "publisher-pilot" and $event != "pull_request" and
                     ($event != "workflow_dispatch" or $ref == "refs/heads/main"))))
             )
           ' <<< "$NEEDS_JSON"
