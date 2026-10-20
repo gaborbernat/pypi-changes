@@ -77,7 +77,7 @@ jobs:
               -f tag_name="$TAG" \
               --jq .body > "$RUNNER_TEMP/generated-notes.md"
           fi
-      - uses: tox-dev/github-workflows/render-release-notes@662d014f87340ee1cb9d55ba27421abd35a34524
+      - uses: tox-dev/github-workflows/render-release-notes@b5eca8e26532a3125cbfc25374059abf22099e6c
         with:
           tag: ${{ github.ref_name }}
           changelog: CHANGELOG.md
