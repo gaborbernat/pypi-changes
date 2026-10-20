@@ -8,12 +8,13 @@ requires = [
 
 [project]
 name = "pypi-changes"
-description = "check out when packages changed"
+import-names = [ "pypi_changes" ]
+description = "Compare installed packages with the latest PyPI releases"
 keywords = [
-  "environments",
-  "isolated",
-  "testing",
-  "virtual",
+  "outdated",
+  "packages",
+  "pypi",
+  "upgrades",
 ]
 license = "MIT"
 maintainers = [
@@ -25,9 +26,7 @@ authors = [
 requires-python = ">=3.11"
 classifiers = [
   "Development Status :: 5 - Production/Stable",
-  "Framework :: tox",
   "Intended Audience :: Developers",
-  "License :: OSI Approved :: MIT License",
   "Operating System :: MacOS :: MacOS X",
   "Operating System :: Microsoft :: Windows",
   "Operating System :: POSIX",
@@ -37,8 +36,6 @@ classifiers = [
   "Programming Language :: Python :: 3.13",
   "Programming Language :: Python :: 3.14",
   "Programming Language :: Python :: 3.15",
-  "Topic :: Software Development :: Libraries",
-  "Topic :: Software Development :: Testing",
   "Topic :: Utilities",
 ]
 dynamic = [
@@ -54,9 +51,10 @@ dependencies = [
   "requests-cache>=1.3.3",
   "rich>=15",
 ]
-urls.Homepage = "https://github.com/gaborbernat/pypi_changes"
-urls.Source = "https://github.com/gaborbernat/pypi_changes"
-urls.Tracker = "https://github.com/gaborbernat/pypi_changes/issues"
+urls.Changelog = "https://github.com/gaborbernat/pypi-changes/blob/main/CHANGELOG.md"
+urls.Homepage = "https://github.com/gaborbernat/pypi-changes"
+urls.Source = "https://github.com/gaborbernat/pypi-changes"
+urls.Tracker = "https://github.com/gaborbernat/pypi-changes/issues"
 scripts.pypi-changes = "pypi_changes.__main__:main"
 
 [dependency-groups]
