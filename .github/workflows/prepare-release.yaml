@@ -41,7 +41,7 @@ jobs:
           set -euo pipefail
           uv venv --python 3.15 "$RUNNER_TEMP/release-tools"
           uv pip sync --preview-features pylock --python "$RUNNER_TEMP/release-tools/bin/python" --group release pylock.toml
-          echo "$RUNNER_TEMP/release-tools/bin" >> "$GITHUB_PATH"
+          echo "$RUNNER_TEMP/release-tools/bin" >>"$GITHUB_PATH"
       - id: prepare
         uses: tox-dev/github-workflows/prepare-towncrier@8db87d4730353b61630d66cbc592d6bed0c85d2b
         with:
@@ -82,7 +82,7 @@ jobs:
           set -euo pipefail
           uv venv --python 3.15 "$RUNNER_TEMP/release-tools"
           uv pip sync --preview-features pylock --python "$RUNNER_TEMP/release-tools/bin/python" --group release pylock.toml
-          echo "$RUNNER_TEMP/release-tools/bin" >> "$GITHUB_PATH"
+          echo "$RUNNER_TEMP/release-tools/bin" >>"$GITHUB_PATH"
       - uses: tox-dev/github-workflows/validate-release-patch@8db87d4730353b61630d66cbc592d6bed0c85d2b
         with:
           version: ${{ needs.assemble.outputs.version }}
