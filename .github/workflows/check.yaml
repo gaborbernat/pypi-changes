@@ -15,6 +15,7 @@ permissions:
   contents: read
 jobs:
   test:
+    name: Test ${{ matrix.env }}
     runs-on: ubuntu-26.04
     strategy:
       fail-fast: false
@@ -45,14 +46,20 @@ jobs:
         run: uv tool install --python-preference only-managed --python 3.15 tox --with tox-uv
       - name: Install Python
         if: startsWith(matrix.env, '3.') && matrix.env != '3.15'
-        run: uv python install --python-preference only-managed ${{ matrix.env }}
-      - name: Setup test suite
-        run: tox run -vv --notest --skip-missing-interpreters false -e ${{ matrix.env }}
-      - name: Run test suite
-        run: tox run --skip-pkg-install -e ${{ matrix.env }}
         env:
+          MATRIX_ENV: ${{ matrix.env }}
+        run: uv python install --python-preference only-managed "$MATRIX_ENV"
+      - name: Setup test suite
+        env:
+          MATRIX_ENV: ${{ matrix.env }}
+        run: tox run -vv --notest --skip-missing-interpreters false -e "$MATRIX_ENV"
+      - name: Run test suite
+        env:
+          MATRIX_ENV: ${{ matrix.env }}
           PYTEST_ADDOPTS: "-vv --durations=5"
+        run: tox run --skip-pkg-install -e "$MATRIX_ENV"
   changelog:
+    name: News fragment
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-24.04
     steps:
@@ -70,7 +77,7 @@ jobs:
           uv venv --python 3.15 "$RUNNER_TEMP/release-tools"
           uv pip sync --preview-features pylock --python "$RUNNER_TEMP/release-tools/bin/python" --group release pylock.toml
           echo "$RUNNER_TEMP/release-tools/bin" >> "$GITHUB_PATH"
-      - uses: tox-dev/github-workflows/validate-news@144f8e68b7d4c7c44e32258b1305e4402bc4e392
+      - uses: tox-dev/github-workflows/validate-news@296388849cced16665b3e8b4397a22265418d3dc
   gate:
     name: Required checks pass
     if: always()

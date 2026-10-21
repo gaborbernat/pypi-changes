@@ -18,11 +18,12 @@ concurrency:
   cancel-in-progress: false
 jobs:
   assemble:
+    name: Assemble release
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-26.04
     permissions:
       contents: read
-      pull-requests: read
+      pull-requests: read # Resolve fragment authors from merged PRs.
     outputs:
       version: ${{ steps.prepare.outputs.version }}
     steps:
@@ -41,7 +42,7 @@ jobs:
           uv pip sync --preview-features pylock --python "$RUNNER_TEMP/release-tools/bin/python" --group release pylock.toml
           echo "$RUNNER_TEMP/release-tools/bin" >> "$GITHUB_PATH"
       - id: prepare
-        uses: tox-dev/github-workflows/prepare-towncrier@c72de07ce576af07b6abe0f1edfc999c288e743e
+        uses: tox-dev/github-workflows/prepare-towncrier@296388849cced16665b3e8b4397a22265418d3dc
         with:
           bump: ${{ inputs.bump }}
           changelog: CHANGELOG.md
@@ -54,6 +55,7 @@ jobs:
           path: ${{ runner.temp }}/release.patch
           if-no-files-found: error
   validate:
+    name: Validate release patch
     needs: assemble
     runs-on: ubuntu-26.04
     permissions:
@@ -79,7 +81,7 @@ jobs:
           uv venv --python 3.15 "$RUNNER_TEMP/release-tools"
           uv pip sync --preview-features pylock --python "$RUNNER_TEMP/release-tools/bin/python" --group release pylock.toml
           echo "$RUNNER_TEMP/release-tools/bin" >> "$GITHUB_PATH"
-      - uses: tox-dev/github-workflows/validate-release-patch@c72de07ce576af07b6abe0f1edfc999c288e743e
+      - uses: tox-dev/github-workflows/validate-release-patch@296388849cced16665b3e8b4397a22265418d3dc
         with:
           version: ${{ needs.assemble.outputs.version }}
           changelog: CHANGELOG.md
@@ -92,6 +94,7 @@ jobs:
           read -r patch_sha _ < <(sha256sum "$RUNNER_TEMP/release-patch/release.patch")
           echo "sha=$patch_sha" >>"$GITHUB_OUTPUT"
   push:
+    name: Push release commit and tag
     needs: [assemble, validate]
     runs-on: ubuntu-26.04
     environment:
@@ -108,7 +111,7 @@ jobs:
         with:
           name: release-patch
           path: ${{ runner.temp }}/release-patch
-      - uses: tox-dev/github-workflows/validate-release-patch@c72de07ce576af07b6abe0f1edfc999c288e743e
+      - uses: tox-dev/github-workflows/validate-release-patch@296388849cced16665b3e8b4397a22265418d3dc
         with:
           version: ${{ needs.assemble.outputs.version }}
           changelog: CHANGELOG.md
@@ -125,7 +128,7 @@ jobs:
           owner: ${{ github.repository_owner }}
           repositories: ${{ github.event.repository.name }}
           permission-contents: write
-      - uses: tox-dev/github-workflows/commit-and-tag@c72de07ce576af07b6abe0f1edfc999c288e743e
+      - uses: tox-dev/github-workflows/commit-and-tag@296388849cced16665b3e8b4397a22265418d3dc
         with:
           version: ${{ needs.assemble.outputs.version }}
           token: ${{ steps.token.outputs.token }}

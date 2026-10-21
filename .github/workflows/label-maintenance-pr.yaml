@@ -3,14 +3,18 @@ on:
   pull_request_target: # zizmor: ignore[dangerous-triggers] This workflow reads PR metadata without checkout or PR code.
     types: [opened, reopened, synchronize]
 permissions: {}
+concurrency:
+  group: label-news-${{ github.event.pull_request.number }}
+  cancel-in-progress: false
 jobs:
   label:
+    name: Label bot changes
     runs-on: ubuntu-26.04
     permissions:
       contents: read
-      issues: write
-      pull-requests: read
+      issues: write # Apply the skip news label.
+      pull-requests: read # Inspect the PR author and changed files.
     steps:
-      - uses: tox-dev/github-workflows/label-bot-news@144f8e68b7d4c7c44e32258b1305e4402bc4e392
+      - uses: tox-dev/github-workflows/label-bot-news@296388849cced16665b3e8b4397a22265418d3dc
         with:
-          fragments: changelog.d,docs/changelog.d
+          fragments: changelog.d

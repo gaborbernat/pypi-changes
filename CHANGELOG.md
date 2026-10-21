@@ -32,7 +32,9 @@
 
 ## 1.7.0 (2026-10-10)
 
-<a name="release-1-7-0-breaking-changes"></a> <a name="release-1-7-0-added"></a>
+<a name="release-1-7-0-breaking-changes"></a>
+
+<a name="release-1-7-0-added"></a>
 
 ### Added
 
@@ -99,7 +101,9 @@
 
 ## 1.4.0 (2025-10-09)
 
-<a name="release-1-4-0-breaking-changes"></a> <a name="release-1-4-0-added"></a>
+<a name="release-1-4-0-breaking-changes"></a>
+
+<a name="release-1-4-0-added"></a>
 
 ### Added
 
