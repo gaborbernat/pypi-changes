@@ -12,7 +12,7 @@ env:
 jobs:
   build:
     name: Validate tagged package
-    uses: tox-dev/github-workflows/.github/workflows/validate-python-release.yaml@296388849cced16665b3e8b4397a22265418d3dc
+    uses: tox-dev/github-workflows/.github/workflows/validate-python-release.yaml@3553fb1bb4ed1385f8b68571de1b5515edf2d339
     permissions:
       contents: read
     with:
@@ -20,26 +20,6 @@ jobs:
       fragments: changelog.d
       format: markdown
       artifact-base-url: https://pypi.org/project/pypi-changes/
-  release:
-    name: Publish to PyPI
-    needs: [build, github_notes]
-    runs-on: ubuntu-26.04
-    environment:
-      name: release
-      url: https://pypi.org/project/pypi-changes/${{ github.ref_name }}
-    permissions:
-      id-token: write # Publish through PyPI's trusted publisher.
-    steps:
-      - name: Download all the dists
-        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
-        with:
-          name: ${{ env.dists-artifact-name }}
-          path: dist/
-      - name: Publish to PyPI
-        uses: pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33 # v1.14.2
-        with:
-          attestations: true
-          skip-existing: true
   previous_tag:
     name: Find previous release
     needs: build
@@ -135,7 +115,7 @@ jobs:
         with:
           name: generated-release-notes
           path: ${{ runner.temp }}/generated-notes
-      - uses: tox-dev/github-workflows/render-release-notes@296388849cced16665b3e8b4397a22265418d3dc
+      - uses: tox-dev/github-workflows/render-release-notes@3553fb1bb4ed1385f8b68571de1b5515edf2d339
         with:
           tag: ${{ github.ref_name }}
           changelog: CHANGELOG.md
@@ -148,41 +128,115 @@ jobs:
           name: github-release-notes
           path: ${{ runner.temp }}/release-notes.md
           if-no-files-found: error
+  stage:
+    name: Stage missing PyPI files
+    needs: build
+    runs-on: ubuntu-26.04
+    permissions:
+      contents: read
+    outputs:
+      missing-count: ${{ steps.missing.outputs.missing-count }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884 # v10.3.0
+        with:
+          version: latest-known
+          python-version: "3.15"
+          enable-cache: false
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: ${{ env.dists-artifact-name }}
+          path: dist/
+      - id: missing
+        uses: tox-dev/github-workflows/reconcile-pypi-artifacts@3553fb1bb4ed1385f8b68571de1b5515edf2d339
+        with:
+          project: pypi-changes
+          version: ${{ github.ref_name }}
+          dist: dist/
+          mode: stage
+          missing-dir: ${{ runner.temp }}/pypi-missing
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: pypi-missing-manifest
+          path: ${{ steps.missing.outputs.manifest }}
+          if-no-files-found: error
+  release:
+    name: Publish to PyPI
+    needs: [stage, github_notes]
+    runs-on: ubuntu-26.04
+    environment:
+      name: release
+      url: https://pypi.org/project/pypi-changes/${{ github.ref_name }}
+    permissions:
+      id-token: write # Publish through PyPI's trusted publisher.
+    steps:
+      - name: Download all the dists
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: ${{ env.dists-artifact-name }}
+          path: dist/
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: pypi-missing-manifest
+          path: ${{ runner.temp }}/pypi-missing-manifest
+      - id: selected
+        uses: tox-dev/github-workflows/select-pypi-artifacts@3553fb1bb4ed1385f8b68571de1b5515edf2d339
+        with:
+          dist: dist/
+          manifest: ${{ runner.temp }}/pypi-missing-manifest/pypi-missing-names.txt
+          output-dir: ${{ runner.temp }}/pypi-upload
+          expected-count: ${{ needs.stage.outputs.missing-count }}
+      - name: Publish to PyPI
+        if: steps.selected.outputs.selected-count != '0'
+        uses: pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33 # v1.14.2
+        with:
+          packages-dir: ${{ runner.temp }}/pypi-upload
+          attestations: true
+          skip-existing: true
+  verify:
+    name: Verify PyPI release
+    needs: release
+    runs-on: ubuntu-26.04
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884 # v10.3.0
+        with:
+          version: latest-known
+          python-version: "3.15"
+          enable-cache: false
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: ${{ env.dists-artifact-name }}
+          path: dist/
+      - uses: tox-dev/github-workflows/reconcile-pypi-artifacts@3553fb1bb4ed1385f8b68571de1b5515edf2d339
+        with:
+          project: pypi-changes
+          version: ${{ github.ref_name }}
+          dist: dist/
+          mode: verify
   github-release:
     name: Publish GitHub Release
-    needs: [release, github_notes]
+    needs: [verify, github_notes]
     runs-on: ubuntu-26.04
     permissions:
       contents: write # Create or repair the GitHub Release after PyPI succeeds.
-    env:
-      GH_REPO: ${{ github.repository }}
     steps:
       - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: github-release-notes
           path: ${{ runner.temp }}/release-notes
-      - name: Find an existing GitHub Release
-        id: existing
+      - uses: tox-dev/github-workflows/publish-github-release@3553fb1bb4ed1385f8b68571de1b5515edf2d339
         env:
           GH_TOKEN: ${{ github.token }}
-          TAG: ${{ github.ref_name }}
-        run: |
-          if gh release view "$TAG" >/dev/null 2>&1; then
-            echo 'exists=true' >>"$GITHUB_OUTPUT"
-          fi
-      - name: Publish GitHub Release
-        if: steps.existing.outputs.exists != 'true'
-        env:
-          GH_TOKEN: ${{ github.token }}
-          TAG: ${{ github.ref_name }}
-        run: |
-          gh release create "$TAG" --verify-tag --title "$TAG" \
-            --notes-file "$RUNNER_TEMP/release-notes/release-notes.md"
-      - name: Update GitHub Release
-        if: steps.existing.outputs.exists == 'true'
-        env:
-          GH_TOKEN: ${{ github.token }}
-          TAG: ${{ github.ref_name }}
-        run: |
-          gh release edit "$TAG" \
-            --notes-file "$RUNNER_TEMP/release-notes/release-notes.md"
+        with:
+          repository: ${{ github.repository }}
+          tag: ${{ github.ref_name }}
+          commit: ${{ github.sha }}
+          title: ${{ github.ref_name }}
+          notes-file: ${{ runner.temp }}/release-notes/release-notes.md
