@@ -12,9 +12,10 @@ env:
 jobs:
   build:
     name: Validate tagged package
-    uses: tox-dev/github-workflows/.github/workflows/validate-python-release.yaml@3553fb1bb4ed1385f8b68571de1b5515edf2d339
+    uses: tox-dev/github-workflows/.github/workflows/validate-python-release.yaml@8db87d4730353b61630d66cbc592d6bed0c85d2b
     permissions:
       contents: read
+      pull-requests: read
     with:
       changelog: CHANGELOG.md
       fragments: changelog.d
@@ -115,7 +116,7 @@ jobs:
         with:
           name: generated-release-notes
           path: ${{ runner.temp }}/generated-notes
-      - uses: tox-dev/github-workflows/render-release-notes@3553fb1bb4ed1385f8b68571de1b5515edf2d339
+      - uses: tox-dev/github-workflows/render-release-notes@8db87d4730353b61630d66cbc592d6bed0c85d2b
         with:
           tag: ${{ github.ref_name }}
           changelog: CHANGELOG.md
@@ -139,7 +140,7 @@ jobs:
         with:
           name: github-release-notes
           path: ${{ runner.temp }}/release-notes
-      - uses: tox-dev/github-workflows/publish-github-release@3553fb1bb4ed1385f8b68571de1b5515edf2d339
+      - uses: tox-dev/github-workflows/publish-github-release@8db87d4730353b61630d66cbc592d6bed0c85d2b
         env:
           GH_TOKEN: ${{ github.token }}
         with:
@@ -171,7 +172,7 @@ jobs:
           name: ${{ env.dists-artifact-name }}
           path: dist/
       - id: missing
-        uses: tox-dev/github-workflows/reconcile-pypi-artifacts@3553fb1bb4ed1385f8b68571de1b5515edf2d339
+        uses: tox-dev/github-workflows/reconcile-pypi-artifacts@8db87d4730353b61630d66cbc592d6bed0c85d2b
         with:
           project: pypi-changes
           version: ${{ github.ref_name }}
@@ -203,17 +204,17 @@ jobs:
           name: pypi-missing-manifest
           path: ${{ runner.temp }}/pypi-missing-manifest
       - id: selected
-        uses: tox-dev/github-workflows/select-pypi-artifacts@3553fb1bb4ed1385f8b68571de1b5515edf2d339
+        uses: tox-dev/github-workflows/select-pypi-artifacts@8db87d4730353b61630d66cbc592d6bed0c85d2b
         with:
           dist: dist/
           manifest: ${{ runner.temp }}/pypi-missing-manifest/pypi-missing-names.txt
-          output-dir: ${{ runner.temp }}/pypi-upload
+          output-dir: pypi-upload
           expected-count: ${{ needs.stage.outputs.missing-count }}
       - name: Publish to PyPI
         if: steps.selected.outputs.selected-count != '0'
         uses: pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33 # v1.14.2
         with:
-          packages-dir: ${{ runner.temp }}/pypi-upload
+          packages-dir: pypi-upload
           attestations: true
           skip-existing: true
   verify:
@@ -235,7 +236,7 @@ jobs:
         with:
           name: ${{ env.dists-artifact-name }}
           path: dist/
-      - uses: tox-dev/github-workflows/reconcile-pypi-artifacts@3553fb1bb4ed1385f8b68571de1b5515edf2d339
+      - uses: tox-dev/github-workflows/reconcile-pypi-artifacts@8db87d4730353b61630d66cbc592d6bed0c85d2b
         with:
           project: pypi-changes
           version: ${{ github.ref_name }}
@@ -252,7 +253,7 @@ jobs:
         with:
           name: github-release-notes
           path: ${{ runner.temp }}/release-notes
-      - uses: tox-dev/github-workflows/publish-github-release@3553fb1bb4ed1385f8b68571de1b5515edf2d339
+      - uses: tox-dev/github-workflows/publish-github-release@8db87d4730353b61630d66cbc592d6bed0c85d2b
         env:
           GH_TOKEN: ${{ github.token }}
         with:

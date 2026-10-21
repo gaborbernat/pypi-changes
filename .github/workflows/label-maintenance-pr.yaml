@@ -15,6 +15,6 @@ jobs:
       issues: write # Apply the skip news label.
       pull-requests: read # Inspect the PR author and changed files.
     steps:
-      - uses: tox-dev/github-workflows/label-bot-news@3553fb1bb4ed1385f8b68571de1b5515edf2d339
+      - uses: tox-dev/github-workflows/label-bot-news@8db87d4730353b61630d66cbc592d6bed0c85d2b
         with:
           fragments: changelog.d

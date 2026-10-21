@@ -9,7 +9,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   upgrade:
-    uses: tox-dev/github-workflows/.github/workflows/upgrade-release-tools.yaml@3553fb1bb4ed1385f8b68571de1b5515edf2d339
+    uses: tox-dev/github-workflows/.github/workflows/upgrade-release-tools.yaml@8db87d4730353b61630d66cbc592d6bed0c85d2b
     permissions:
       actions: write # Dispatch checks on the dependency branch.
       contents: write # Push the refreshed lock to that branch.
