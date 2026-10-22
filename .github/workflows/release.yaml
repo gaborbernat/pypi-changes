@@ -12,7 +12,7 @@ env:
 jobs:
   build:
     name: Validate tagged package
-    uses: tox-dev/github-workflows/.github/workflows/validate-python-release.yaml@a32ce094895292b19eea422fc6500f1ef1ae8d5f
+    uses: tox-dev/github-workflows/.github/workflows/validate-python-release.yaml@2b4ed19340a7ec97020f4fd0a403531845c49356
     permissions:
       contents: read
     with:
@@ -113,7 +113,7 @@ jobs:
         with:
           name: generated-release-notes
           path: ${{ runner.temp }}/generated-notes
-      - uses: tox-dev/github-workflows/render-release-notes@a32ce094895292b19eea422fc6500f1ef1ae8d5f
+      - uses: tox-dev/github-workflows/render-release-notes@2b4ed19340a7ec97020f4fd0a403531845c49356
         with:
           tag: ${{ github.ref_name }}
           changelog: CHANGELOG.md
@@ -137,7 +137,7 @@ jobs:
         with:
           name: github-release-notes
           path: ${{ runner.temp }}/release-notes
-      - uses: tox-dev/github-workflows/publish-github-release@a32ce094895292b19eea422fc6500f1ef1ae8d5f
+      - uses: tox-dev/github-workflows/publish-github-release@2b4ed19340a7ec97020f4fd0a403531845c49356
         env:
           GH_TOKEN: ${{ github.token }}
         with:
@@ -169,7 +169,7 @@ jobs:
           name: ${{ env.dists-artifact-name }}
           path: dist/
       - id: missing
-        uses: tox-dev/github-workflows/reconcile-pypi-artifacts@a32ce094895292b19eea422fc6500f1ef1ae8d5f
+        uses: tox-dev/github-workflows/reconcile-pypi-artifacts@2b4ed19340a7ec97020f4fd0a403531845c49356
         with:
           project: pypi-changes
           version: ${{ github.ref_name }}
@@ -201,7 +201,7 @@ jobs:
           name: pypi-missing-manifest
           path: ${{ runner.temp }}/pypi-missing-manifest
       - id: selected
-        uses: tox-dev/github-workflows/select-pypi-artifacts@a32ce094895292b19eea422fc6500f1ef1ae8d5f
+        uses: tox-dev/github-workflows/select-pypi-artifacts@2b4ed19340a7ec97020f4fd0a403531845c49356
         with:
           dist: dist/
           manifest: ${{ runner.temp }}/pypi-missing-manifest/pypi-missing-names.txt
@@ -233,7 +233,7 @@ jobs:
         with:
           name: ${{ env.dists-artifact-name }}
           path: dist/
-      - uses: tox-dev/github-workflows/reconcile-pypi-artifacts@a32ce094895292b19eea422fc6500f1ef1ae8d5f
+      - uses: tox-dev/github-workflows/reconcile-pypi-artifacts@2b4ed19340a7ec97020f4fd0a403531845c49356
         with:
           project: pypi-changes
           version: ${{ github.ref_name }}
@@ -250,7 +250,7 @@ jobs:
         with:
           name: github-release-notes
           path: ${{ runner.temp }}/release-notes
-      - uses: tox-dev/github-workflows/publish-github-release@a32ce094895292b19eea422fc6500f1ef1ae8d5f
+      - uses: tox-dev/github-workflows/publish-github-release@2b4ed19340a7ec97020f4fd0a403531845c49356
         env:
           GH_TOKEN: ${{ github.token }}
         with:
