@@ -90,6 +90,25 @@ release = [
   "release-creator>=0.5.1",
   "towncrier",
 ]
+release-check = [
+  "prek",
+]
+release-news = [
+  "release-creator>=0.5.1",
+  "towncrier",
+]
+release-notes = [
+  "release-creator>=0.5.1",
+]
+release-prepare = [
+  "prek",
+  "release-creator>=0.5.1",
+  "towncrier",
+]
+release-validate = [
+  "prek",
+  "release-creator>=0.5.1",
+]
 
 [tool.hatch]
 version.source = "vcs"
@@ -106,6 +125,11 @@ build.hooks.vcs.version-file = "src/pypi_changes/_version.py"
 
 [tool.uv]
 dependency-groups.release = { requires-python = ">=3.15" }
+dependency-groups.release-check = { requires-python = ">=3.15" }
+dependency-groups.release-news = { requires-python = ">=3.15" }
+dependency-groups.release-notes = { requires-python = ">=3.15" }
+dependency-groups.release-prepare = { requires-python = ">=3.15" }
+dependency-groups.release-validate = { requires-python = ">=3.15" }
 
 [tool.ruff]
 line-length = 120
