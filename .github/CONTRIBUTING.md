@@ -14,9 +14,9 @@ prek run --all-files
 ## Release notes
 
 Add a `changelog.d/+short-name.<type>.md` fragment for each user-facing change. The name must be unique in the pull
-request. During release preparation, `release-creator fragments --git` links each fragment to its merged squash pull
-request and credits the pull request author. It reads the number from the squash commit subject, so you can name
-fragments before a pull request exists.
+request. During release preparation, `release-creator fragments` links each fragment to its merged squash pull request
+and credits the pull request author. It reads the number from the squash commit subject, so you can name fragments
+before a pull request exists.
 
 Use these fragment types:
 
