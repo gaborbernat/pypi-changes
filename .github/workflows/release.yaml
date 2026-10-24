@@ -4,59 +4,145 @@ on:
     tags: ["*"]
 permissions:
   contents: read
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
 env:
   dists-artifact-name: python-package-distributions
 jobs:
   build:
+    name: Validate tagged package
+    uses: tox-dev/github-workflows/.github/workflows/validate-python-release.yaml@55f51f9b5cc0b40f280155a95de2d4f0ecbf7be1 # v3.0.0
+    permissions:
+      contents: read
+  previous_tag:
+    name: Find previous release
+    needs: build
     runs-on: ubuntu-26.04
+    permissions:
+      contents: read
+    outputs:
+      tag: ${{ steps.previous.outputs.previous }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
           persist-credentials: false
-      - name: Install the latest version of uv
-        uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884 # v10.3.0
+      - uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884 # v10.3.0
         with:
+          version: latest-known
           python-version: "3.15"
           enable-cache: false
-          cache-dependency-glob: "pyproject.toml"
-          github-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Install locked release tools
-        run: |
-          set -euo pipefail
-          uv venv --python 3.15 "$RUNNER_TEMP/release-tools"
-          uv pip sync \
-            --preview-features pylock \
-            --python "$RUNNER_TEMP/release-tools/bin/python" \
-            --group release \
-            pylock.toml
-          echo "$RUNNER_TEMP/release-tools/bin" >> "$GITHUB_PATH"
-      - name: Require a changelog section for the tag
+        uses: tox-dev/github-workflows/install-locked-tools@55f51f9b5cc0b40f280155a95de2d4f0ecbf7be1 # v3.0.0
+        with:
+          groups: release-notes
+          venv: ${{ runner.temp }}/release-tools
+      - name: Find previous tag
+        id: previous
+        uses: tox-dev/github-workflows/select-previous-tag@55f51f9b5cc0b40f280155a95de2d4f0ecbf7be1 # v3.0.0
+        with:
+          tag: ${{ github.ref_name }}
+  contributor_metadata:
+    name: Generate contributor notes
+    needs: previous_tag
+    runs-on: ubuntu-26.04
+    permissions:
+      contents: write # GitHub's generated-notes API requires Contents write.
+    steps:
+      - name: Generate contributor notes from the previous release
+        if: needs.previous_tag.outputs.tag != ''
         env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+          PREVIOUS: ${{ needs.previous_tag.outputs.tag }}
+        run: |
+          gh api -X POST "repos/${GITHUB_REPOSITORY}/releases/generate-notes" \
+            -f tag_name="$TAG" -f previous_tag_name="$PREVIOUS" \
+            --jq .body >"$RUNNER_TEMP/generated-notes.md"
+      - name: Generate contributor notes for the first release
+        if: needs.previous_tag.outputs.tag == ''
+        env:
+          GH_TOKEN: ${{ github.token }}
           TAG: ${{ github.ref_name }}
         run: |
-          set -euo pipefail
-          release-creator tags "$TAG"
-          if ! grep -qF "## $TAG (" CHANGELOG.md; then
-            echo "::error::CHANGELOG.md has no section for $TAG"
-            exit 1
-          fi
-      - name: Build package
-        run: uv build --python 3.15 --python-preference only-managed --sdist --wheel . --out-dir dist
-      - name: Store the distribution packages
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+          gh api -X POST "repos/${GITHUB_REPOSITORY}/releases/generate-notes" \
+            -f tag_name="$TAG" --jq .body >"$RUNNER_TEMP/generated-notes.md"
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
-          name: ${{ env.dists-artifact-name }}
-          path: dist/*
+          name: generated-release-notes
+          path: ${{ runner.temp }}/generated-notes.md
+          if-no-files-found: error
+  github_notes:
+    name: Render GitHub Release notes
+    needs: [contributor_metadata, previous_tag]
+    runs-on: ubuntu-26.04
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884 # v10.3.0
+        with:
+          version: latest-known
+          python-version: "3.15"
+          enable-cache: false
+      - name: Install locked release tools
+        uses: tox-dev/github-workflows/install-locked-tools@55f51f9b5cc0b40f280155a95de2d4f0ecbf7be1 # v3.0.0
+        with:
+          groups: release-notes
+          venv: ${{ runner.temp }}/release-tools
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: generated-release-notes
+          path: ${{ runner.temp }}/generated-notes
+      - uses: tox-dev/github-workflows/render-release-notes@55f51f9b5cc0b40f280155a95de2d4f0ecbf7be1 # v3.0.0
+        with:
+          tag: ${{ github.ref_name }}
+          previous: ${{ needs.previous_tag.outputs.tag }}
+          changelog: CHANGELOG.md
+          artifact-url: https://pypi.org/project/pypi-changes/${{ github.ref_name }}/
+          generated-notes: ${{ runner.temp }}/generated-notes/generated-notes.md
+          output: ${{ runner.temp }}/release-notes.md
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: github-release-notes
+          path: ${{ runner.temp }}/release-notes.md
+          if-no-files-found: error
+  stage-github-release:
+    name: Stage GitHub Release draft
+    needs: github_notes
+    runs-on: ubuntu-26.04
+    permissions:
+      contents: write # Create the draft before publishing to PyPI.
+    steps:
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: github-release-notes
+          path: ${{ runner.temp }}/release-notes
+      - uses: tox-dev/github-workflows/publish-github-release@55f51f9b5cc0b40f280155a95de2d4f0ecbf7be1 # v3.0.0
+        env:
+          GH_TOKEN: ${{ github.token }}
+        with:
+          tag: ${{ github.ref_name }}
+          commit: ${{ github.sha }}
+          title: ${{ github.ref_name }}
+          notes-file: ${{ runner.temp }}/release-notes/release-notes.md
+          mode: stage
   release:
+    name: Publish to PyPI
     needs:
       - build
+      - stage-github-release
+      - github_notes
     runs-on: ubuntu-26.04
     environment:
       name: release
       url: https://pypi.org/project/pypi-changes/${{ github.ref_name }}
     permissions:
-      id-token: write
+      id-token: write # Publish through PyPI's trusted publisher.
     steps:
       - name: Download all the dists
         uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
@@ -66,57 +152,50 @@ jobs:
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33 # v1.14.2
         with:
+          packages-dir: dist
           attestations: true
-  github-release:
-    needs: release
+          skip-existing: true
+  verify:
+    name: Verify PyPI release
+    needs: [release, stage-github-release]
     runs-on: ubuntu-26.04
     permissions:
-      contents: write
+      contents: read
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          fetch-depth: 0
           persist-credentials: false
       - uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884 # v10.3.0
         with:
+          version: latest-known
           python-version: "3.15"
           enable-cache: false
-      - name: Install locked release tools
-        run: |
-          set -euo pipefail
-          uv venv --python 3.15 "$RUNNER_TEMP/release-tools"
-          uv pip sync \
-            --preview-features pylock \
-            --python "$RUNNER_TEMP/release-tools/bin/python" \
-            --group release \
-            pylock.toml
-          echo "$RUNNER_TEMP/release-tools/bin" >> "$GITHUB_PATH"
-      - name: Publish GitHub Release
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: ${{ env.dists-artifact-name }}
+          path: dist/
+      - uses: tox-dev/github-workflows/reconcile-pypi-artifacts@55f51f9b5cc0b40f280155a95de2d4f0ecbf7be1 # v3.0.0
+        with:
+          project: pypi-changes
+          version: ${{ github.ref_name }}
+          dist: dist/
+  github-release:
+    name: Publish GitHub Release
+    needs: [verify, stage-github-release, github_notes]
+    runs-on: ubuntu-26.04
+    permissions:
+      contents: write # Create or repair the GitHub Release after PyPI succeeds.
+    steps:
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: github-release-notes
+          path: ${{ runner.temp }}/release-notes
+      - uses: tox-dev/github-workflows/publish-github-release@55f51f9b5cc0b40f280155a95de2d4f0ecbf7be1 # v3.0.0
         env:
           GH_TOKEN: ${{ github.token }}
-          TAG: ${{ github.ref_name }}
-        run: |
-          set -euo pipefail
-          previous=$(git tag --list | release-creator tags "$TAG" --previous)
-          args=(
-            --changelog CHANGELOG.md
-            --tag "$TAG"
-            --repository "$GITHUB_REPOSITORY"
-            --artifact-url "https://pypi.org/project/pypi-changes/$TAG/"
-          )
-          if [[ -n "$previous" ]]; then
-            args+=(--previous "$previous")
-            gh api -X POST "repos/${GITHUB_REPOSITORY}/releases/generate-notes" \
-              -f tag_name="$TAG" \
-              -f previous_tag_name="$previous" \
-              --jq .body > "$RUNNER_TEMP/generated-notes.md"
-          else
-            gh api -X POST "repos/${GITHUB_REPOSITORY}/releases/generate-notes" \
-              -f tag_name="$TAG" \
-              --jq .body > "$RUNNER_TEMP/generated-notes.md"
-          fi
-          release-creator notes "${args[@]}" \
-            --generated-notes "$RUNNER_TEMP/generated-notes.md" \
-            > "$RUNNER_TEMP/release-notes.md"
-          test -s "$RUNNER_TEMP/release-notes.md"
-          gh release create "$TAG" --verify-tag --title "$TAG" --notes-file "$RUNNER_TEMP/release-notes.md"
+        with:
+          tag: ${{ github.ref_name }}
+          commit: ${{ github.sha }}
+          title: ${{ github.ref_name }}
+          notes-file: ${{ runner.temp }}/release-notes/release-notes.md
+          mode: publish
