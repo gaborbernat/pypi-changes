@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+from operator import attrgetter
 from pathlib import Path
 from typing import TYPE_CHECKING
 from unittest.mock import create_autospec
@@ -8,15 +9,23 @@ from unittest.mock import create_autospec
 import pytest
 from pypi_simple import DistributionPackage, ProjectPage, PyPISimple
 from vcr import use_cassette
+from vcr.stubs import VCRHTTPResponse
 
 from pypi_changes._info import _merge_with_index_server, pypi_info
 from pypi_changes._pkg import Package
 
 if TYPE_CHECKING:
+    from _pytest.monkeypatch import MonkeyPatch
     from pytest_mock import MockerFixture
 
     from pypi_changes._cli import Options
     from tests import MakeDist
+
+
+@pytest.fixture(autouse=True)
+def _vcr_response_request_url(monkeypatch: MonkeyPatch) -> None:
+    # requests-cache reads urllib3 2's HTTPResponse._request_url (backing its url), which vcrpy's replay stub lacks
+    monkeypatch.setattr(VCRHTTPResponse, "_request_url", property(attrgetter("url")), raising=False)
 
 
 @pytest.fixture

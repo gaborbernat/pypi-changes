@@ -3,7 +3,7 @@ interactions:
       body: null
       headers:
         Accept:
-          - "*/*"
+          - '*/*'
         Accept-Encoding:
           - gzip, deflate
         Connection:
@@ -14,37 +14,7 @@ interactions:
       uri: https://pypi.org/pypi/pypi-changes/json
     response:
       body:
-        string: !!binary |
-          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
-          vv4C1A1YrbYVAAA=
+        string: '{"info":{"author":"Bern\u00e1t G\u00e1bor","author_email":"gaborjbernat@gmail.com","bugtrack_url":null,"classifiers":["Development Status :: 5 - Production/Stable","Framework :: tox","Intended Audience :: Developers","License :: OSI Approved :: MIT License","Operating System :: MacOS :: MacOS X","Operating System :: Microsoft :: Windows","Operating System :: POSIX","Programming Language :: Python :: 3","Programming Language :: Python :: 3 :: Only","Programming Language :: Python :: 3.7","Programming Language :: Python :: 3.8","Programming Language :: Python :: 3.9","Programming Language :: Python :: 3.10","Topic :: Software Development :: Libraries","Topic :: Software Development :: Testing","Topic :: Utilities"],"description":"# pypi_changes\n\n[![check](https://github.com/gaborbernat/pypi_changes/actions/workflows/check.yml/badge.svg)](https://github.com/gaborbernat/pypi_changes/actions/workflows/check.yml)\n[![codecov](https://codecov.io/gh/gaborbernat/pypi_changes/branch/main/graph/badge.svg)](https://codecov.io/gh/gaborbernat/pypi_changes/branch/main)\n[![Code style:\nblack](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)\n\n[![asciicast](https://asciinema.org/a/446966.svg)](https://asciinema.org/a/446966)\n\n\n","description_content_type":"text/markdown","docs_url":null,"download_url":"","downloads":{"last_day":-1,"last_month":-1,"last_week":-1},"home_page":"http://pypi_changes.readthedocs.org","keywords":"virtual,environments,isolated,testing","license":"MIT","maintainer":"Bern\u00e1t G\u00e1bor","maintainer_email":"gaborbernat@python.org","name":"pypi-changes","package_url":"https://pypi.org/project/pypi-changes/","platform":"any","project_url":"https://pypi.org/project/pypi-changes/","project_urls":{"Homepage":"http://pypi_changes.readthedocs.org","Source":"https://github.com/gaborbernat/pypi_changes","Tracker":"https://github.com/gaborbernat/pypi_changes/issues"},"release_url":"https://pypi.org/project/pypi-changes/1.0.0/","requires_dist":["humanize (>=3.12)","packaging (>=21.2)","platformdirs (>=2.4)","pypi-simple (>=0.9)","requests (>=2.26)","requests-cache (>=0.8)","rich (>=10.12)","backports.cached-property ; python_version < \"3.8\"","importlib-metadata (>=4.8.1) ; python_version < \"3.8\"","furo (>=2021.8.17b43) ; extra == ''docs''","sphinx (>=4.1) ; extra == ''docs''","sphinx-argparse-cli (>=1.7) ; extra == ''docs''","sphinx-autodoc-typehints (>=1.12) ; extra == ''docs''","sphinx-copybutton (>=0.4) ; extra == ''docs''","sphinx-inline-tabs (>=2021.4.11b9) ; extra == ''docs''","sphinxcontrib-towncrier (>=0.2.0a0) ; extra == ''docs''","towncrier (>=21.3) ; extra == ''docs''","covdefaults (>=1.2) ; extra == ''testing''","pytest (>=6.2) ; extra == ''testing''","pytest-cov (>=2.12) ; extra == ''testing''","pytest-mock (>=3.6) ; extra == ''testing''"],"requires_python":">=3.7","summary":"check out when packages changed","version":"1.0.0","yanked":false,"yanked_reason":null},"last_serial":11924395,"releases":{"1.0.0":[{"comment_text":"","digests":{"md5":"0a8b6bf99f2516c03fda2a8972dcc404","sha256":"b54656cc50073fa27150435603a716144b83a29f4f222893eb863ddac204ba11"},"downloads":-1,"filename":"pypi_changes-1.0.0-py3-none-any.whl","has_sig":false,"md5_digest":"0a8b6bf99f2516c03fda2a8972dcc404","packagetype":"bdist_wheel","python_version":"py3","requires_python":">=3.7","size":10076,"upload_time":"2021-11-04T10:20:58","upload_time_iso_8601":"2021-11-04T10:20:58.671572Z","url":"https://files.pythonhosted.org/packages/3e/81/edaaa30f96f538e5c6a6c6e5a4f9024571fa2d81ed939816e1109904c4b7/pypi_changes-1.0.0-py3-none-any.whl","yanked":false,"yanked_reason":null},{"comment_text":"","digests":{"md5":"33eb994aa9c79e96dc8743f8b285413c","sha256":"c327946ac86e6c02e6f6ec03aff80c31d835d573f544f12eb3baaa81677d2dc0"},"downloads":-1,"filename":"pypi_changes-1.0.0.tar.gz","has_sig":false,"md5_digest":"33eb994aa9c79e96dc8743f8b285413c","packagetype":"sdist","python_version":"source","requires_python":">=3.7","size":78047,"upload_time":"2021-11-04T10:20:59","upload_time_iso_8601":"2021-11-04T10:20:59.963603Z","url":"https://files.pythonhosted.org/packages/3f/05/71f8a5cd42c846d3f27045aa8246df6a6e3c0f1e763ec9c68c43e9aa5fe5/pypi_changes-1.0.0.tar.gz","yanked":false,"yanked_reason":null}]},"urls":[{"comment_text":"","digests":{"md5":"0a8b6bf99f2516c03fda2a8972dcc404","sha256":"b54656cc50073fa27150435603a716144b83a29f4f222893eb863ddac204ba11"},"downloads":-1,"filename":"pypi_changes-1.0.0-py3-none-any.whl","has_sig":false,"md5_digest":"0a8b6bf99f2516c03fda2a8972dcc404","packagetype":"bdist_wheel","python_version":"py3","requires_python":">=3.7","size":10076,"upload_time":"2021-11-04T10:20:58","upload_time_iso_8601":"2021-11-04T10:20:58.671572Z","url":"https://files.pythonhosted.org/packages/3e/81/edaaa30f96f538e5c6a6c6e5a4f9024571fa2d81ed939816e1109904c4b7/pypi_changes-1.0.0-py3-none-any.whl","yanked":false,"yanked_reason":null},{"comment_text":"","digests":{"md5":"33eb994aa9c79e96dc8743f8b285413c","sha256":"c327946ac86e6c02e6f6ec03aff80c31d835d573f544f12eb3baaa81677d2dc0"},"downloads":-1,"filename":"pypi_changes-1.0.0.tar.gz","has_sig":false,"md5_digest":"33eb994aa9c79e96dc8743f8b285413c","packagetype":"sdist","python_version":"source","requires_python":">=3.7","size":78047,"upload_time":"2021-11-04T10:20:59","upload_time_iso_8601":"2021-11-04T10:20:59.963603Z","url":"https://files.pythonhosted.org/packages/3f/05/71f8a5cd42c846d3f27045aa8246df6a6e3c0f1e763ec9c68c43e9aa5fe5/pypi_changes-1.0.0.tar.gz","yanked":false,"yanked_reason":null}],"vulnerabilities":[]}'
       headers:
         Accept-Ranges:
           - bytes
@@ -53,19 +23,15 @@ interactions:
         Access-Control-Allow-Methods:
           - GET
         Access-Control-Allow-Origin:
-          - "*"
+          - '*'
         Access-Control-Expose-Headers:
           - X-PyPI-Last-Serial
         Access-Control-Max-Age:
-          - "86400"
+          - '86400'
         Cache-Control:
           - max-age=900, public
         Connection:
           - keep-alive
-        Content-Encoding:
-          - gzip
-        Content-Length:
-          - "1664"
         Content-Security-Policy:
           - base-uri 'self'; block-all-mixed-content; connect-src 'self' https://api.github.com/repos/ *.fastly-insights.com sentry.io https://api.pwnedpasswords.com https://2p66nmmycsj3.statuspage.io; default-src 'none'; font-src 'self' fonts.gstatic.com; form-action 'self'; frame-ancestors 'none'; frame-src 'none'; img-src 'self' https://warehouse-camo.ingress.cmh1.psfhosted.org/ www.google-analytics.com *.fastly-insights.com; script-src 'self' www.googletagmanager.com www.google-analytics.com *.fastly-insights.com https://cdn.ravenjs.com; style-src 'self' fonts.googleapis.com; worker-src *.fastly-insights.com
         Content-Type:
@@ -93,13 +59,15 @@ interactions:
         X-Permitted-Cross-Domain-Policies:
           - none
         X-PyPI-Last-Serial:
-          - "11924395"
+          - '11924395'
         X-Served-By:
           - cache-bwi5127-BWI, cache-lhr7369-LHR
         X-Timer:
           - S1636099548.605431,VS0,VE1
         X-XSS-Protection:
           - 1; mode=block
+        content-length:
+          - '5558'
       status:
         code: 200
         message: OK
@@ -107,7 +75,7 @@ interactions:
       body: null
       headers:
         Accept:
-          - "*/*"
+          - '*/*'
         Accept-Encoding:
           - gzip, deflate
         Connection:
@@ -118,16 +86,7 @@ interactions:
       uri: https://pypi.org/simple/pypi-changes/
     response:
       body:
-        string: !!binary |
-          H4sIAAAAAAAC/52TTW/UMBCG7/yKNEjcEn9/lWQlBD0gVaICLpzQxB5vou4mITGg8OvxKtsLAgn1
-          5LHGr+edZ+zm5t2Ht5+/PNwVfTqfDi+afSmKpkcIlyCHZ0xQjHDGtpy3ebhdcJ7WIU3LVv3AZR2m
-          sSz8NCYcU1uympZXXRrSCQ/3w/i4FnFaiou48j2MR1wbsmcvpchTraabwnYV9+yfypzaz0DRLxjb
-          sk9pXm8JicMJ13reUj+N/bQmDPW0HMkM/hGykggklhEMACBodDoqYVF5DdprVCCjo1wqwyLwYBkG
-          J5xlGhmjzlHpZWfIxcnXq5Mq91rTat5ENU4jVjBu9c/+9HLtgSvddkpqpb1XlBqRrzRMUSmUpgIM
-          00zKzgrgLsrIObdOYGe1CAE8p7IDxsoiQIJqwW/fhyVX2/tqy1fH9LoVtSkP/2GmIXBouoU8l1gk
-          VJFMxILyQXJvpQ4ickOlArA872LGh8LTyNBogd55bb0U6ABURPUXYnWCpT7+euLkBTdOavBWo/aU
-          o44afaYUo6VesGCFCiojVFJGxrETXR5gHowxgQdPn8PpauEPOmR/f/mF7Z/hpqo+3X18/+a+YMxx
-          KZyqqsNvhHHyojMDAAA=
+        string: "<!DOCTYPE html>\n<html>\n  <head>\n    <meta name=\"pypi:repository-version\" content=\"1.0\">\n    <title>Links for pypi-changes</title>\n  </head>\n  <body>\n    <h1>Links for pypi-changes</h1>\n    <a href=\"https://files.pythonhosted.org/packages/3e/81/edaaa30f96f538e5c6a6c6e5a4f9024571fa2d81ed939816e1109904c4b7/pypi_changes-1.0.0-py3-none-any.whl#sha256=b54656cc50073fa27150435603a716144b83a29f4f222893eb863ddac204ba11\" data-requires-python=\"&gt;=3.7\">pypi_changes-1.0.0-py3-none-any.whl</a><br/>\n    <a href=\"https://files.pythonhosted.org/packages/3f/05/71f8a5cd42c846d3f27045aa8246df6a6e3c0f1e763ec9c68c43e9aa5fe5/pypi_changes-1.0.0.tar.gz#sha256=c327946ac86e6c02e6f6ec03aff80c31d835d573f544f12eb3baaa81677d2dc0\" data-requires-python=\"&gt;=3.7\">pypi_changes-1.0.0.tar.gz</a><br/>\n    </body>\n</html>\n<!--SERIAL 11924395-->"
       headers:
         Accept-Ranges:
           - bytes
@@ -135,10 +94,6 @@ interactions:
           - max-age=600, public
         Connection:
           - keep-alive
-        Content-Encoding:
-          - gzip
-        Content-Length:
-          - "470"
         Content-Security-Policy:
           - default-src 'none'; sandbox allow-top-navigation
         Content-Type:
@@ -166,13 +121,15 @@ interactions:
         X-Permitted-Cross-Domain-Policies:
           - none
         X-PyPI-Last-Serial:
-          - "11924395"
+          - '11924395'
         X-Served-By:
           - cache-bwi5161-BWI, cache-lhr7369-LHR
         X-Timer:
           - S1636099548.622362,VS0,VE1
         X-XSS-Protection:
           - 1; mode=block
+        content-length:
+          - '819'
       status:
         code: 200
         message: OK
