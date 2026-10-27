@@ -2,6 +2,17 @@
 
 <!-- towncrier release notes start -->
 
+<a name="release-1-7-4"></a>
+
+## 1.7.4 (2026-10-27)
+
+<a name="release-1-7-4-fixed"></a>
+
+### Fixed
+
+- Fix repository links in the PyPI project description ([#276](https://github.com/gaborbernat/pypi-changes/pull/276)) by
+  [@gaborbernat](https://github.com/gaborbernat).
+
 <a name="release-1-7-3"></a>
 
 ## 1.7.3 (2026-10-19)
