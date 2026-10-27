@@ -1,11 +1,11 @@
-name: check
+name: 🧪 check
 on:
   workflow_dispatch:
   push:
     branches: ["main"]
     tags-ignore: ["**"]
   pull_request:
-    types: [opened, synchronize, reopened, labeled, unlabeled]
+    types: [opened, synchronize, reopened]
   schedule:
     - cron: "0 8 * * *"
 concurrency:
@@ -15,6 +15,7 @@ permissions:
   contents: read
 jobs:
   test:
+    name: 🧪 Test ${{ matrix.env }}
     runs-on: ubuntu-26.04
     strategy:
       fail-fast: false
@@ -30,60 +31,42 @@ jobs:
           - dev
           - pkg_meta
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: 📥 Check out code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
           persist-credentials: false
-      - name: Install the latest version of uv
-        uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884 # v10.3.0
+      - name: 🐍 Install uv
+        uses: astral-sh/setup-uv@07a047e608db84b3d8c06cd9a7c7dcc9c355c18e # v10.3.2
         with:
+          version: latest-known
           python-version: "3.15"
           enable-cache: false
           cache-dependency-glob: "pyproject.toml"
           github-token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Install tox
+      - name: 📦 Install tox
         run: uv tool install --python-preference only-managed --python 3.15 tox --with tox-uv
-      - name: Install Python
+      - name: 🐍 Install Python
         if: startsWith(matrix.env, '3.') && matrix.env != '3.15'
-        run: uv python install --python-preference only-managed ${{ matrix.env }}
-      - name: Setup test suite
-        run: tox run -vv --notest --skip-missing-interpreters false -e ${{ matrix.env }}
-      - name: Run test suite
-        run: tox run --skip-pkg-install -e ${{ matrix.env }}
         env:
+          MATRIX_ENV: ${{ matrix.env }}
+        run: uv python install --python-preference only-managed "$MATRIX_ENV"
+      - name: 📦 Set up test suite
+        env:
+          MATRIX_ENV: ${{ matrix.env }}
+        run: tox run -vv --notest --skip-missing-interpreters false -e "$MATRIX_ENV"
+      - name: 🧪 Run test suite
+        env:
+          MATRIX_ENV: ${{ matrix.env }}
           PYTEST_ADDOPTS: "-vv --durations=5"
-  changelog:
-    if: github.event_name == 'pull_request' && !contains(github.event.pull_request.labels.*.name, 'skip news')
-    runs-on: ubuntu-24.04
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          fetch-depth: 0
-          persist-credentials: false
-      - uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884 # v10.3.0
-        with:
-          python-version: "3.15"
-          enable-cache: false
-      - name: Install locked release tools
-        run: |
-          set -euo pipefail
-          uv venv --python 3.15 "$RUNNER_TEMP/release-tools"
-          uv pip sync --preview-features pylock --python "$RUNNER_TEMP/release-tools/bin/python" --group release pylock.toml
-          echo "$RUNNER_TEMP/release-tools/bin" >> "$GITHUB_PATH"
-      - run: towncrier check --compare-with "origin/${GITHUB_BASE_REF}"
+        run: tox run --skip-pkg-install -e "$MATRIX_ENV"
   gate:
-    name: Required checks pass
-    if: always()
-    needs: [test, changelog]
+    name: 🚦 ${{ github.event_name == 'pull_request' && 'Required checks pass' || 'Non-PR checks pass' }}
+    if: ${{ !cancelled() }} # codespell:ignore cancelled
+    needs: [test]
     runs-on: ubuntu-24.04
     steps:
-      - env:
+      - name: 🚦 Require all needed jobs to pass
+        env:
           NEEDS_JSON: ${{ toJSON(needs) }}
-        run: |
-          jq -e '
-            all(
-              to_entries[];
-              .value.result == "success" or
-              (.key == "changelog" and .value.result == "skipped")
-            )
-          ' <<< "$NEEDS_JSON"
+        run: jq -e 'all(to_entries[]; .value.result == "success")' <<<"$NEEDS_JSON"

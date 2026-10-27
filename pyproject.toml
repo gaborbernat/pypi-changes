@@ -1,20 +1,20 @@
 [build-system]
 build-backend = "hatchling.build"
 requires = [
+  "hatch-fancy-pypi-readme>=25.1",
   "hatch-vcs>=0.5",
   "hatchling>=1.28",
 ]
 
 [project]
 name = "pypi-changes"
-description = "check out when packages changed"
-readme.content-type = "text/markdown"
-readme.file = "README.md"
+import-names = [ "pypi_changes" ]
+description = "Compare installed packages with the latest PyPI releases"
 keywords = [
-  "environments",
-  "isolated",
-  "testing",
-  "virtual",
+  "outdated",
+  "packages",
+  "pypi",
+  "upgrades",
 ]
 license = "MIT"
 maintainers = [
@@ -26,9 +26,7 @@ authors = [
 requires-python = ">=3.11"
 classifiers = [
   "Development Status :: 5 - Production/Stable",
-  "Framework :: tox",
   "Intended Audience :: Developers",
-  "License :: OSI Approved :: MIT License",
   "Operating System :: MacOS :: MacOS X",
   "Operating System :: Microsoft :: Windows",
   "Operating System :: POSIX",
@@ -38,11 +36,10 @@ classifiers = [
   "Programming Language :: Python :: 3.13",
   "Programming Language :: Python :: 3.14",
   "Programming Language :: Python :: 3.15",
-  "Topic :: Software Development :: Libraries",
-  "Topic :: Software Development :: Testing",
   "Topic :: Utilities",
 ]
 dynamic = [
+  "readme",
   "version",
 ]
 dependencies = [
@@ -54,9 +51,10 @@ dependencies = [
   "requests-cache>=1.3.3",
   "rich>=15",
 ]
-urls.Homepage = "https://github.com/gaborbernat/pypi_changes"
-urls.Source = "https://github.com/gaborbernat/pypi_changes"
-urls.Tracker = "https://github.com/gaborbernat/pypi_changes/issues"
+urls.Changelog = "https://github.com/gaborbernat/pypi-changes/blob/main/CHANGELOG.md"
+urls.Homepage = "https://github.com/gaborbernat/pypi-changes"
+urls.Source = "https://github.com/gaborbernat/pypi-changes"
+urls.Tracker = "https://github.com/gaborbernat/pypi-changes/issues"
 scripts.pypi-changes = "pypi_changes.__main__:main"
 
 [dependency-groups]
@@ -78,6 +76,13 @@ type = [
   "ty>=0.0.84",
   { include-group = "test" },
 ]
+build = [
+  "cython>=3",
+  "hatch-fancy-pypi-readme>=25.1",
+  "hatch-vcs>=0.5",
+  "hatchling>=1.28",
+  "setuptools>=80",
+]
 lint = [
   "pre-commit-uv>=4.2",
 ]
@@ -86,15 +91,36 @@ pkg-meta = [
   "twine>=6.2",
   "uv>=0.12.22",
 ]
-release = [
+release-news = [
+  "release-creator>=4.1",
+  "towncrier",
+]
+release-notes = [
+  "release-creator>=4.1",
+]
+release-prepare = [
   "prek",
-  "release-creator>=0.2",
+  "release-creator>=4.1",
   "towncrier",
 ]
 
 [tool.hatch]
 version.source = "vcs"
+metadata.hooks.fancy-pypi-readme.content-type = "text/markdown"
+metadata.hooks.fancy-pypi-readme.fragments = [ { path = "README.md" } ]
+metadata.hooks.fancy-pypi-readme.substitutions = [
+  { pattern = '''(?x)
+    (?<!!)\[(?P<label>[^\]]+)\]\( # Link text, excluding images
+    (?P<path>\.github/CONTRIBUTING\.md|CHANGELOG\.md) # Repository files linked from the README
+    \)
+    ''', replacement = '[\g<label>](https://github.com/gaborbernat/pypi-changes/blob/main/\g<path>)' },
+]
 build.hooks.vcs.version-file = "src/pypi_changes/_version.py"
+
+[tool.uv]
+dependency-groups.release-news = { requires-python = ">=3.15" }
+dependency-groups.release-notes = { requires-python = ">=3.15" }
+dependency-groups.release-prepare = { requires-python = ">=3.15" }
 
 [tool.ruff]
 line-length = 120
@@ -180,3 +206,15 @@ type = [
   { directory = "removal", name = "Removed", showcontent = true },
   { directory = "packaging", name = "Packaging", showcontent = true },
 ]
+
+[tool.nab]
+mode = "universal"
+base-group = "project-runtime"
+uploaded-prior-to = "P7D"
+decision-order = "stable"
+matrix.python = ">=3.15,<3.16"
+matrix.platforms = [ "linux_x86_64" ]
+# temporary, delete after 2026-11-02
+packages.release-creator.uploaded-prior-to = 2026-10-26T18:24:46Z
+# temporary, delete after 2026-11-02: vcrpy 9.2 carries the urllib3 2 fix the tests need
+packages.vcrpy.uploaded-prior-to = 2026-10-25T22:29:43Z
