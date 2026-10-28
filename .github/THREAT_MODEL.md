@@ -6,10 +6,11 @@ SECURITY.md wins and we fix this file.
 
 ## How pypi-changes works
 
-pypi-changes runs the target interpreter to list its installed distributions, then asks PyPI's JSON API (and the simple
-index named by `PIP_INDEX_URL`, when it is not PyPI) for each package's releases. Answers are cached in a SQLite file
-under the user cache directory for `--cache-duration` seconds. It prints a tree with release ages and major-version
-jumps, or JSON or a requirements list.
+pypi-changes runs the target interpreter only to read its `sys.path`, reads the distribution metadata found there, then
+asks PyPI's JSON API (and the simple index named by `PIP_INDEX_URL`, when it is not PyPI) for each package's releases.
+Answers are cached in a SQLite file under the user cache directory for `--cache-duration` seconds (`0` bypasses the
+cache, `-1` keeps answers forever). It prints a tree with release ages and major-version jumps, or JSON or a
+requirements list.
 
 ```mermaid
 flowchart LR
@@ -33,11 +34,11 @@ which first needs a trusted element compromised is out of scope; the first triag
 [DOMPurify](https://github.com/cure53/DOMPurify/blob/main/SECURITY.md#what-we-consider-a-vulnerability) puts it, is what
 the attacker controls.
 
-| Project                                                                           | Language   | Where it draws the line                                                                |
-| --------------------------------------------------------------------------------- | ---------- | -------------------------------------------------------------------------------------- |
-| [npm CLI](https://github.com/npm/cli/security/policy)                             | JavaScript | Reads registry metadata for `npm outdated`; private reports, no separate threat model. |
-| [Cargo (`cargo outdated` ecosystem)](https://www.rust-lang.org/policies/security) | Rust       | Registry data is the untrusted input; the local toolchain is trusted.                  |
-| [pnpm](https://github.com/pnpm/pnpm/security/policy)                              | JavaScript | Registry metadata is untrusted input; the local project and store are trusted.         |
+| Project                                                                           | Language   | Where it draws the line                                                                                                                                                  |
+| --------------------------------------------------------------------------------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| [npm CLI](https://github.com/npm/cli/security/policy)                             | JavaScript | Follows GitHub's open source reporting policy, which defines no scope of its own.                                                                                        |
+| [Cargo (`cargo outdated` ecosystem)](https://www.rust-lang.org/policies/security) | Rust       | The Rust toolchain, Cargo included, assumes the user's code and dependencies are trusted; compiling or analyzing a malicious project is out of scope.                    |
+| [pnpm](https://github.com/pnpm/pnpm/security/policy)                              | JavaScript | Draws its boundary at filesystem permissions: the store, project, lockfile and configuration are trusted, and running it in a repository means trusting that repository. |
 
 ## Trusted
 
@@ -63,8 +64,8 @@ An attacker who controls any of these already has what pypi-changes could give t
 ## Release chain
 
 Releases run on the shared [tox-dev/github-workflows](https://github.com/tox-dev/github-workflows) pipeline. A release
-App, not a person, pushes the release commit and tag; the build installs its tools hash-checked from `pylock.toml` with
-a seven-day upload cooldown; PyPI receives the files through
+App, not a person, pushes the release commit and tag; the build installs its tools from a hash-checked `pylock.toml`
+resolved with a seven-day upload cooldown by default; PyPI receives the files through
 [trusted publishing](https://docs.pypi.org/trusted-publishers/) with attestations, and the GitHub Release is immutable.
 Every workflow pins third-party actions to a commit SHA.
 
@@ -75,6 +76,13 @@ Every workflow pins third-party actions to a commit SHA.
 | A package's release data with `\x1b]0;...` retitles the terminal | Vulnerability       | Untrusted data reached the terminal as control codes. |
 | pypi-changes runs the interpreter it was given                   | Not a vulnerability | The interpreter is trusted.                           |
 | A release shows the wrong age                                    | Bug                 | Correctness only.                                     |
+
+## Severity
+
+- **High:** release data breaks out of its field in the JSON or requirements output, or requests go to a host other than
+  PyPI and the configured index.
+- **Medium:** release data changes the terminal through control sequences, or a write lands outside the cache file.
+- **Low:** a crash on malformed release data instead of skipping it.
 
 ## Accepted risks
 
