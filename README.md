@@ -15,6 +15,8 @@ PyPI. It shows which packages are outdated, how long ago each release was publis
 so you can make informed upgrade decisions.
 
 [![asciicast](https://asciinema.org/a/446966.svg)](https://asciinema.org/a/446966)
+[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/gaborbernat/pypi-changes/badge)](https://scorecard.dev/viewer/?uri=github.com/gaborbernat/pypi-changes)
+[![OpenSSF Best Practices](https://www.bestpractices.dev/projects/16277/badge)](https://www.bestpractices.dev/projects/16277)
 
 ## Getting started
 
