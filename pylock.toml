@@ -2286,6 +2286,15 @@ dependencies = [
 ]
 index = "https://pypi.org/simple/"
 
+[packages.sdist]
+name = "vcrpy-9.2.0.tar.gz"
+upload-time = 2026-10-25 22:29:44.293992+00:00
+url = "https://files.pythonhosted.org/packages/9a/5e/7e75478db669231809ba9f4197f3460d1a4603e5ecb1d894b967cca5a7e8/vcrpy-9.2.0.tar.gz"
+size = 113323
+
+[packages.sdist.hashes]
+sha256 = "c325fa276b175de06bc7afe1b2a45204dbe1fddd90d1b2a18ab14dff2e8e2e4a"
+
 [[packages.wheels]]
 name = "vcrpy-9.2.0-py3-none-any.whl"
 upload-time = 2026-10-25 22:29:42.674935+00:00
