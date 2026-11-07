@@ -4,8 +4,8 @@ import json
 import re
 from importlib.metadata import Distribution, PathDistribution
 from pathlib import Path
-from subprocess import check_output  # ruff:ignore[suspicious-subprocess-import]
-from typing import TYPE_CHECKING
+from subprocess import check_output  # ruff:ignore[suspicious-subprocess-import]  # the user names the interpreter
+from typing import TYPE_CHECKING, Final
 
 from rich.console import Console
 
@@ -14,22 +14,18 @@ if TYPE_CHECKING:
 
     from ._cli import Options
 
-_PKG_REGEX = re.compile(r"^([A-Z0-9]|[A-Z0-9][A-Z0-9._-]*[A-Z0-9])(\.egg-info|\.dist-info)$", flags=re.IGNORECASE)
+_PKG_REGEX: Final[re.Pattern[str]] = re.compile(
+    r"^([A-Z0-9]|[A-Z0-9][A-Z0-9._-]*[A-Z0-9])(\.egg-info|\.dist-info)$", flags=re.IGNORECASE
+)
 
 
 def collect_distributions(options: Options) -> list[PathDistribution]:
     distributions: list[PathDistribution] = []
     with Console().status("Discovering distributions") as status:
-        paths = _get_py_info(str(options.python))
-        for dist in _iter_distributions(paths):
+        for dist in _iter_distributions(_get_py_info(str(options.python))):
             status.update(f"Discovering distributions {len(distributions)}")
             distributions.append(dist)
     return distributions
-
-
-def _get_py_info(python: str) -> list[Path]:
-    cmd = [python, "-c", "import sys, json; print(json.dumps(sys.path))"]
-    return [Path(i) for i in json.loads(check_output(cmd, text=True))]  # ruff:ignore[subprocess-without-shell-equals-true]
 
 
 def _iter_distributions(paths: Iterable[Path]) -> Generator[PathDistribution, None, None]:
@@ -38,19 +34,25 @@ def _iter_distributions(paths: Iterable[Path]) -> Generator[PathDistribution, No
     for raw_path in paths:
         if not raw_path.exists():
             continue
-        path = raw_path.resolve()
-        if path not in done_paths:
+        if (path := raw_path.resolve()) not in done_paths:
             done_paths.add(path)
-            for candidate in path.iterdir():
-                if not candidate.is_dir():
-                    continue
-                match = _PKG_REGEX.match(candidate.name)
-                if match:
-                    dist = Distribution.at(candidate)
-                    name = dist.metadata["Name"]
-                    if name is not None and name not in found:
-                        found.add(name)
-                        yield dist
+            for dist in _dists_in(path):
+                if (name := dist.metadata["Name"]) is not None and name not in found:
+                    found.add(name)
+                    yield dist
+
+
+def _dists_in(path: Path) -> Generator[PathDistribution, None, None]:
+    for candidate in path.iterdir():
+        if candidate.is_dir() and _PKG_REGEX.match(candidate.name):
+            yield Distribution.at(candidate)
+
+
+def _get_py_info(python: str) -> list[Path]:
+    output = check_output(  # ruff:ignore[subprocess-without-shell-equals-true]  # argv list, no shell
+        [python, "-c", "import sys, json; print(json.dumps(sys.path))"], text=True
+    )
+    return [Path(i) for i in json.loads(output)]
 
 
 __all__ = [

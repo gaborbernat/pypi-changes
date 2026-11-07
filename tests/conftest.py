@@ -1,19 +1,19 @@
 from __future__ import annotations
 
-import sys
+from collections.abc import Callable
+from importlib.metadata import PathDistribution
+from pathlib import Path
 from typing import TYPE_CHECKING
-from unittest.mock import MagicMock, create_autospec
 
 import pytest
 
 from pypi_changes._cli import Options
 
 if TYPE_CHECKING:
-    from pathlib import Path
-
     from _pytest.monkeypatch import MonkeyPatch
+    from pytest_mock import MockerFixture
 
-    from tests import MakeDist
+MakeDist = Callable[[Path, str, str], PathDistribution]
 
 
 @pytest.fixture(autouse=True)
@@ -34,13 +34,10 @@ def option_simple(tmp_path: Path) -> Options:
 
 
 @pytest.fixture
-def make_dist() -> MakeDist:
-    def func(path: Path, name: str, version: str) -> MagicMock:
-        of_type = f"importlib{'.' if sys.version_info >= (3, 8) else '_'}metadata.PathDistribution"
-        dist: MagicMock = create_autospec(of_type)
-        dist.metadata = {"Name": name}
-        dist._path = path / "dist"  # ruff:ignore[private-member-access]
-        dist.version = version
-        return dist
+def make_dist(mocker: MockerFixture) -> MakeDist:
+    def func(path: Path, name: str, version: str) -> PathDistribution:
+        return mocker.create_autospec(
+            PathDistribution, instance=True, metadata={"Name": name}, _path=path / "dist", version=version
+        )
 
     return func

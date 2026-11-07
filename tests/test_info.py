@@ -4,7 +4,6 @@ import os
 from operator import attrgetter
 from pathlib import Path
 from typing import TYPE_CHECKING
-from unittest.mock import create_autospec
 
 import pytest
 from pypi_simple import DistributionPackage, ProjectPage, PyPISimple
@@ -19,7 +18,9 @@ if TYPE_CHECKING:
     from pytest_mock import MockerFixture
 
     from pypi_changes._cli import Options
-    from tests import MakeDist
+    from pypi_changes._pkg import Release
+
+    from .conftest import MakeDist
 
 
 @pytest.fixture(autouse=True)
@@ -36,8 +37,7 @@ def _force_pypi_index(mocker: MockerFixture, _no_index: None) -> None:
 
 @pytest.mark.usefixtures("_force_pypi_index")
 def test_info_self(tmp_path: Path, option_simple: Options, make_dist: MakeDist) -> None:
-    dist = make_dist(tmp_path, "pypi-changes", "1.0.0")
-    distributions = [dist]
+    distributions = [make_dist(tmp_path, "pypi-changes", "1.0.0")]
 
     with use_cassette(str(Path(__file__).parent / "pypi_info_self.yaml"), mode="once"):
         packages = list(pypi_info(distributions, option_simple))
@@ -52,8 +52,7 @@ def test_info_self(tmp_path: Path, option_simple: Options, make_dist: MakeDist) 
 @pytest.mark.usefixtures("_force_pypi_index")
 @pytest.mark.usefixtures("_no_proxy")
 def test_info_missing(tmp_path: Path, option_simple: Options, make_dist: MakeDist) -> None:
-    dist = make_dist(tmp_path, "missing-package", "1.0.0")
-    distributions = [dist]
+    distributions = [make_dist(tmp_path, "missing-package", "1.0.0")]
 
     with use_cassette(str(Path(__file__).parent / "pypi_info_missing_package.yaml"), mode="once"):
         packages = list(pypi_info(distributions, option_simple))
@@ -87,8 +86,9 @@ def test_info_pypi_server_timeout(
     make_dist: MakeDist,
 ) -> None:
     dist = make_dist(tmp_path, "a", "1.0")
-    mock_cached_session = mocker.patch("pypi_changes._info.CachedSession")
-    mock_cached_session.return_value.__enter__.return_value.get.side_effect = TimeoutError
+    mocker.patch(
+        "pypi_changes._info.CachedSession", autospec=True
+    ).return_value.__enter__.return_value.get.side_effect = TimeoutError
 
     packages = list(pypi_info([dist], option_simple))
 
@@ -99,14 +99,14 @@ def test_info_pypi_server_timeout(
     assert isinstance(pkg.exc, TimeoutError)
 
 
-def test_merge_with_pypi() -> None:
+def test_merge_with_pypi(mocker: MockerFixture) -> None:
     versions = [("2", "sdist"), ("1", "sdist"), (None, None), ("3", "wheel")]
-    packages = [create_autospec(DistributionPackage, version=v, package_type=t) for v, t in versions]
-    page = create_autospec(ProjectPage, packages=packages)
-    client = create_autospec(PyPISimple, spec_set=True)
+    packages = [mocker.create_autospec(DistributionPackage, version=v, package_type=t) for v, t in versions]
+    page = mocker.create_autospec(ProjectPage, packages=packages)
+    client = mocker.create_autospec(PyPISimple, spec_set=True)
     client.get_project_page.return_value = page
 
-    start = {"0": [{"packagetype": "sdist", "upload_time_iso_8601": None, "version": "0"}]}
+    start: dict[str, list[Release]] = {"0": [{"packagetype": "sdist", "upload_time_iso_8601": None, "version": "0"}]}
     result = _merge_with_index_server("a", client, start)
     assert result == {
         "0": [{"packagetype": "sdist", "upload_time_iso_8601": None, "version": "0"}],

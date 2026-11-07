@@ -10,7 +10,7 @@ from rich.markup import escape
 from rich.text import Text
 from rich.tree import Tree
 
-from . import get_sorted_pkg_list
+from ._sort import get_sorted_pkg_list
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
@@ -28,14 +28,13 @@ def print_tree(distributions: Iterable[Package], options: Options) -> None:
         text.append(" ", "white")
         text.append(pkg.version, "blue")
 
-        current_release = pkg.current_release
-        current_release_at = current_release.get("upload_time_iso_8601")
+        current_release_at = pkg.current_release.get("upload_time_iso_8601")
         last_release = pkg.last_release or {}
         last_release_at = pkg.last_release_at
 
         if current_release_at is not None:
-            text.append(" ")  # pragma: no cover
-            text.append(naturaldelta(now - current_release_at), "green")  # pragma: no cover
+            text.append(" ")  # pragma: no cover  # no test gives the installed version a release date
+            text.append(naturaldelta(now - current_release_at), "green")  # pragma: no cover  # same as above
         if pkg.version != (remote_version := last_release.get("version")):
             style = "bold red" if _is_major_bump(pkg.version, remote_version) else "red"
             text.append(f" remote {remote_version}", style)

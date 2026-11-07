@@ -8,11 +8,13 @@ from pypi_changes._pkg import Package
 if TYPE_CHECKING:
     from pathlib import Path
 
-    from tests import MakeDist
+    from pypi_changes._pkg import Project, Release
+
+    from .conftest import MakeDist
 
 
 def test_ignore_dev_release(make_dist: MakeDist, tmp_path: Path) -> None:
-    releases = {"releases": {"1.0.0dev1": [{"version": "1.0.0dev1"}], "0.9.0": [{"version": "0.9.0"}]}}
+    releases: Project = {"releases": {"1.0.0dev1": [{"version": "1.0.0dev1"}], "0.9.0": [{"version": "0.9.0"}]}}
     pkg = Package(make_dist(tmp_path, "a", "1.0.0"), info=releases)
     assert pkg.last_release == {"version": "0.9.0"}
 
@@ -33,7 +35,7 @@ def test_current_release_empty(make_dist: MakeDist, tmp_path: Path) -> None:
 
 
 def test_last_release_at_synthesized(make_dist: MakeDist, tmp_path: Path) -> None:
-    release = {
+    release: Release = {
         "version": "1.0.0",
         "upload_time_iso_8601": datetime(2021, 1, 1, tzinfo=UTC),
         "synthesized": True,
@@ -45,7 +47,7 @@ def test_last_release_at_synthesized(make_dist: MakeDist, tmp_path: Path) -> Non
 
 def test_last_release_at_real(make_dist: MakeDist, tmp_path: Path) -> None:
     upload_time = datetime(2021, 1, 1, tzinfo=UTC)
-    release = {"version": "1.0.0", "upload_time_iso_8601": upload_time}
+    release: Release = {"version": "1.0.0", "upload_time_iso_8601": upload_time}
     pkg = Package(make_dist(tmp_path, "a", "0.9.0"), info={"releases": {"1.0.0": [release]}})
 
     assert pkg.last_release_at == upload_time

@@ -7,21 +7,37 @@ from typing import TYPE_CHECKING
 
 from platformdirs import user_cache_path
 
+from ._distributions import collect_distributions
+from ._info import pypi_info
+from ._print.json import print_json
+from ._print.requirements import print_requirements
+from ._print.tree import print_tree
 from ._version import version
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
 
 
-class Options(Namespace):
-    python: Path
-    jobs: int
-    cache_path: Path
-    cache_duration: int
-    sort: str
+def main(args: Sequence[str] | None = None) -> int:
+    """
+    Execute the entry point.
+
+    :param args: CLI arguments
+    :returns: exit code
+    """
+    options = parse_cli_arguments(args)
+    info = pypi_info(collect_distributions(options), options)
+
+    if options.output == "tree":
+        print_tree(info, options)
+    elif options.output == "json":
+        print_json(info, options)
+    else:  # output == "requirements"
+        print_requirements(info, options)
+    return 0
 
 
-def parse_cli_arguments(args: Sequence[str] | None = None) -> Options:
+def parse_cli_arguments(args: Sequence[str] | None) -> Options:
     parser = _define_cli_arguments()
     options = Options()
     parser.parse_args(args, options)
@@ -84,29 +100,38 @@ def _define_cli_arguments() -> ArgumentParser:
     return parser
 
 
+class _HelpFormatter(ArgumentDefaultsHelpFormatter):
+    def __init__(self, prog: str) -> None:
+        super().__init__(prog, max_help_position=35, width=190)
+
+
 class _Python(Action):
     def __call__(
         self,
-        parser: ArgumentParser,  # ruff:ignore[unused-method-argument]
+        parser: ArgumentParser,  # ruff:ignore[unused-method-argument]  # argparse passes every action its parser
         namespace: Namespace,
         values: str | Sequence[str] | None,
-        option_string: str | None = None,  # ruff:ignore[unused-method-argument]
+        option_string: str | None = None,  # ruff:ignore[unused-method-argument]  # unused for a positional argument
     ) -> None:
         if values is None:
             return
-        assert isinstance(values, str)  # ruff:ignore[assert]
+        assert isinstance(values, str)  # ruff:ignore[assert]  # nargs="?" yields a single string here
         path = Path(values).absolute()
         if not path.exists():
             raise ArgumentError(self, f"path {path} does not exist")
         setattr(namespace, self.dest, path)
 
 
-class _HelpFormatter(ArgumentDefaultsHelpFormatter):
-    def __init__(self, prog: str) -> None:
-        super().__init__(prog, max_help_position=35, width=190)
+class Options(Namespace):
+    python: Path
+    jobs: int
+    cache_path: Path
+    cache_duration: int
+    sort: str
 
 
 __all__ = [
     "Options",
+    "main",
     "parse_cli_arguments",
 ]

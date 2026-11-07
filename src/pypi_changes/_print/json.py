@@ -2,29 +2,17 @@ from __future__ import annotations
 
 import json
 from datetime import UTC, datetime
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from humanize import naturaldelta
 
-from . import get_sorted_pkg_list
+from ._sort import get_sorted_pkg_list
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
 
     from pypi_changes._cli import Options
-    from pypi_changes._pkg import Package
-
-
-def release_info(release: dict[str, Any] | None, now: datetime) -> dict[str, Any]:
-    if release is None:
-        return {}
-    release_at = release.get("upload_time_iso_8601") if not release.get("synthesized") else None
-    release_since = naturaldelta(now - release_at) if release_at else None
-    return {
-        "version": release.get("version"),
-        "date": release_at.isoformat() if release_at is not None else None,
-        "since": release_since,
-    }
+    from pypi_changes._pkg import Package, Release
 
 
 def print_json(distributions: Iterable[Package], options: Options) -> None:
@@ -43,9 +31,22 @@ def print_json(distributions: Iterable[Package], options: Options) -> None:
                 "latest": latest_release,
             },
         )
-    print(json.dumps(pkg_list, indent=2))  # ruff:ignore[print]
+    print(json.dumps(pkg_list, indent=2))  # ruff:ignore[print]  # the JSON document is the command's output
+
+
+def release_info(release: Release | None, now: datetime) -> dict[str, str | None]:
+    if release is None:
+        return {}
+    release_at = release.get("upload_time_iso_8601") if not release.get("synthesized") else None
+    release_since = naturaldelta(now - release_at) if release_at else None
+    return {
+        "version": release.get("version"),
+        "date": release_at.isoformat() if release_at is not None else None,
+        "since": release_since,
+    }
 
 
 __all__ = [
     "print_json",
+    "release_info",
 ]

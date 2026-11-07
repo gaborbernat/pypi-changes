@@ -3,13 +3,12 @@ from __future__ import annotations
 import json
 import sys
 from datetime import UTC, datetime
+from importlib.metadata import PathDistribution
 from pathlib import Path
 from typing import TYPE_CHECKING
-from unittest.mock import create_autospec
 
 from pypi_changes._pkg import Package
 from pypi_changes._print.json import print_json, release_info
-from tests import PathDistribution
 
 if TYPE_CHECKING:
     from _pytest.capture import CaptureFixture
@@ -19,13 +18,14 @@ if TYPE_CHECKING:
 
 
 def test_print_json(capsys: CaptureFixture[str], option_simple: Options, mocker: MockerFixture) -> None:
-    mocked_datetime = mocker.patch("pypi_changes._print.json.datetime")
-    mocked_datetime.now.return_value = datetime(2021, 11, 6, 10, tzinfo=UTC)
+    mocker.patch("pypi_changes._print.json.datetime", autospec=True).now.return_value = datetime(
+        2021, 11, 6, 10, tzinfo=UTC
+    )
     option_simple.python = Path(sys.executable)
     option_simple.sort = "unsorted"
     packages = [
         Package(
-            create_autospec(PathDistribution, spec_set=True, version=v_cur, metadata={"Name": n}),
+            mocker.create_autospec(PathDistribution, spec_set=True, version=v_cur, metadata={"Name": n}),
             info={
                 "releases": {
                     v_last: [{"version": v_last, "upload_time_iso_8601": t_last}],
@@ -51,8 +51,7 @@ def test_print_json(capsys: CaptureFixture[str], option_simple: Options, mocker:
 
     out, err = capsys.readouterr()
     assert not err
-    output = [i.strip() for i in out.splitlines()]
-    parsed_output = json.loads("".join(output))
+    parsed_output = json.loads("".join([i.strip() for i in out.splitlines()]))
     assert parsed_output == [
         {
             "name": "b",
