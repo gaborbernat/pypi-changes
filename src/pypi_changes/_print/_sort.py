@@ -12,8 +12,8 @@ if TYPE_CHECKING:
 
 def get_sorted_pkg_list(distributions: Iterable[Package], options: Options, now: datetime) -> Iterable[Package]:
     if options.sort in {"a", "alphabetic"}:
-        return sorted(distributions, key=lambda v: v.name.lower())
-    return sorted(distributions, key=lambda v: (v.last_release_at or now, _Reversor(v.name)), reverse=True)
+        return sorted(distributions, key=lambda pkg: pkg.name.lower())
+    return sorted(distributions, key=lambda pkg: (pkg.last_release_at or now, _Reversor(pkg.name)), reverse=True)
 
 
 class _Reversor:  # ruff:ignore[eq-without-hash]
