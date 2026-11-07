@@ -3,14 +3,13 @@ from __future__ import annotations
 import json
 import sys
 from datetime import UTC, datetime
+from importlib.metadata import PathDistribution
 from pathlib import Path
 from typing import TYPE_CHECKING
 from unittest.mock import create_autospec
 
 from pypi_changes._pkg import Package
 from pypi_changes._print.json import print_json, release_info
-
-from . import PathDistribution
 
 if TYPE_CHECKING:
     from _pytest.capture import CaptureFixture

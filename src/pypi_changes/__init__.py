@@ -2,41 +2,8 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
-from ._cli import parse_cli_arguments
-from ._distributions import collect_distributions
-from ._info import pypi_info
-from ._print.json import print_json
-from ._print.requirements import print_requirements
-from ._print.tree import print_tree
-from ._version import version
-
-if TYPE_CHECKING:
-    from collections.abc import Sequence
-
-#: semantic version of the package
-__version__ = version
-
-
-def main(args: Sequence[str] | None = None) -> int:
-    """
-    Execute the entry point.
-
-    :param args: CLI arguments
-    :returns: exit code
-    """
-    options = parse_cli_arguments(args)
-    info = pypi_info(collect_distributions(options), options)
-
-    if options.output == "tree":
-        print_tree(info, options)
-    elif options.output == "json":
-        print_json(info, options)
-    else:  # output == "requirements"
-        print_requirements(info, options)
-    return 0
-
+from ._cli import main
+from ._version import __version__
 
 __all__ = [
     "__version__",

@@ -1,13 +1,12 @@
 from __future__ import annotations
 
 import sys
+from importlib.metadata import PathDistribution
 from pathlib import Path
 from typing import TYPE_CHECKING
 
 from pypi_changes._cli import Options
 from pypi_changes._distributions import collect_distributions
-
-from . import PathDistribution
 
 if TYPE_CHECKING:
     from pytest_mock import MockerFixture

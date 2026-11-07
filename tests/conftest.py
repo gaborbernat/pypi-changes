@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import sys
+from collections.abc import Callable
+from pathlib import Path
 from typing import TYPE_CHECKING
 from unittest.mock import MagicMock, create_autospec
 
@@ -9,11 +11,9 @@ import pytest
 from pypi_changes._cli import Options
 
 if TYPE_CHECKING:
-    from pathlib import Path
-
     from _pytest.monkeypatch import MonkeyPatch
 
-    from . import MakeDist
+MakeDist = Callable[[Path, str, str], MagicMock]
 
 
 @pytest.fixture(autouse=True)

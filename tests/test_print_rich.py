@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import sys
 from datetime import UTC, datetime
+from importlib.metadata import PathDistribution
 from pathlib import Path
 from typing import TYPE_CHECKING
 from unittest.mock import create_autospec
@@ -10,8 +11,6 @@ from rich.console import Console
 
 from pypi_changes._pkg import Package
 from pypi_changes._print.tree import print_tree
-
-from . import PathDistribution
 
 if TYPE_CHECKING:
     import pytest

@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Any
 
 from humanize import naturaldelta
 
-from . import get_sorted_pkg_list
+from ._sort import get_sorted_pkg_list
 
 if TYPE_CHECKING:
     from collections.abc import Iterable

@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import UTC, datetime
 from typing import TYPE_CHECKING
 
-from . import get_sorted_pkg_list
+from ._sort import get_sorted_pkg_list
 
 if TYPE_CHECKING:
     from collections.abc import Iterable

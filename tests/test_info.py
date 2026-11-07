@@ -20,7 +20,7 @@ if TYPE_CHECKING:
 
     from pypi_changes._cli import Options
 
-    from . import MakeDist
+    from .conftest import MakeDist
 
 
 @pytest.fixture(autouse=True)

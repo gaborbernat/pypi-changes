@@ -8,7 +8,7 @@ from pypi_changes._pkg import Package
 if TYPE_CHECKING:
     from pathlib import Path
 
-    from . import MakeDist
+    from .conftest import MakeDist
 
 
 def test_ignore_dev_release(make_dist: MakeDist, tmp_path: Path) -> None:

@@ -7,10 +7,34 @@ from typing import TYPE_CHECKING
 
 from platformdirs import user_cache_path
 
+from ._distributions import collect_distributions
+from ._info import pypi_info
+from ._print.json import print_json
+from ._print.requirements import print_requirements
+from ._print.tree import print_tree
 from ._version import version
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
+
+
+def main(args: Sequence[str] | None = None) -> int:
+    """
+    Execute the entry point.
+
+    :param args: CLI arguments
+    :returns: exit code
+    """
+    options = parse_cli_arguments(args)
+    info = pypi_info(collect_distributions(options), options)
+
+    if options.output == "tree":
+        print_tree(info, options)
+    elif options.output == "json":
+        print_json(info, options)
+    else:  # output == "requirements"
+        print_requirements(info, options)
+    return 0
 
 
 def parse_cli_arguments(args: Sequence[str] | None) -> Options:
@@ -108,5 +132,6 @@ class Options(Namespace):
 
 __all__ = [
     "Options",
+    "main",
     "parse_cli_arguments",
 ]
