@@ -5,7 +5,7 @@ import re
 from importlib.metadata import Distribution, PathDistribution
 from pathlib import Path
 from subprocess import check_output  # ruff:ignore[suspicious-subprocess-import]
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Final
 
 from rich.console import Console
 
@@ -14,7 +14,9 @@ if TYPE_CHECKING:
 
     from ._cli import Options
 
-_PKG_REGEX = re.compile(r"^([A-Z0-9]|[A-Z0-9][A-Z0-9._-]*[A-Z0-9])(\.egg-info|\.dist-info)$", flags=re.IGNORECASE)
+_PKG_REGEX: Final[re.Pattern[str]] = re.compile(
+    r"^([A-Z0-9]|[A-Z0-9][A-Z0-9._-]*[A-Z0-9])(\.egg-info|\.dist-info)$", flags=re.IGNORECASE
+)
 
 
 def collect_distributions(options: Options) -> list[PathDistribution]:
