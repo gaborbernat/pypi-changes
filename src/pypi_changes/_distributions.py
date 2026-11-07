@@ -34,14 +34,16 @@ def _iter_distributions(paths: Iterable[Path]) -> Generator[PathDistribution, No
             continue
         if (path := raw_path.resolve()) not in done_paths:
             done_paths.add(path)
-            for candidate in path.iterdir():
-                if not candidate.is_dir():
-                    continue
-                if _PKG_REGEX.match(candidate.name):
-                    dist = Distribution.at(candidate)
-                    if (name := dist.metadata["Name"]) is not None and name not in found:
-                        found.add(name)
-                        yield dist
+            for dist in _dists_in(path):
+                if (name := dist.metadata["Name"]) is not None and name not in found:
+                    found.add(name)
+                    yield dist
+
+
+def _dists_in(path: Path) -> Generator[PathDistribution, None, None]:
+    for candidate in path.iterdir():
+        if candidate.is_dir() and _PKG_REGEX.match(candidate.name):
+            yield Distribution.at(candidate)
 
 
 def _get_py_info(python: str) -> list[Path]:
