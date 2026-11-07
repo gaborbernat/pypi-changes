@@ -4,7 +4,7 @@ import json
 import re
 from importlib.metadata import Distribution, PathDistribution
 from pathlib import Path
-from subprocess import check_output  # ruff:ignore[suspicious-subprocess-import]
+from subprocess import check_output  # ruff:ignore[suspicious-subprocess-import]  # the user names the interpreter
 from typing import TYPE_CHECKING, Final
 
 from rich.console import Console
@@ -49,8 +49,10 @@ def _dists_in(path: Path) -> Generator[PathDistribution, None, None]:
 
 
 def _get_py_info(python: str) -> list[Path]:
-    cmd = [python, "-c", "import sys, json; print(json.dumps(sys.path))"]
-    return [Path(i) for i in json.loads(check_output(cmd, text=True))]  # ruff:ignore[subprocess-without-shell-equals-true]
+    output = check_output(  # ruff:ignore[subprocess-without-shell-equals-true]  # argv list, no shell
+        [python, "-c", "import sys, json; print(json.dumps(sys.path))"], text=True
+    )
+    return [Path(i) for i in json.loads(output)]
 
 
 __all__ = [

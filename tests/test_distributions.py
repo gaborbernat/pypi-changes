@@ -41,4 +41,4 @@ def test_distribution_duplicate_pkg(mocker: MockerFixture, tmp_path: Path) -> No
     distributions = list(collect_distributions(Options(python=Path(sys.executable))))
     assert len(distributions) == 1
     assert distributions[0].metadata["Name"] == "a"
-    assert distributions[0]._path == dist_1  # ruff:ignore[private-member-access]
+    assert distributions[0]._path == dist_1  # ruff:ignore[private-member-access]  # checks which duplicate is kept

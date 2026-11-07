@@ -16,7 +16,7 @@ def get_sorted_pkg_list(distributions: Iterable[Package], options: Options, now:
     return sorted(distributions, key=lambda pkg: (pkg.last_release_at or now, _Reversor(pkg.name)), reverse=True)
 
 
-class _Reversor:  # ruff:ignore[eq-without-hash]
+class _Reversor:  # ruff:ignore[eq-without-hash]  # instances are compared for sorting, never hashed
     def __init__(self, obj: str) -> None:
         self.obj = obj
 

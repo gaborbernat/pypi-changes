@@ -108,14 +108,14 @@ class _HelpFormatter(ArgumentDefaultsHelpFormatter):
 class _Python(Action):
     def __call__(
         self,
-        parser: ArgumentParser,  # ruff:ignore[unused-method-argument]
+        parser: ArgumentParser,  # ruff:ignore[unused-method-argument]  # argparse passes every action its parser
         namespace: Namespace,
         values: str | Sequence[str] | None,
-        option_string: str | None = None,  # ruff:ignore[unused-method-argument]
+        option_string: str | None = None,  # ruff:ignore[unused-method-argument]  # unused for a positional argument
     ) -> None:
         if values is None:
             return
-        assert isinstance(values, str)  # ruff:ignore[assert]
+        assert isinstance(values, str)  # ruff:ignore[assert]  # nargs="?" yields a single string here
         path = Path(values).absolute()
         if not path.exists():
             raise ArgumentError(self, f"path {path} does not exist")

@@ -31,7 +31,7 @@ def print_json(distributions: Iterable[Package], options: Options) -> None:
                 "latest": latest_release,
             },
         )
-    print(json.dumps(pkg_list, indent=2))  # ruff:ignore[print]
+    print(json.dumps(pkg_list, indent=2))  # ruff:ignore[print]  # the JSON document is the command's output
 
 
 def release_info(release: Release | None, now: datetime) -> dict[str, str | None]:

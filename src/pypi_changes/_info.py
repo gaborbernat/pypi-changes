@@ -54,7 +54,7 @@ def pypi_info(distributions: Sequence[PathDistribution], options: Options) -> Ge
             progress.update(task, advance=1)
             try:
                 result: Exception | Project | None = future.result()
-            except Exception as exc:  # ruff:ignore[blind-except]
+            except Exception as exc:  # ruff:ignore[blind-except]  # the error is kept on its package
                 result = exc
             yield Package(dist, result)
 
@@ -72,7 +72,7 @@ class _SpeedColumn(TextColumn):
     def __init__(self) -> None:
         super().__init__("[bold cyan]")
 
-    def render(self, task: Task) -> Text:  # ruff:ignore[no-self-use]
+    def render(self, task: Task) -> Text:  # ruff:ignore[no-self-use]  # rich's column API renders per instance
         if task.speed is None:
             return Text("no speed")
         return Text(f"{task.speed:.3f} steps/s")

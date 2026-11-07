@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 def print_requirements(distributions: Iterable[Package], options: Options) -> None:
     for pkg in get_sorted_pkg_list(distributions, options, datetime.now(UTC)):
         if (remote_version := (pkg.last_release or {}).get("version")) and pkg.version != remote_version:
-            print(f"{pkg.name}=={remote_version}")  # ruff:ignore[print]
+            print(f"{pkg.name}=={remote_version}")  # ruff:ignore[print]  # the requirement lines are the output
 
 
 __all__ = [
