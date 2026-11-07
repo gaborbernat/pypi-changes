@@ -5,7 +5,7 @@ from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from contextlib import ExitStack, contextmanager
 from datetime import UTC, datetime, timedelta
-from typing import TYPE_CHECKING, Any, Final
+from typing import TYPE_CHECKING, Final, TypedDict
 
 from packaging.version import InvalidVersion, Version
 from pypi_simple import PyPISimple
@@ -22,6 +22,7 @@ if TYPE_CHECKING:
     from requests import Session
 
     from ._cli import Options
+    from ._pkg import Project, Release
 
 PYPI_INDEX: Final[str] = "https://pypi.org/simple"
 
@@ -52,7 +53,7 @@ def pypi_info(distributions: Sequence[PathDistribution], options: Options) -> Ge
             dist = future_to_url[future]
             progress.update(task, advance=1)
             try:
-                result: Exception | dict[str, Any] | None = future.result()
+                result: Exception | Project | None = future.result()
             except Exception as exc:  # ruff:ignore[blind-except]
                 result = exc
             yield Package(dist, result)
@@ -77,7 +78,7 @@ class SpeedColumn(TextColumn):
         return Text(f"{task.speed:.3f} steps/s")
 
 
-def _one_info(pypi_client: PyPISimple | None, session: CachedSession, dist: PathDistribution) -> dict[str, Any] | None:
+def _one_info(pypi_client: PyPISimple | None, session: CachedSession, dist: PathDistribution) -> Project | None:
     name: str = dist.metadata["Name"]
     result = _load_from_pypi_json_api(name, session)
     if pypi_client is not None:
@@ -85,33 +86,39 @@ def _one_info(pypi_client: PyPISimple | None, session: CachedSession, dist: Path
     return result
 
 
-def _load_from_pypi_json_api(name: str, session: CachedSession) -> dict[str, Any]:
+def _load_from_pypi_json_api(name: str, session: CachedSession) -> Project:
     # ask PyPi - e.g. https://pypi.org/pypi/pip/json, see https://warehouse.pypa.io/api-reference/json/ for more details
     response = session.get(f"https://pypi.org/pypi/{name}/json")
-    result: dict[str, Any] = response.json() if response.ok else {"releases": {}}
+    raw: _RawProject = response.json() if response.ok else {"releases": {}}
 
     # normalize response
     prev_release_at = datetime.now(UTC)
-    for a_version, artifact_release in sorted(result["releases"].items(), reverse=True):
+    releases: dict[str, list[Release]] = {}
+    for a_version, artifact_release in sorted(raw["releases"].items(), reverse=True):
         if artifact_release:  # enrich into releases version and transform upload time to python datetime
-            for release in artifact_release:
-                upload_time = datetime.fromisoformat(release.get("upload_time_iso_8601"))
-                release.update({"version": a_version, "upload_time_iso_8601": upload_time})
-            prev_release_at = artifact_release[0]["upload_time_iso_8601"]
+            releases[a_version] = [
+                {
+                    **release,
+                    "version": a_version,
+                    "upload_time_iso_8601": datetime.fromisoformat(release["upload_time_iso_8601"]),
+                }
+                for release in artifact_release
+            ]
+            prev_release_at = datetime.fromisoformat(artifact_release[0]["upload_time_iso_8601"])
         else:  # if no releases make up a release time and enrich version
             prev_release_at -= timedelta(seconds=1)
-            release = {
-                "packagetype": "sdist",
-                "version": a_version,
-                "upload_time_iso_8601": prev_release_at,
-                "synthesized": True,
-            }
-            artifact_release.append(release)
-    result["releases"] = dict(sorted(result["releases"].items(), key=_sort_by_version_release, reverse=True))
-    return result
+            releases[a_version] = [
+                {
+                    "packagetype": "sdist",
+                    "version": a_version,
+                    "upload_time_iso_8601": prev_release_at,
+                    "synthesized": True,
+                },
+            ]
+    return {"releases": dict(sorted(releases.items(), key=_sort_by_version_release, reverse=True))}
 
 
-def _sort_by_version_release(value: tuple[str, list[dict[str, Any]]]) -> tuple[Version, datetime]:
+def _sort_by_version_release(value: tuple[str, list[Release]]) -> tuple[Version, datetime | None]:
     try:
         version = Version(value[0])
     except InvalidVersion:
@@ -122,19 +129,27 @@ def _sort_by_version_release(value: tuple[str, list[dict[str, Any]]]) -> tuple[V
 def _merge_with_index_server(
     name: str,
     pypi_client: PyPISimple,
-    releases: dict[str, list[dict[str, Any]]],
-) -> dict[str, list[dict[str, Any]]]:
+    releases: dict[str, list[Release]],
+) -> dict[str, list[Release]]:
     index_info = pypi_client.get_project_page(name)
-    index_releases = defaultdict(list)
+    index_releases: defaultdict[str, list[Release]] = defaultdict(list)
     for pkg in index_info.packages:
-        release = {"packagetype": pkg.package_type, "version": pkg.version, "upload_time_iso_8601": None}
         if pkg.version is not None:  # some Artifactory might not set this for .egg-info uploads, ignore those
+            release: Release = {"packagetype": pkg.package_type, "version": pkg.version, "upload_time_iso_8601": None}
             index_releases[pkg.version].append(release)
 
     if missing := {ver: values for ver, values in index_releases.items() if ver not in releases}:
         missing.update(releases)
         return dict(sorted(missing.items(), key=_sort_by_version_release, reverse=True))
     return releases
+
+
+class _RawRelease(TypedDict):
+    upload_time_iso_8601: str
+
+
+class _RawProject(TypedDict):
+    releases: dict[str, list[_RawRelease]]
 
 
 __all__ = [

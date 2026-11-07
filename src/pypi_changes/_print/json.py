@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 from datetime import UTC, datetime
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from humanize import naturaldelta
 
@@ -12,7 +12,7 @@ if TYPE_CHECKING:
     from collections.abc import Iterable
 
     from pypi_changes._cli import Options
-    from pypi_changes._pkg import Package
+    from pypi_changes._pkg import Package, Release
 
 
 def print_json(distributions: Iterable[Package], options: Options) -> None:
@@ -34,7 +34,7 @@ def print_json(distributions: Iterable[Package], options: Options) -> None:
     print(json.dumps(pkg_list, indent=2))  # ruff:ignore[print]
 
 
-def release_info(release: dict[str, Any] | None, now: datetime) -> dict[str, Any]:
+def release_info(release: Release | None, now: datetime) -> dict[str, str | None]:
     if release is None:
         return {}
     release_at = release.get("upload_time_iso_8601") if not release.get("synthesized") else None

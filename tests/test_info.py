@@ -18,6 +18,7 @@ if TYPE_CHECKING:
     from pytest_mock import MockerFixture
 
     from pypi_changes._cli import Options
+    from pypi_changes._pkg import Release
 
     from .conftest import MakeDist
 
@@ -105,7 +106,7 @@ def test_merge_with_pypi(mocker: MockerFixture) -> None:
     client = mocker.create_autospec(PyPISimple, spec_set=True)
     client.get_project_page.return_value = page
 
-    start = {"0": [{"packagetype": "sdist", "upload_time_iso_8601": None, "version": "0"}]}
+    start: dict[str, list[Release]] = {"0": [{"packagetype": "sdist", "upload_time_iso_8601": None, "version": "0"}]}
     result = _merge_with_index_server("a", client, start)
     assert result == {
         "0": [{"packagetype": "sdist", "upload_time_iso_8601": None, "version": "0"}],
