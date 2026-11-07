@@ -40,7 +40,7 @@ def pypi_info(distributions: Sequence[PathDistribution], options: Options) -> Ge
             BarColumn(),
             TextColumn("[bold magenta] {task.completed}/{task.total}"),
             "[progress.percentage]{task.percentage:>3.0f}%",
-            SpeedColumn(),
+            _SpeedColumn(),
             TimeRemainingColumn(),
             transient=True,
         )
@@ -68,7 +68,7 @@ def _pypi_client(session: Session) -> Generator[PyPISimple | None, None, None]:
         yield None
 
 
-class SpeedColumn(TextColumn):
+class _SpeedColumn(TextColumn):
     def __init__(self) -> None:
         super().__init__("[bold cyan]")
 
