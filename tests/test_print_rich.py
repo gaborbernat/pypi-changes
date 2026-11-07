@@ -5,7 +5,6 @@ from datetime import UTC, datetime
 from importlib.metadata import PathDistribution
 from pathlib import Path
 from typing import TYPE_CHECKING
-from unittest.mock import create_autospec
 
 from rich.console import Console
 
@@ -20,12 +19,14 @@ if TYPE_CHECKING:
 
 
 def test_print(capsys: pytest.CaptureFixture[str], option_simple: Options, mocker: MockerFixture) -> None:
-    mocker.patch("pypi_changes._print.tree.datetime").now.return_value = datetime(2021, 11, 6, 10, tzinfo=UTC)
+    mocker.patch("pypi_changes._print.tree.datetime", autospec=True).now.return_value = datetime(
+        2021, 11, 6, 10, tzinfo=UTC
+    )
     option_simple.python = Path(sys.executable)
     option_simple.sort = "updated"
     packages = [
         Package(
-            create_autospec(PathDistribution, spec_set=True, version=v_l, metadata={"Name": n}),
+            mocker.create_autospec(PathDistribution, spec_set=True, version=v_l, metadata={"Name": n}),
             info={"releases": {v_u: [{"version": v_u, "upload_time_iso_8601": t}]}},
         )
         for n, v_l, v_u, t in [
@@ -52,12 +53,14 @@ def test_print(capsys: pytest.CaptureFixture[str], option_simple: Options, mocke
 
 
 def test_print_alphabetical(capsys: pytest.CaptureFixture[str], option_simple: Options, mocker: MockerFixture) -> None:
-    mocker.patch("pypi_changes._print.tree.datetime").now.return_value = datetime(2021, 11, 6, 10, tzinfo=UTC)
+    mocker.patch("pypi_changes._print.tree.datetime", autospec=True).now.return_value = datetime(
+        2021, 11, 6, 10, tzinfo=UTC
+    )
     option_simple.python = Path(sys.executable)
     option_simple.sort = "alphabetic"
     packages = [
         Package(
-            create_autospec(PathDistribution, spec_set=True, version=v_l, metadata={"Name": n}),
+            mocker.create_autospec(PathDistribution, spec_set=True, version=v_l, metadata={"Name": n}),
             info={"releases": {v_u: [{"version": v_u, "upload_time_iso_8601": t}]}},
         )
         for n, v_l, v_u, t in [
@@ -84,17 +87,19 @@ def test_print_alphabetical(capsys: pytest.CaptureFixture[str], option_simple: O
 
 
 def test_major_bump_bold_style(option_simple: Options, mocker: MockerFixture) -> None:
-    mocker.patch("pypi_changes._print.tree.datetime").now.return_value = datetime(2021, 11, 6, 10, tzinfo=UTC)
-    mock_print = mocker.patch("pypi_changes._print.tree.rich_print")
+    mocker.patch("pypi_changes._print.tree.datetime", autospec=True).now.return_value = datetime(
+        2021, 11, 6, 10, tzinfo=UTC
+    )
+    mock_print = mocker.patch("pypi_changes._print.tree.rich_print", autospec=True)
     option_simple.python = Path(sys.executable)
     option_simple.sort = "alphabetic"
     packages = [
         Package(
-            create_autospec(PathDistribution, spec_set=True, version="1.0.0", metadata={"Name": "major-bump"}),
+            mocker.create_autospec(PathDistribution, spec_set=True, version="1.0.0", metadata={"Name": "major-bump"}),
             info={"releases": {"2.0.0": [{"version": "2.0.0", "upload_time_iso_8601": None}]}},
         ),
         Package(
-            create_autospec(PathDistribution, spec_set=True, version="1.0.0", metadata={"Name": "minor-bump"}),
+            mocker.create_autospec(PathDistribution, spec_set=True, version="1.0.0", metadata={"Name": "minor-bump"}),
             info={"releases": {"1.1.0": [{"version": "1.1.0", "upload_time_iso_8601": None}]}},
         ),
     ]

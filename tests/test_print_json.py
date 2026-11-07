@@ -6,7 +6,6 @@ from datetime import UTC, datetime
 from importlib.metadata import PathDistribution
 from pathlib import Path
 from typing import TYPE_CHECKING
-from unittest.mock import create_autospec
 
 from pypi_changes._pkg import Package
 from pypi_changes._print.json import print_json, release_info
@@ -19,12 +18,14 @@ if TYPE_CHECKING:
 
 
 def test_print_json(capsys: CaptureFixture[str], option_simple: Options, mocker: MockerFixture) -> None:
-    mocker.patch("pypi_changes._print.json.datetime").now.return_value = datetime(2021, 11, 6, 10, tzinfo=UTC)
+    mocker.patch("pypi_changes._print.json.datetime", autospec=True).now.return_value = datetime(
+        2021, 11, 6, 10, tzinfo=UTC
+    )
     option_simple.python = Path(sys.executable)
     option_simple.sort = "unsorted"
     packages = [
         Package(
-            create_autospec(PathDistribution, spec_set=True, version=v_cur, metadata={"Name": n}),
+            mocker.create_autospec(PathDistribution, spec_set=True, version=v_cur, metadata={"Name": n}),
             info={
                 "releases": {
                     v_last: [{"version": v_last, "upload_time_iso_8601": t_last}],

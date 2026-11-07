@@ -18,7 +18,11 @@ def test_distributions() -> None:
 
 
 def test_distribution_duplicate_path(mocker: MockerFixture, tmp_path: Path) -> None:
-    mocker.patch("pypi_changes._distributions._get_py_info", return_value=[_make_dist(tmp_path, "a").parent] * 2)
+    mocker.patch(
+        "pypi_changes._distributions._get_py_info",
+        autospec=True,
+        return_value=[_make_dist(tmp_path, "a").parent] * 2,
+    )
     distributions = list(collect_distributions(Options(python=Path(sys.executable))))
     assert len(distributions) == 1
     assert distributions[0].metadata["Name"] == "a"
@@ -33,7 +37,7 @@ def _make_dist(path: Path, name: str) -> Path:
 
 def test_distribution_duplicate_pkg(mocker: MockerFixture, tmp_path: Path) -> None:
     dist_1, dist_2 = _make_dist(tmp_path / "1", "a"), _make_dist(tmp_path / "2", "a")
-    mocker.patch("pypi_changes._distributions._get_py_info", return_value=[dist_1.parent, dist_2.parent])
+    mocker.patch("pypi_changes._distributions._get_py_info", autospec=True, return_value=[dist_1.parent, dist_2.parent])
     distributions = list(collect_distributions(Options(python=Path(sys.executable))))
     assert len(distributions) == 1
     assert distributions[0].metadata["Name"] == "a"

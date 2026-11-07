@@ -4,7 +4,6 @@ import os
 from operator import attrgetter
 from pathlib import Path
 from typing import TYPE_CHECKING
-from unittest.mock import create_autospec
 
 import pytest
 from pypi_simple import DistributionPackage, ProjectPage, PyPISimple
@@ -86,7 +85,9 @@ def test_info_pypi_server_timeout(
     make_dist: MakeDist,
 ) -> None:
     dist = make_dist(tmp_path, "a", "1.0")
-    mocker.patch("pypi_changes._info.CachedSession").return_value.__enter__.return_value.get.side_effect = TimeoutError
+    mocker.patch(
+        "pypi_changes._info.CachedSession", autospec=True
+    ).return_value.__enter__.return_value.get.side_effect = TimeoutError
 
     packages = list(pypi_info([dist], option_simple))
 
@@ -97,11 +98,11 @@ def test_info_pypi_server_timeout(
     assert isinstance(pkg.exc, TimeoutError)
 
 
-def test_merge_with_pypi() -> None:
+def test_merge_with_pypi(mocker: MockerFixture) -> None:
     versions = [("2", "sdist"), ("1", "sdist"), (None, None), ("3", "wheel")]
-    packages = [create_autospec(DistributionPackage, version=v, package_type=t) for v, t in versions]
-    page = create_autospec(ProjectPage, packages=packages)
-    client = create_autospec(PyPISimple, spec_set=True)
+    packages = [mocker.create_autospec(DistributionPackage, version=v, package_type=t) for v, t in versions]
+    page = mocker.create_autospec(ProjectPage, packages=packages)
+    client = mocker.create_autospec(PyPISimple, spec_set=True)
     client.get_project_page.return_value = page
 
     start = {"0": [{"packagetype": "sdist", "upload_time_iso_8601": None, "version": "0"}]}
