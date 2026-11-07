@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 
     from _pytest.monkeypatch import MonkeyPatch
 
-    from tests import MakeDist
+    from . import MakeDist
 
 
 @pytest.fixture(autouse=True)

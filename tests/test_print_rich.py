@@ -10,7 +10,8 @@ from rich.console import Console
 
 from pypi_changes._pkg import Package
 from pypi_changes._print.tree import print_tree
-from tests import PathDistribution
+
+from . import PathDistribution
 
 if TYPE_CHECKING:
     import pytest
@@ -20,8 +21,7 @@ if TYPE_CHECKING:
 
 
 def test_print(capsys: pytest.CaptureFixture[str], option_simple: Options, mocker: MockerFixture) -> None:
-    mocked_datetime = mocker.patch("pypi_changes._print.tree.datetime")
-    mocked_datetime.now.return_value = datetime(2021, 11, 6, 10, tzinfo=UTC)
+    mocker.patch("pypi_changes._print.tree.datetime").now.return_value = datetime(2021, 11, 6, 10, tzinfo=UTC)
     option_simple.python = Path(sys.executable)
     option_simple.sort = "updated"
     packages = [
@@ -53,8 +53,7 @@ def test_print(capsys: pytest.CaptureFixture[str], option_simple: Options, mocke
 
 
 def test_print_alphabetical(capsys: pytest.CaptureFixture[str], option_simple: Options, mocker: MockerFixture) -> None:
-    mocked_datetime = mocker.patch("pypi_changes._print.tree.datetime")
-    mocked_datetime.now.return_value = datetime(2021, 11, 6, 10, tzinfo=UTC)
+    mocker.patch("pypi_changes._print.tree.datetime").now.return_value = datetime(2021, 11, 6, 10, tzinfo=UTC)
     option_simple.python = Path(sys.executable)
     option_simple.sort = "alphabetic"
     packages = [
@@ -86,8 +85,7 @@ def test_print_alphabetical(capsys: pytest.CaptureFixture[str], option_simple: O
 
 
 def test_major_bump_bold_style(option_simple: Options, mocker: MockerFixture) -> None:
-    mocked_datetime = mocker.patch("pypi_changes._print.tree.datetime")
-    mocked_datetime.now.return_value = datetime(2021, 11, 6, 10, tzinfo=UTC)
+    mocker.patch("pypi_changes._print.tree.datetime").now.return_value = datetime(2021, 11, 6, 10, tzinfo=UTC)
     mock_print = mocker.patch("pypi_changes._print.tree.rich_print")
     option_simple.python = Path(sys.executable)
     option_simple.sort = "alphabetic"
@@ -108,8 +106,8 @@ def test_major_bump_bold_style(option_simple: Options, mocker: MockerFixture) ->
     console = Console(record=True, force_terminal=True, width=200)
     console.print(tree)
     html = console.export_html(inline_styles=True)
-    major_marker = "font-weight: bold"
     major_line = next(line for line in html.splitlines() if "major-bump" in line)
     minor_line = next(line for line in html.splitlines() if "minor-bump" in line)
+    major_marker = "font-weight: bold"
     assert major_marker in major_line
     assert major_marker not in minor_line

@@ -19,7 +19,8 @@ if TYPE_CHECKING:
     from pytest_mock import MockerFixture
 
     from pypi_changes._cli import Options
-    from tests import MakeDist
+
+    from . import MakeDist
 
 
 @pytest.fixture(autouse=True)
@@ -36,8 +37,7 @@ def _force_pypi_index(mocker: MockerFixture, _no_index: None) -> None:
 
 @pytest.mark.usefixtures("_force_pypi_index")
 def test_info_self(tmp_path: Path, option_simple: Options, make_dist: MakeDist) -> None:
-    dist = make_dist(tmp_path, "pypi-changes", "1.0.0")
-    distributions = [dist]
+    distributions = [make_dist(tmp_path, "pypi-changes", "1.0.0")]
 
     with use_cassette(str(Path(__file__).parent / "pypi_info_self.yaml"), mode="once"):
         packages = list(pypi_info(distributions, option_simple))
@@ -52,8 +52,7 @@ def test_info_self(tmp_path: Path, option_simple: Options, make_dist: MakeDist) 
 @pytest.mark.usefixtures("_force_pypi_index")
 @pytest.mark.usefixtures("_no_proxy")
 def test_info_missing(tmp_path: Path, option_simple: Options, make_dist: MakeDist) -> None:
-    dist = make_dist(tmp_path, "missing-package", "1.0.0")
-    distributions = [dist]
+    distributions = [make_dist(tmp_path, "missing-package", "1.0.0")]
 
     with use_cassette(str(Path(__file__).parent / "pypi_info_missing_package.yaml"), mode="once"):
         packages = list(pypi_info(distributions, option_simple))
@@ -87,8 +86,7 @@ def test_info_pypi_server_timeout(
     make_dist: MakeDist,
 ) -> None:
     dist = make_dist(tmp_path, "a", "1.0")
-    mock_cached_session = mocker.patch("pypi_changes._info.CachedSession")
-    mock_cached_session.return_value.__enter__.return_value.get.side_effect = TimeoutError
+    mocker.patch("pypi_changes._info.CachedSession").return_value.__enter__.return_value.get.side_effect = TimeoutError
 
     packages = list(pypi_info([dist], option_simple))
 

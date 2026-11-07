@@ -6,7 +6,8 @@ from typing import TYPE_CHECKING
 
 from pypi_changes._cli import Options
 from pypi_changes._distributions import collect_distributions
-from tests import PathDistribution
+
+from . import PathDistribution
 
 if TYPE_CHECKING:
     from pytest_mock import MockerFixture
@@ -17,19 +18,18 @@ def test_distributions() -> None:
     assert all(isinstance(i, PathDistribution) for i in distributions)
 
 
+def test_distribution_duplicate_path(mocker: MockerFixture, tmp_path: Path) -> None:
+    mocker.patch("pypi_changes._distributions._get_py_info", return_value=[_make_dist(tmp_path, "a").parent] * 2)
+    distributions = list(collect_distributions(Options(python=Path(sys.executable))))
+    assert len(distributions) == 1
+    assert distributions[0].metadata["Name"] == "a"
+
+
 def _make_dist(path: Path, name: str) -> Path:
     dist = path / f"{name}.dist-info"
     dist.mkdir(parents=True)
     (dist / "METADATA").write_text(f"Name: {name}")
     return dist
-
-
-def test_distribution_duplicate_path(mocker: MockerFixture, tmp_path: Path) -> None:
-    dist = _make_dist(tmp_path, "a")
-    mocker.patch("pypi_changes._distributions._get_py_info", return_value=[dist.parent] * 2)
-    distributions = list(collect_distributions(Options(python=Path(sys.executable))))
-    assert len(distributions) == 1
-    assert distributions[0].metadata["Name"] == "a"
 
 
 def test_distribution_duplicate_pkg(mocker: MockerFixture, tmp_path: Path) -> None:

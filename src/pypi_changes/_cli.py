@@ -13,15 +13,7 @@ if TYPE_CHECKING:
     from collections.abc import Sequence
 
 
-class Options(Namespace):
-    python: Path
-    jobs: int
-    cache_path: Path
-    cache_duration: int
-    sort: str
-
-
-def parse_cli_arguments(args: Sequence[str] | None = None) -> Options:
+def parse_cli_arguments(args: Sequence[str] | None) -> Options:
     parser = _define_cli_arguments()
     options = Options()
     parser.parse_args(args, options)
@@ -84,6 +76,11 @@ def _define_cli_arguments() -> ArgumentParser:
     return parser
 
 
+class _HelpFormatter(ArgumentDefaultsHelpFormatter):
+    def __init__(self, prog: str) -> None:
+        super().__init__(prog, max_help_position=35, width=190)
+
+
 class _Python(Action):
     def __call__(
         self,
@@ -101,9 +98,12 @@ class _Python(Action):
         setattr(namespace, self.dest, path)
 
 
-class _HelpFormatter(ArgumentDefaultsHelpFormatter):
-    def __init__(self, prog: str) -> None:
-        super().__init__(prog, max_help_position=35, width=190)
+class Options(Namespace):
+    python: Path
+    jobs: int
+    cache_path: Path
+    cache_duration: int
+    sort: str
 
 
 __all__ = [

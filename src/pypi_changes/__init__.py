@@ -24,11 +24,10 @@ def main(args: Sequence[str] | None = None) -> int:
     Execute the entry point.
 
     :param args: CLI arguments
-    :return: exit code
+    :returns: exit code
     """
     options = parse_cli_arguments(args)
-    distributions = collect_distributions(options)
-    info = pypi_info(distributions, options)
+    info = pypi_info(collect_distributions(options), options)
 
     if options.output == "tree":
         print_tree(info, options)

@@ -13,10 +13,8 @@ if TYPE_CHECKING:
 
 
 def print_requirements(distributions: Iterable[Package], options: Options) -> None:
-    now = datetime.now(UTC)
-    for pkg in get_sorted_pkg_list(distributions, options, now):
-        last_release = pkg.last_release or {}
-        if (remote_version := last_release.get("version")) and pkg.version != remote_version:
+    for pkg in get_sorted_pkg_list(distributions, options, datetime.now(UTC)):
+        if (remote_version := (pkg.last_release or {}).get("version")) and pkg.version != remote_version:
             print(f"{pkg.name}=={remote_version}")  # ruff:ignore[print]
 
 

@@ -15,18 +15,6 @@ if TYPE_CHECKING:
     from pypi_changes._pkg import Package
 
 
-def release_info(release: dict[str, Any] | None, now: datetime) -> dict[str, Any]:
-    if release is None:
-        return {}
-    release_at = release.get("upload_time_iso_8601") if not release.get("synthesized") else None
-    release_since = naturaldelta(now - release_at) if release_at else None
-    return {
-        "version": release.get("version"),
-        "date": release_at.isoformat() if release_at is not None else None,
-        "since": release_since,
-    }
-
-
 def print_json(distributions: Iterable[Package], options: Options) -> None:
     now = datetime.now(UTC)
     pkg_list = []
@@ -46,6 +34,19 @@ def print_json(distributions: Iterable[Package], options: Options) -> None:
     print(json.dumps(pkg_list, indent=2))  # ruff:ignore[print]
 
 
+def release_info(release: dict[str, Any] | None, now: datetime) -> dict[str, Any]:
+    if release is None:
+        return {}
+    release_at = release.get("upload_time_iso_8601") if not release.get("synthesized") else None
+    release_since = naturaldelta(now - release_at) if release_at else None
+    return {
+        "version": release.get("version"),
+        "date": release_at.isoformat() if release_at is not None else None,
+        "since": release_since,
+    }
+
+
 __all__ = [
     "print_json",
+    "release_info",
 ]

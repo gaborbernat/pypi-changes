@@ -8,7 +8,8 @@ from unittest.mock import create_autospec
 
 from pypi_changes._pkg import Package
 from pypi_changes._print.requirements import print_requirements
-from tests import PathDistribution
+
+from . import PathDistribution
 
 if TYPE_CHECKING:
     import pytest
@@ -18,8 +19,7 @@ if TYPE_CHECKING:
 
 
 def test_print_requirements(capsys: pytest.CaptureFixture[str], option_simple: Options, mocker: MockerFixture) -> None:
-    mocked_datetime = mocker.patch("pypi_changes._print.requirements.datetime")
-    mocked_datetime.now.return_value = datetime(2021, 11, 6, 10, tzinfo=UTC)
+    mocker.patch("pypi_changes._print.requirements.datetime").now.return_value = datetime(2021, 11, 6, 10, tzinfo=UTC)
     option_simple.python = Path(sys.executable)
     option_simple.sort = "alphabetic"
     packages = [
@@ -45,8 +45,7 @@ def test_print_requirements(capsys: pytest.CaptureFixture[str], option_simple: O
 def test_print_requirements_no_outdated(
     capsys: pytest.CaptureFixture[str], option_simple: Options, mocker: MockerFixture
 ) -> None:
-    mocked_datetime = mocker.patch("pypi_changes._print.requirements.datetime")
-    mocked_datetime.now.return_value = datetime(2021, 11, 6, 10, tzinfo=UTC)
+    mocker.patch("pypi_changes._print.requirements.datetime").now.return_value = datetime(2021, 11, 6, 10, tzinfo=UTC)
     option_simple.python = Path(sys.executable)
     option_simple.sort = "alphabetic"
     packages = [

@@ -5,7 +5,7 @@ from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from contextlib import ExitStack, contextmanager
 from datetime import UTC, datetime, timedelta
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Final
 
 from packaging.version import InvalidVersion, Version
 from pypi_simple import PyPISimple
@@ -23,7 +23,7 @@ if TYPE_CHECKING:
 
     from ._cli import Options
 
-PYPI_INDEX = "https://pypi.org/simple"
+PYPI_INDEX: Final[str] = "https://pypi.org/simple"
 
 
 def pypi_info(distributions: Sequence[PathDistribution], options: Options) -> Generator[Package, None, None]:
@@ -47,7 +47,7 @@ def pypi_info(distributions: Sequence[PathDistribution], options: Options) -> Ge
         task = progress.add_task("[red]Acquire release information", total=len(distributions))
 
         executor = enter(ThreadPoolExecutor(max_workers=options.jobs, thread_name_prefix="version-getter"))
-        future_to_url = {executor.submit(one_info, client, session, dist): dist for dist in distributions}
+        future_to_url = {executor.submit(_one_info, client, session, dist): dist for dist in distributions}
         for future in as_completed(future_to_url):
             dist = future_to_url[future]
             progress.update(task, advance=1)
@@ -56,6 +56,15 @@ def pypi_info(distributions: Sequence[PathDistribution], options: Options) -> Ge
             except Exception as exc:  # ruff:ignore[blind-except]
                 result = exc
             yield Package(dist, result)
+
+
+@contextmanager
+def _pypi_client(session: Session) -> Generator[PyPISimple | None, None, None]:
+    if (url := os.environ.get("PIP_INDEX_URL")) is not None and url.lstrip("/") != PYPI_INDEX:
+        with PyPISimple(endpoint=url, session=session) as client:
+            yield client
+    else:
+        yield None
 
 
 class SpeedColumn(TextColumn):
@@ -68,17 +77,7 @@ class SpeedColumn(TextColumn):
         return Text(f"{task.speed:.3f} steps/s")
 
 
-@contextmanager
-def _pypi_client(session: Session) -> Generator[PyPISimple | None, None, None]:
-    url = os.environ.get("PIP_INDEX_URL")
-    if url is not None and url.lstrip("/") != PYPI_INDEX:
-        with PyPISimple(endpoint=url, session=session) as client:
-            yield client
-    else:
-        yield None
-
-
-def one_info(pypi_client: PyPISimple | None, session: CachedSession, dist: PathDistribution) -> dict[str, Any] | None:
+def _one_info(pypi_client: PyPISimple | None, session: CachedSession, dist: PathDistribution) -> dict[str, Any] | None:
     name: str = dist.metadata["Name"]
     result = _load_from_pypi_json_api(name, session)
     if pypi_client is not None:
@@ -108,11 +107,11 @@ def _load_from_pypi_json_api(name: str, session: CachedSession) -> dict[str, Any
                 "synthesized": True,
             }
             artifact_release.append(release)
-    result["releases"] = dict(sorted(result["releases"].items(), key=sort_by_version_release, reverse=True))
+    result["releases"] = dict(sorted(result["releases"].items(), key=_sort_by_version_release, reverse=True))
     return result
 
 
-def sort_by_version_release(value: tuple[str, list[dict[str, Any]]]) -> tuple[Version, datetime]:
+def _sort_by_version_release(value: tuple[str, list[dict[str, Any]]]) -> tuple[Version, datetime]:
     try:
         version = Version(value[0])
     except InvalidVersion:
@@ -132,14 +131,12 @@ def _merge_with_index_server(
         if pkg.version is not None:  # some Artifactory might not set this for .egg-info uploads, ignore those
             index_releases[pkg.version].append(release)
 
-    missing = {ver: values for ver, values in index_releases.items() if ver not in releases}
-    if missing:
+    if missing := {ver: values for ver, values in index_releases.items() if ver not in releases}:
         missing.update(releases)
-        return dict(sorted(missing.items(), key=sort_by_version_release, reverse=True))
+        return dict(sorted(missing.items(), key=_sort_by_version_release, reverse=True))
     return releases
 
 
 __all__ = [
-    "Package",
     "pypi_info",
 ]

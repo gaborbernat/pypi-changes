@@ -16,5 +16,4 @@ def test_pypi_changes_self_output_default(tmp_path: Path) -> None:
 
 
 def test_pypi_changes_self_output_json(tmp_path: Path) -> None:
-    venv = cli_run([str(tmp_path / "venv")], setup_logging=False)
-    main([str(venv.creator.exe), "--output", "json"])
+    main([str(cli_run([str(tmp_path / "venv")], setup_logging=False).creator.exe), "--output", "json"])

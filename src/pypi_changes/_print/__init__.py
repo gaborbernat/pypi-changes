@@ -10,6 +10,12 @@ if TYPE_CHECKING:
     from pypi_changes._pkg import Package
 
 
+def get_sorted_pkg_list(distributions: Iterable[Package], options: Options, now: datetime) -> Iterable[Package]:
+    if options.sort in {"a", "alphabetic"}:
+        return sorted(distributions, key=lambda v: v.name.lower())
+    return sorted(distributions, key=lambda v: (v.last_release_at or now, _Reversor(v.name)), reverse=True)
+
+
 class _Reversor:  # ruff:ignore[eq-without-hash]
     def __init__(self, obj: str) -> None:
         self.obj = obj
@@ -19,12 +25,6 @@ class _Reversor:  # ruff:ignore[eq-without-hash]
 
     def __lt__(self, other: _Reversor) -> bool:
         return other.obj < self.obj
-
-
-def get_sorted_pkg_list(distributions: Iterable[Package], options: Options, now: datetime) -> Iterable[Package]:
-    if options.sort in {"a", "alphabetic"}:
-        return sorted(distributions, key=lambda v: v.name.lower())
-    return sorted(distributions, key=lambda v: (v.last_release_at or now, _Reversor(v.name)), reverse=True)
 
 
 __all__ = [

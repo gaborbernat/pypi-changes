@@ -28,8 +28,7 @@ def print_tree(distributions: Iterable[Package], options: Options) -> None:
         text.append(" ", "white")
         text.append(pkg.version, "blue")
 
-        current_release = pkg.current_release
-        current_release_at = current_release.get("upload_time_iso_8601")
+        current_release_at = pkg.current_release.get("upload_time_iso_8601")
         last_release = pkg.last_release or {}
         last_release_at = pkg.last_release_at
 
