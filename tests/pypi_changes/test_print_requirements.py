@@ -6,14 +6,14 @@ from importlib.metadata import PathDistribution
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from pypi_changes._pkg import Package
-from pypi_changes._print.requirements import print_requirements
+from pypi_changes._pkg import Package  # ruff:ignore[import-private-name]  # construct printer input
+from pypi_changes._print import print_requirements  # ruff:ignore[import-private-name]  # test requirements printer
 
 if TYPE_CHECKING:
     import pytest
     from pytest_mock import MockerFixture
 
-    from pypi_changes._cli import Options
+    from tests.conftest import Options
 
 
 def test_print_requirements(capsys: pytest.CaptureFixture[str], option_simple: Options, mocker: MockerFixture) -> None:

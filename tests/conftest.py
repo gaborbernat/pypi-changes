@@ -7,22 +7,21 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from pypi_changes._cli import Options
+from pypi_changes._cli import Options  # ruff:ignore[import-private-name]  # fixtures construct CLI options
 
 if TYPE_CHECKING:
-    from _pytest.monkeypatch import MonkeyPatch
     from pytest_mock import MockerFixture
 
 MakeDist = Callable[[Path, str, str], PathDistribution]
 
 
-@pytest.fixture(autouse=True)
-def _no_index(monkeypatch: MonkeyPatch) -> None:
+@pytest.fixture(autouse=True)  # ruff:ignore[pytest-fixture-autouse]  # all tests need a clean package index
+def _no_index(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.delenv("PIP_INDEX_URL", raising=False)
 
 
-@pytest.fixture(autouse=True)
-def _no_proxy(monkeypatch: MonkeyPatch) -> None:
+@pytest.fixture(autouse=True)  # ruff:ignore[pytest-fixture-autouse]  # all tests need a clean proxy environment
+def _no_proxy(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.delenv("https_proxy", raising=False)
     monkeypatch.delenv("http_proxy", raising=False)
     monkeypatch.delenv("no_proxy", raising=False)

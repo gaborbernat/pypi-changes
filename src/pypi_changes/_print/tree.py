@@ -15,8 +15,7 @@ from ._sort import get_sorted_pkg_list
 if TYPE_CHECKING:
     from collections.abc import Iterable
 
-    from pypi_changes._cli import Options
-    from pypi_changes._pkg import Package
+    from . import Options, Package
 
 
 def print_tree(distributions: Iterable[Package], options: Options) -> None:
@@ -33,8 +32,8 @@ def print_tree(distributions: Iterable[Package], options: Options) -> None:
         last_release_at = pkg.last_release_at
 
         if current_release_at is not None:
-            text.append(" ")  # pragma: no cover  # no test gives the installed version a release date
-            text.append(naturaldelta(now - current_release_at), "green")  # pragma: no cover  # same as above
+            text.append(" ")
+            text.append(naturaldelta(now - current_release_at), "green")
         if pkg.version != (remote_version := last_release.get("version")):
             style = "bold red" if _is_major_bump(pkg.version, remote_version) else "red"
             text.append(f" remote {remote_version}", style)

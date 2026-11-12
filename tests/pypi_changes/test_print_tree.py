@@ -8,14 +8,14 @@ from typing import TYPE_CHECKING
 
 from rich.console import Console
 
-from pypi_changes._pkg import Package
-from pypi_changes._print.tree import print_tree
+from pypi_changes._pkg import Package  # ruff:ignore[import-private-name]  # construct printer input
+from pypi_changes._print import print_tree  # ruff:ignore[import-private-name]  # test tree printer
 
 if TYPE_CHECKING:
     import pytest
     from pytest_mock import MockerFixture
 
-    from pypi_changes._cli import Options
+    from tests.conftest import Options
 
 
 def test_print(capsys: pytest.CaptureFixture[str], option_simple: Options, mocker: MockerFixture) -> None:
@@ -115,3 +115,37 @@ def test_major_bump_bold_style(option_simple: Options, mocker: MockerFixture) ->
     major_marker = "font-weight: bold"
     assert major_marker in major_line
     assert major_marker not in minor_line
+
+
+def test_missing_remote_version_not_bold(option_simple: Options, mocker: MockerFixture) -> None:
+    mock_print = mocker.patch("pypi_changes._print.tree.rich_print", autospec=True)
+    option_simple.python = Path(sys.executable)
+    option_simple.sort = "alphabetic"
+    package = Package(
+        mocker.create_autospec(PathDistribution, spec_set=True, version="1.0.0", metadata={"Name": "a"}),
+        info={"releases": {"2.0.0": [{"upload_time_iso_8601": None}]}},
+    )
+
+    print_tree([package], option_simple)
+
+    console = Console(record=True, force_terminal=True, width=200)
+    console.print(mock_print.call_args[0][0])
+    line = next(line for line in console.export_html(inline_styles=True).splitlines() if "remote" in line)
+    assert ("remote None" in line, "font-weight: bold" in line) == (True, False)
+
+
+def test_invalid_local_version_not_bold(option_simple: Options, mocker: MockerFixture) -> None:
+    mock_print = mocker.patch("pypi_changes._print.tree.rich_print", autospec=True)
+    option_simple.python = Path(sys.executable)
+    option_simple.sort = "alphabetic"
+    package = Package(
+        mocker.create_autospec(PathDistribution, spec_set=True, version="invalid", metadata={"Name": "a"}),
+        info={"releases": {"2.0.0": [{"version": "2.0.0", "upload_time_iso_8601": None}]}},
+    )
+
+    print_tree([package], option_simple)
+
+    console = Console(record=True, force_terminal=True, width=200)
+    console.print(mock_print.call_args[0][0])
+    line = next(line for line in console.export_html(inline_styles=True).splitlines() if "remote" in line)
+    assert ("remote 2.0.0" in line, "font-weight: bold" in line) == (True, False)

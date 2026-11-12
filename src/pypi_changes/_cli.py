@@ -9,9 +9,7 @@ from platformdirs import user_cache_path
 
 from ._distributions import collect_distributions
 from ._info import pypi_info
-from ._print.json import print_json
-from ._print.requirements import print_requirements
-from ._print.tree import print_tree
+from ._print import print_json, print_requirements, print_tree
 from ._version import version
 
 if TYPE_CHECKING:

@@ -36,7 +36,7 @@ class Package:
 
     @property
     def path(self) -> Path:
-        return cast("Path", self.dist._path)  # ruff:ignore[private-member-access]  # no public accessor for it
+        return cast("Path", self.dist._path)  # ruff:ignore[private-member-access]  # PathDistribution has no public accessor
 
     @property
     def last_release_at(self) -> datetime | None:

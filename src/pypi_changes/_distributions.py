@@ -15,7 +15,16 @@ if TYPE_CHECKING:
     from ._cli import Options
 
 _PKG_REGEX: Final[re.Pattern[str]] = re.compile(
-    r"^([A-Z0-9]|[A-Z0-9][A-Z0-9._-]*[A-Z0-9])(\.egg-info|\.dist-info)$", flags=re.IGNORECASE
+    r"""
+    ^
+    (?:
+        [A-Z0-9]  # one-character distribution name
+        | [A-Z0-9][A-Z0-9._-]*[A-Z0-9]  # longer distribution name
+    )
+    (?:\.egg-info|\.dist-info)  # metadata directory suffix
+    $
+    """,
+    flags=re.IGNORECASE | re.VERBOSE,
 )
 
 

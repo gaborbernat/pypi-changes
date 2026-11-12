@@ -11,8 +11,7 @@ from ._sort import get_sorted_pkg_list
 if TYPE_CHECKING:
     from collections.abc import Iterable
 
-    from pypi_changes._cli import Options
-    from pypi_changes._pkg import Package, Release
+    from . import Options, Package, Release
 
 
 def print_json(distributions: Iterable[Package], options: Options) -> None:
@@ -20,8 +19,8 @@ def print_json(distributions: Iterable[Package], options: Options) -> None:
     pkg_list = []
 
     for pkg in get_sorted_pkg_list(distributions, options, now):
-        current_release = {"version": pkg.version, **release_info(pkg.current_release, now)}
-        latest_release = release_info(pkg.last_release, now)
+        current_release = {"version": pkg.version, **_release_info(pkg.current_release, now)}
+        latest_release = _release_info(pkg.last_release, now)
         pkg_list.append(
             {
                 "name": pkg.name,
@@ -34,7 +33,7 @@ def print_json(distributions: Iterable[Package], options: Options) -> None:
     print(json.dumps(pkg_list, indent=2))  # ruff:ignore[print]  # the JSON document is the command's output
 
 
-def release_info(release: Release | None, now: datetime) -> dict[str, str | None]:
+def _release_info(release: Release | None, now: datetime) -> dict[str, str | None]:
     if release is None:
         return {}
     release_at = release.get("upload_time_iso_8601") if not release.get("synthesized") else None
@@ -48,5 +47,4 @@ def release_info(release: Release | None, now: datetime) -> dict[str, str | None
 
 __all__ = [
     "print_json",
-    "release_info",
 ]
