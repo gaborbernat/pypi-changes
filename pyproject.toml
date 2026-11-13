@@ -134,18 +134,17 @@ lint.select = [
   "ALL",
 ]
 lint.ignore = [
-  "CPY",                                    # No copyright statements
-  "DOC",                                    # no support
-  "incorrect-blank-line-before-class",      # incompatible with blank-line-before-class
-  "missing-trailing-comma",                 # Conflict with formatter
-  "multi-line-summary-first-line",          # incompatible with multi-line-summary-second-line
-  "undocumented-magic-method",              # undocumented-public-api (simplint) covers the public API instead
-  "undocumented-public-class",              # undocumented-public-api (simplint) covers the public API instead
-  "undocumented-public-function",           # undocumented-public-api (simplint) covers the public API instead
-  "undocumented-public-init",               # undocumented-public-api (simplint) covers the public API instead
-  "undocumented-public-method",             # undocumented-public-api (simplint) covers the public API instead
-  "undocumented-public-nested-class",       # undocumented-public-api (simplint) covers the public API instead
-  "unnecessary-regular-expression-compile", # conflicts with simplint inline-regex
+  "CPY",                               # No copyright statements
+  "DOC",                               # no support
+  "incorrect-blank-line-before-class", # incompatible with blank-line-before-class
+  "missing-trailing-comma",            # Conflict with formatter
+  "multi-line-summary-first-line",     # incompatible with multi-line-summary-second-line
+  "undocumented-magic-method",         # undocumented-public-api (simplint) covers the public API instead
+  "undocumented-public-class",         # undocumented-public-api (simplint) covers the public API instead
+  "undocumented-public-function",      # undocumented-public-api (simplint) covers the public API instead
+  "undocumented-public-init",          # undocumented-public-api (simplint) covers the public API instead
+  "undocumented-public-method",        # undocumented-public-api (simplint) covers the public API instead
+  "undocumented-public-nested-class",  # undocumented-public-api (simplint) covers the public API instead
 ]
 lint.per-file-ignores."tests/**/*.py" = [
   "assert", # assertions check test behavior
