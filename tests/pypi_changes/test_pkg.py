@@ -3,14 +3,13 @@ from __future__ import annotations
 from datetime import UTC, datetime
 from typing import TYPE_CHECKING
 
-from pypi_changes._pkg import Package
+from pypi_changes._pkg import Package  # ruff:ignore[import-private-name]  # test package model
 
 if TYPE_CHECKING:
     from pathlib import Path
 
     from pypi_changes._pkg import Project, Release
-
-    from .conftest import MakeDist
+    from tests.conftest import MakeDist
 
 
 def test_ignore_dev_release(make_dist: MakeDist, tmp_path: Path) -> None:

@@ -6,8 +6,7 @@ if TYPE_CHECKING:
     from collections.abc import Iterable
     from datetime import datetime
 
-    from pypi_changes._cli import Options
-    from pypi_changes._pkg import Package
+    from . import Options, Package
 
 
 def get_sorted_pkg_list(distributions: Iterable[Package], options: Options, now: datetime) -> Iterable[Package]:

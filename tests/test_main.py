@@ -13,4 +13,6 @@ def test_help_module() -> None:
 
 @pytest.mark.parametrize("name", [pytest.param("python.exe" if sys.platform == "win32" else "python", id="console")])
 def test_help_console(name: str) -> None:
-    subprocess.check_call([str(Path(sys.executable).parent / name), "--help"])
+    subprocess.check_call(  # ruff:ignore[subprocess-without-shell-equals-true]  # fixed argv tests console entry point
+        [str(Path(sys.executable).parent / name), "--help"]
+    )

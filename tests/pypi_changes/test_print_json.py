@@ -7,17 +7,17 @@ from importlib.metadata import PathDistribution
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from pypi_changes._pkg import Package
-from pypi_changes._print.json import print_json, release_info
+from pypi_changes._pkg import Package  # ruff:ignore[import-private-name]  # construct printer input
+from pypi_changes._print import print_json  # ruff:ignore[import-private-name]  # test JSON printer
 
 if TYPE_CHECKING:
-    from _pytest.capture import CaptureFixture
+    import pytest
     from pytest_mock import MockerFixture
 
-    from pypi_changes._cli import Options
+    from tests.conftest import Options
 
 
-def test_print_json(capsys: CaptureFixture[str], option_simple: Options, mocker: MockerFixture) -> None:
+def test_print_json(capsys: pytest.CaptureFixture[str], option_simple: Options, mocker: MockerFixture) -> None:
     mocker.patch("pypi_changes._print.json.datetime", autospec=True).now.return_value = datetime(
         2021, 11, 6, 10, tzinfo=UTC
     )
@@ -78,7 +78,14 @@ def test_print_json(capsys: CaptureFixture[str], option_simple: Options, mocker:
     ]
 
 
-def test_release_info_no_release() -> None:
-    result = release_info(None, datetime.now(UTC))
+def test_print_json_no_release(
+    capsys: pytest.CaptureFixture[str], option_simple: Options, mocker: MockerFixture
+) -> None:
+    option_simple.sort = "alphabetic"
+    print_json(
+        [Package(mocker.create_autospec(PathDistribution, spec_set=True, version="1", metadata={"Name": "a"}), None)],
+        option_simple,
+    )
 
-    assert result == {}
+    out, err = capsys.readouterr()
+    assert (json.loads(out)[0]["latest"], err) == ({}, "")

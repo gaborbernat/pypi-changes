@@ -8,8 +8,7 @@ from ._sort import get_sorted_pkg_list
 if TYPE_CHECKING:
     from collections.abc import Iterable
 
-    from pypi_changes._cli import Options
-    from pypi_changes._pkg import Package
+    from . import Options, Package
 
 
 def print_requirements(distributions: Iterable[Package], options: Options) -> None:
