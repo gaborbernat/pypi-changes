@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING  # simplint: ignore[init-module-content]  # type-only re-exports
+from typing import TYPE_CHECKING
 
 from .json import print_json
 from .requirements import print_requirements
