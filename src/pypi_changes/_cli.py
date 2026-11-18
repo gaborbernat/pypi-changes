@@ -1,5 +1,15 @@
 from __future__ import annotations
 
+__lazy_modules__ = [
+    "pathlib",
+    "platformdirs",
+    "shutil",
+    f"{__spec__.parent}._distributions",  # ty: ignore[missing-union-attribute]  # imported modules have a spec
+    f"{__spec__.parent}._info",  # ty: ignore[missing-union-attribute]  # imported modules have a spec
+    f"{__spec__.parent}._print",  # ty: ignore[missing-union-attribute]  # imported modules have a spec
+    f"{__spec__.parent}._version",  # ty: ignore[missing-union-attribute]  # imported modules have a spec
+]
+
 import shutil
 from argparse import Action, ArgumentDefaultsHelpFormatter, ArgumentError, ArgumentParser, Namespace
 from pathlib import Path

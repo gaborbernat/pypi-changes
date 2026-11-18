@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+__lazy_modules__ = ["packaging.version"]
+
 from typing import TYPE_CHECKING, TypedDict, cast
 
 from packaging.version import Version

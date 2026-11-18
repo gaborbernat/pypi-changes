@@ -1,5 +1,16 @@
 from __future__ import annotations
 
+__lazy_modules__ = [
+    "collections",
+    "concurrent.futures",
+    "datetime",
+    "packaging.version",
+    "pypi_simple",
+    "requests_cache",
+    "rich.text",
+    f"{__spec__.parent}._pkg",  # ty: ignore[missing-union-attribute]  # imported modules have a spec
+]
+
 import os
 from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor, as_completed
