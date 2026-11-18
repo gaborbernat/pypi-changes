@@ -1,5 +1,13 @@
 from __future__ import annotations
 
+__lazy_modules__ = [
+    "importlib.metadata",
+    "json",
+    "pathlib",
+    "rich.console",
+    "subprocess",
+]
+
 import json
 import re
 from importlib.metadata import Distribution, PathDistribution

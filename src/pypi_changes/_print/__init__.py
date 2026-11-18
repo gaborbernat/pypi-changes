@@ -2,6 +2,12 @@
 
 from __future__ import annotations
 
+__lazy_modules__ = [
+    f"{__spec__.parent}.json",  # ty: ignore[missing-union-attribute]  # imported modules have a spec
+    f"{__spec__.parent}.requirements",  # ty: ignore[missing-union-attribute]  # imported modules have a spec
+    f"{__spec__.parent}.tree",  # ty: ignore[missing-union-attribute]  # imported modules have a spec
+]
+
 from typing import TYPE_CHECKING
 
 from .json import print_json
